@@ -37,6 +37,7 @@ Currently working on DIGITAL PROTOTYPE: Final Submission (5/12-13) @11:59pm
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 **Status:**
 
+(This is where you can note your progress on a given task)
 
 # Github Terms:
 
