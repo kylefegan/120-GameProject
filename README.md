@@ -3,8 +3,6 @@ GitHub repository for the 120 series final game project
 
 Currently working on DIGITAL PROTOTYPE: Final Submission (5/12-13) @11:59pm
 
-# Tasks:
-
 ### Styling:
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 - NO horizontal scrolling (keep all statements short enough)
@@ -14,6 +12,8 @@ Currently working on DIGITAL PROTOTYPE: Final Submission (5/12-13) @11:59pm
 - All variables and objects have a descriptive identifier.
 - All variables and objects use the camelCase convention.
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+# Tasks:
 
 ### Kyle Fegan:
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
