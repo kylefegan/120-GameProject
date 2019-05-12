@@ -19,12 +19,16 @@ Play.prototype = {
 		this.playerCollisionGroup = game.physics.p2.createCollisionGroup();
 		this.ballCollisionGroup = game.physics.p2.createCollisionGroup();
 		this.terrainCollisionGroup = game.physics.p2.createCollisionGroup();
-
+		this.hazardCollisionGroup = game.physics.p2.createCollisionGroup();
 		game.physics.p2.updateBoundsCollisionGroup();
 
 		this.terrainGroup = game.add.group();
 		this.terrainGroup.enableBody = true;
 		this.terrainGroup.physicsBodyType = Phaser.Physics.P2JS;
+
+		this.hazardGroup = game.add.group();
+		this.hazardGroup.enableBody = true;
+		this.hazardGroup.physicsBodyType = Phaser.Physics.P2JS;
 
 		this.attackGroup = game.add.group();
 		this.attackGroup.enableBody = true;
@@ -48,6 +52,15 @@ Play.prototype = {
 		this.halfpipe.body.setCollisionGroup(this.terrainCollisionGroup);
 		this.halfpipe.body.collides([this.ballCollisionGroup, this.playerCollisionGroup]);
 
+		//Hazard
+		//adds static hazard 
+		this.hazard = this.hazardGroup.create(game.world.width/2, game.world.height/2 - 200, 'fire');
+		this.game.physics.p2.enable(this.hazard, false);
+		this.hazard.body.static = true;
+		this.hazard.body.setCollisionGroup(this.hazardCollisionGroup);
+		this.hazard.body.collides([this.ballCollisionGroup, this.playerCollisionGroup]);
+
+
 		// Ball 1
 		//this.ball1 = this.ballGroup.create(150, 60, 'ball');
 		this.ball1 = game.add.sprite(150, 60, 'ball');
@@ -55,7 +68,7 @@ Play.prototype = {
 		game.physics.p2.enable(this.ball1, false);
 		this.ball1.body.setCircle(18);
 		this.ball1.body.setCollisionGroup(this.ballCollisionGroup);
-		this.ball1.body.collides([this.ballCollisionGroup, this.playerCollisionGroup, this.attackCollisionGroup, this.terrainCollisionGroup]);
+		this.ball1.body.collides([this.ballCollisionGroup, this.playerCollisionGroup, this.attackCollisionGroup, this.terrainCollisionGroup, this.hazardCollisionGroup]);
 		this.ballGroup.add(this.ball1);
 
 		//Ball 2
@@ -65,7 +78,7 @@ Play.prototype = {
 		game.physics.p2.enable(this.ball2, false);
 		this.ball2.body.setCircle(18);
 		this.ball2.body.setCollisionGroup(this.ballCollisionGroup);
-		this.ball2.body.collides([this.ballCollisionGroup, this.playerCollisionGroup, this.attackCollisionGroup, this.terrainCollisionGroup]);
+		this.ball2.body.collides([this.ballCollisionGroup, this.playerCollisionGroup, this.attackCollisionGroup, this.terrainCollisionGroup, this.hazardCollisionGroup]);
 		this.ballGroup.add(this.ball2);
 
 		//Player 1
@@ -76,7 +89,7 @@ Play.prototype = {
 		this.player.body.fixedRotation = true;
 		this.player.body.dynamic = true;
 		this.player.body.setCollisionGroup(this.playerCollisionGroup);
-		this.player.body.collides([this.ballCollisionGroup, this.terrainCollisionGroup]);
+		this.player.body.collides([this.ballCollisionGroup, this.terrainCollisionGroup, this.hazardCollisionGroup]);
 		this.playerGroup.add(this.player);
 
 		//Player 2
@@ -87,7 +100,7 @@ Play.prototype = {
 		this.player2.body.fixedRotation = true;
 		this.player2.body.dynamic = true;
 		this.player2.body.setCollisionGroup(this.playerCollisionGroup);
-		this.player2.body.collides([this.ballCollisionGroup, this.terrainCollisionGroup]);
+		this.player2.body.collides([this.ballCollisionGroup, this.terrainCollisionGroup, this.hazardCollisionGroup]);
 		this.playerGroup.add(this.player2);
 
 		//PlayerAttackZone = function(game, x, y, key, strength, direction, outerContext)
@@ -102,9 +115,11 @@ Play.prototype = {
 		this.player.body.createBodyCallback(this.halfpipe, this.jumpReset);
 		this.player2.body.createBodyCallback(this.halfpipe, this.jumpReset);
 
-		//create callback for ball and players to kill players when hit
+		//create callback for ball or hazards with players to kill players when hit
 		this.player.body.createGroupCallback(this.ballCollisionGroup, this.hitByBall);
 		this.player2.body.createGroupCallback(this.ballCollisionGroup, this.hitByBall);
+		this.player.body.createGroupCallback(this.hazardCollisionGroup, this.hitByHazard);
+		this.player2.body.createGroupCallback(this.hazardCollisionGroup, this.hitByHazard);
 	},
 	
 	update: function() {
@@ -136,6 +151,10 @@ Play.prototype = {
 	},
 
 	hitByBall: function(receiver, hitter) {
+		receiver.sprite.kill();
+	},
+
+	hitByHazard: function(receiver, hitter) {
 		receiver.sprite.kill();
 	}
 };
