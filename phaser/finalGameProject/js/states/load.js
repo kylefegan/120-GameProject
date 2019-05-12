@@ -11,6 +11,7 @@ Load.prototype = {
 		game.load.image('halfpipe', 'halfpipe.png');
 		game.load.physics("physics", "final game.json", null, Phaser.Physics.LIME_CORONA_JSON);
 		game.load.image('ball', 'ball.png');
+		game.load.image('attackZone', 'playerAttackZone.png'); //it's a transparent box image.
 
 		// load audio assets
 		//game.load.path = 'assets/audio/';

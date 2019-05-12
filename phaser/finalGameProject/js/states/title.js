@@ -10,7 +10,7 @@ Title.prototype = {
 		var instructText = game.add.text(game.width/2, game.height/2 + 48, 'By Group 50', {font: 'Helvetica', fontSize: '24px', fill: '#fff'});
 		instructText.anchor.set(0.5);
 
-		var playText = game.add.text(game.width/2, game.height*.8, 'P1 = arrows, P2 = awd, down arrow to end.', {font: 'Helvetica', fontSize: '24px', fill: '#fff'});
+		var playText = game.add.text(game.width/2, game.height*.8, 'P1 = arrows & NUM0, P2 = awd & shift, down arrow to end.', {font: 'Helvetica', fontSize: '24px', fill: '#fff'});
 		playText.anchor.set(0.5);
 
 	},

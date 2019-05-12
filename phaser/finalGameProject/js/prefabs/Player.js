@@ -1,19 +1,25 @@
 //Player prefab
 
 //Player constructor
-var Player = function(game, x, y, key, playerNumber) {
+var Player = function(game, x, y, key, playerNumber, attackGroup, attackCollisionGroup,ballCollisionGroup, outerContext) {
 	// call Sprite constructor within this object
 	// new Sprite(game, x, y, key, frame)
 	Phaser.Sprite.call(this, game, x, y, key);
-	game.physics.p2.enable(this, false);	// enable physics
+	game.physics.p2.enable(this, false);	// enable physics, I believe this is redundant
 
 	this.PLAYER_SCALE = 1;
 	this.MAX_JUMP = 2;
+	this.STRIKE_STRENGTH = 300;
 	this.jumps = this.MAX_JUMP;
 	this.JUMP_SPEED = -300;
 	this.canJump = false;
 	this.playNum = playerNumber;
 	this.playerVel = 200;
+	this.outerContext = outerContext;
+	this.attackGroup = attackGroup;
+	this.attackCollisionGroup = attackCollisionGroup;
+	this.ballCollisionGroup = ballCollisionGroup;
+	this.ATTACK_SPAWN_OFFSET = 40;
 
 	if (this.playNum == 1) {
 		this.tint = 0xf4307c;
@@ -60,6 +66,22 @@ Player.prototype.update = function() {
 		   	this.jumping = false;
 		}
 
+		//attack stuff
+		if (game.input.keyboard.justPressed(Phaser.Keyboard.NUMPAD_0)) {
+			if (this.scale.x > 0) {
+				this.attackOffset = this.x + this.ATTACK_SPAWN_OFFSET;
+				this.attackDirection = 1;
+			} else {
+				this.attackOffset = this.x -this.ATTACK_SPAWN_OFFSET;
+				this.attackDirection = -1;
+			}
+			this.attackZone = new PlayerAttackZone(game, this.attackOffset, this.y, 'attackZone', this.STRIKE_STRENGTH, this.attackDirection, this.outerContext);
+			this.game.add.existing(this.attackZone);
+			this.attackZone.body.setCollisionGroup(this.attackCollisionGroup);
+			this.attackZone.body.collides(this.ballCollisionGroup, this.outerContext.playerAttack, this.outerContext);
+			this.attackGroup.add(this.attackZone);
+		}
+
 	} else if (this.playNum == 2) {
 		
 		if(game.input.keyboard.isDown(Phaser.Keyboard.A)) {
@@ -85,6 +107,22 @@ Player.prototype.update = function() {
 		if(this.jumping && game.input.keyboard.upDuration(Phaser.Keyboard.W)) {
 		  	this.jumps--;
 		   	this.jumping = false;
+		}
+
+		//attack stuff
+		if (game.input.keyboard.justPressed(Phaser.Keyboard.SHIFT)) {
+			if (this.scale.x > 0) {
+				this.attackOffset = this.x + this.ATTACK_SPAWN_OFFSET;
+				this.attackDirection = 1;
+			} else {
+				this.attackOffset = this.x -this.ATTACK_SPAWN_OFFSET;
+				this.attackDirection = -1;
+			}
+			this.attackZone = new PlayerAttackZone(game, this.attackOffset, this.y, 'attackZone', this.STRIKE_STRENGTH, this.attackDirection, this.outerContext);
+			this.game.add.existing(this.attackZone);
+			this.attackZone.body.setCollisionGroup(this.attackCollisionGroup);
+			this.attackZone.body.collides(this.ballCollisionGroup, this.outerContext.playerAttack, this.outerContext);
+			this.attackGroup.add(this.attackZone);
 		}
 	}
 
