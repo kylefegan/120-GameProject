@@ -53,7 +53,7 @@ Play.prototype = {
 
 		// Ball 1
 		//this.ball1 = this.ballGroup.create(150, 60, 'ball');
-		this.ball1 = game.add.sprite(150, 60, 'ball');
+		this.ball1 = game.add.sprite(230, 300, 'ball');
 		this.ball1.tint = 0xc242f4;
 		game.physics.p2.enable(this.ball1, this.DEBUG_BODIES);
 		this.ball1.body.setCircle(18);
@@ -63,7 +63,7 @@ Play.prototype = {
 
 		//Ball 2
 		//this.ball2 = this.ballGroup.create(this.game.width - 150, 60, 'ball');
-		this.ball2 = game.add.sprite(this.game.width - 150, 60, 'ball');
+		this.ball2 = game.add.sprite(this.game.width - 230, 300, 'ball');
 		this.ball2.tint = 0xf4ee41;
 		game.physics.p2.enable(this.ball2, this.DEBUG_BODIES);
 		this.ball2.body.setCircle(18);
@@ -138,10 +138,20 @@ Play.prototype = {
 	},
 
 	hitByBall: function(receiver, hitter) {
-		//checks ball velocity, if moving >= 30% of strike strength, kill player.
-		if (hitter.sprite.body.velocity.x >= (receiver.sprite.STRIKE_STRENGTH * 0.3)) {
-			//receiver.sprite.kill();
-			receiver.sprite.destroy();
+		//checks ball velocity, if moving >= a percentage of strike strength, kill player.
+		this.strikeThreshold = 0.5; //50%
+		console.log('PlayerVel: ' + receiver.sprite.body.velocity.x);
+		console.log('ballVel: ' + hitter.sprite.body.velocity.x);
+		if (hitter.sprite.body.velocity.x < 0) {
+			if (hitter.sprite.body.velocity.x <= (receiver.sprite.STRIKE_STRENGTH * this.strikeThreshold)) {
+				//receiver.sprite.kill();
+				receiver.sprite.destroy(); //using destroy to prevent players spawning attack zones while dead.
+			}
+		} else {
+			if (hitter.sprite.body.velocity.x >= (receiver.sprite.STRIKE_STRENGTH * this.strikeThreshold)) {
+				//receiver.sprite.kill();
+				receiver.sprite.destroy(); //using destroy to prevent players spawning attack zones while dead.
+			}
 		}
 		
 	}
