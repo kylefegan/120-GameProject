@@ -2,14 +2,17 @@
 
 //Player constructor
 var Player = function(game, x, y, key, playerNumber, attackGroup, attackCollisionGroup,ballCollisionGroup, outerContext) {
+
+	this.DEBUG_BODIES = false; //toggle for physics body debug
+
 	// call Sprite constructor within this object
 	// new Sprite(game, x, y, key, frame)
 	Phaser.Sprite.call(this, game, x, y, key);
-	game.physics.p2.enable(this, false);	// enable physics, I believe this is redundant
+	game.physics.p2.enable(this, this.DEBUG_BODIES);	// enable physics, I believe this is redundant
 
 	this.PLAYER_SCALE = 1;
 	this.MAX_JUMP = 2;
-	this.STRIKE_STRENGTH = 300;
+	this.STRIKE_STRENGTH = 500;
 	this.jumps = this.MAX_JUMP;
 	this.JUMP_SPEED = -300;
 	this.canJump = false;

@@ -2,14 +2,20 @@
 
 //Player constructor
 var PlayerAttackZone = function(game, x, y, key, strength, direction, outerContext) {
+
+	this.DEBUG_BODIES = false; //toggle for physics body debug
+	
 	// call Sprite constructor within this object
 	// new Sprite(game, x, y, key, frame)
 	Phaser.Sprite.call(this, game, x, y, key);
-	game.physics.p2.enable(this, false);	// enable physics
+	game.physics.p2.enable(this, this.DEBUG_BODIES);	// enable physics
+	this.body.data.gravityScale = 0;
+	this.body.setZeroVelocity();
+	this.body.static = true;
 	this.STRIKE_STRENGTH = strength;
 	this.direction = direction;
 	this.outerContext = outerContext;
-	this.lifeTime = 100;
+	this.lifeTime = 10;
 
 };
 

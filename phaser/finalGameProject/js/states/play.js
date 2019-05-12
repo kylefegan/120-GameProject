@@ -3,6 +3,9 @@
 var Play = function(game) {};
 Play.prototype = {
 	create: function() {
+		this.DEBUG_BODIES = false; //this will toggle p2 physics debug bodies in this file. Check player and playerAttackZone for their bodies.
+
+
 		game.physics.startSystem(Phaser.Physics.P2JS);
 
 		game.stage.setBackgroundColor('#87CEEB');
@@ -41,7 +44,7 @@ Play.prototype = {
 		//Terrain
 		//adds halfpipe with custom hitbox and is static
 		this.halfpipe = this.terrainGroup.create(game.world.width/2, game.world.height/2, 'halfpipe');
-		this.game.physics.p2.enable(this.halfpipe, false);
+		this.game.physics.p2.enable(this.halfpipe, this.DEBUG_BODIES);
         this.halfpipe.body.clearShapes();
 		this.halfpipe.body.loadPolygon("physics", "halfpipe");
 		this.halfpipe.body.static = true;
@@ -52,7 +55,7 @@ Play.prototype = {
 		//this.ball1 = this.ballGroup.create(150, 60, 'ball');
 		this.ball1 = game.add.sprite(150, 60, 'ball');
 		this.ball1.tint = 0xc242f4;
-		game.physics.p2.enable(this.ball1, false);
+		game.physics.p2.enable(this.ball1, this.DEBUG_BODIES);
 		this.ball1.body.setCircle(18);
 		this.ball1.body.setCollisionGroup(this.ballCollisionGroup);
 		this.ball1.body.collides([this.ballCollisionGroup, this.playerCollisionGroup, this.attackCollisionGroup, this.terrainCollisionGroup]);
@@ -62,7 +65,7 @@ Play.prototype = {
 		//this.ball2 = this.ballGroup.create(this.game.width - 150, 60, 'ball');
 		this.ball2 = game.add.sprite(this.game.width - 150, 60, 'ball');
 		this.ball2.tint = 0xf4ee41;
-		game.physics.p2.enable(this.ball2, false);
+		game.physics.p2.enable(this.ball2, this.DEBUG_BODIES);
 		this.ball2.body.setCircle(18);
 		this.ball2.body.setCollisionGroup(this.ballCollisionGroup);
 		this.ball2.body.collides([this.ballCollisionGroup, this.playerCollisionGroup, this.attackCollisionGroup, this.terrainCollisionGroup]);
@@ -102,7 +105,7 @@ Play.prototype = {
 		this.player.body.createBodyCallback(this.halfpipe, this.jumpReset);
 		this.player2.body.createBodyCallback(this.halfpipe, this.jumpReset);
 
-		//create callback for ball and players to kill players when hit
+		// Collision callback between player and ball objects.
 		this.player.body.createGroupCallback(this.ballCollisionGroup, this.hitByBall);
 		this.player2.body.createGroupCallback(this.ballCollisionGroup, this.hitByBall);
 	},
@@ -114,7 +117,8 @@ Play.prototype = {
     	}
 	},
 	
-	// makes jump variable true if you do collide with halfpipe
+	// Player jump count resets on collision with "halfpipe."
+	// This also means players can effectively wall jump. May need to address this later.
 	jumpReset: function(thisBody, impactedBody) {
 		thisBody.sprite.jumps = thisBody.sprite.MAX_JUMP;
 	},
@@ -129,13 +133,16 @@ Play.prototype = {
 
 	//player attack handling
 	playerAttack: function(body1, body2) {
-		console.log(body1);
-		console.log(body2);
 		body2.sprite.body.velocity.x = body1.sprite.STRIKE_STRENGTH * body1.sprite.direction;
 		body1.safeDestroy = true;
 	},
 
 	hitByBall: function(receiver, hitter) {
-		receiver.sprite.kill();
+		//checks ball velocity, if moving >= 30% of strike strength, kill player.
+		if (hitter.sprite.body.velocity.x >= (receiver.sprite.STRIKE_STRENGTH * 0.3)) {
+			//receiver.sprite.kill();
+			receiver.sprite.destroy();
+		}
+		
 	}
 };
