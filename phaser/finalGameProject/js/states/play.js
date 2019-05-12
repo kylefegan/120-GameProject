@@ -102,6 +102,9 @@ Play.prototype = {
 		this.player.body.createBodyCallback(this.halfpipe, this.jumpReset);
 		this.player2.body.createBodyCallback(this.halfpipe, this.jumpReset);
 
+		//create callback for ball and players to kill players when hit
+		this.player.body.createGroupCallback(this.ballCollisionGroup, this.hitByBall);
+		this.player2.body.createGroupCallback(this.ballCollisionGroup, this.hitByBall);
 	},
 	
 	update: function() {
@@ -130,5 +133,9 @@ Play.prototype = {
 		console.log(body2);
 		body2.sprite.body.velocity.x = body1.sprite.STRIKE_STRENGTH * body1.sprite.direction;
 		body1.safeDestroy = true;
+	},
+
+	hitByBall: function(receiver, hitter) {
+		receiver.sprite.kill();
 	}
 };
