@@ -139,11 +139,11 @@ Play.prototype = {
 
 	hitByBall: function(receiver, hitter) {
 		//checks ball velocity, if moving >= a percentage of strike strength, kill player.
-		this.strikeThreshold = 0.5; //50%
+		this.strikeThreshold = 0.3; //30%
 		console.log('PlayerVel: ' + receiver.sprite.body.velocity.x);
 		console.log('ballVel: ' + hitter.sprite.body.velocity.x);
 		if (hitter.sprite.body.velocity.x < 0) {
-			if (hitter.sprite.body.velocity.x <= (receiver.sprite.STRIKE_STRENGTH * this.strikeThreshold)) {
+			if (hitter.sprite.body.velocity.x <= (receiver.sprite.STRIKE_STRENGTH * this.strikeThreshold * -1)) {
 				//receiver.sprite.kill();
 				receiver.sprite.destroy(); //using destroy to prevent players spawning attack zones while dead.
 			}
