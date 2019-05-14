@@ -8,22 +8,28 @@ var Player = function(game, x, y, key, playerNumber, attackGroup, attackCollisio
 	// call Sprite constructor within this object
 	// new Sprite(game, x, y, key, frame)
 	Phaser.Sprite.call(this, game, x, y, key);
+
 	game.physics.p2.enable(this, this.DEBUG_BODIES);	// enable physics, I believe this is redundant
 
-	this.PLAYER_SCALE = 1;
-	this.MAX_JUMP = 2;
-	this.STRIKE_STRENGTH = 500;
-	this.jumps = this.MAX_JUMP;
-	this.JUMP_SPEED = -300;
-	this.canJump = false;
-	this.playNum = playerNumber;
-	this.playerVel = 200;
-	this.outerContext = outerContext;
+	this.playerDied = game.add.audio('playerDied'); //player death audio. temp asset, like everything else.
+	this.PLAYER_SCALE = 1; //used to invert player sprite facing direction
+	this.MAX_JUMP = 2; //how many multi jumps a player can make
+	this.STRIKE_STRENGTH = 500; //how hard a player hits the ball objects
+	this.jumps = this.MAX_JUMP; //tracking var for multi jumping
+	this.JUMP_SPEED = -300; //jump strnegth
+	this.playNum = playerNumber; //which player the instance is for
+	this.playerVel = 200; //player move speed
+	this.outerContext = outerContext; //required to call functions written in play state. Wasn't sure if you can or how to create new functions in prefabs.
+
+	//groups for spawning attack hitbox/hitzone
 	this.attackGroup = attackGroup;
 	this.attackCollisionGroup = attackCollisionGroup;
 	this.ballCollisionGroup = ballCollisionGroup;
-	this.ATTACK_SPAWN_OFFSET = 40;
 
+	this.ATTACK_SPAWN_OFFSET = 40; //how far in front of the sprite to spawn
+	//potential issue with attack spawn offset anchor position during spawn, requires investigation.
+
+	//coloring players to differentiate them.
 	if (this.playNum == 1) {
 		this.tint = 0xf4307c;
 	} else if (this.playNum == 2) {
@@ -41,9 +47,10 @@ Player.prototype.constructor = Player;
 //override the Phaser.Sprite update function
 Player.prototype.update = function() {
 
-	// updates are wrapped within player number cases
+	// updates are wrapped within player number cases in order to handle multiple instances of player objects/sprites.
+	//Player 1 stuff
 	if (this.playNum == 1) {
-
+		//movement controls
 		if(game.input.keyboard.isDown(Phaser.Keyboard.LEFT)) {
 
 			this.body.velocity.x = -this.playerVel;
@@ -55,9 +62,11 @@ Player.prototype.update = function() {
 			this.scale.x = this.PLAYER_SCALE; 	// re-orient sprite
 
 		} else {
+			//idles when not controlled
 			this.body.velocity.x = 0;	
 		}
 
+		//jump controls
 		if(this.jumps > 0 && game.input.keyboard.downDuration(Phaser.Keyboard.UP, 150)) {
 		    this.body.velocity.y = this.JUMP_SPEED;
 		    this.jumping = true;
@@ -69,7 +78,7 @@ Player.prototype.update = function() {
 		   	this.jumping = false;
 		}
 
-		//attack stuff
+		//attack stuff, spawns an invisible hit box to check collisions
 		if (game.input.keyboard.justPressed(Phaser.Keyboard.NUMPAD_0)) {
 			if (this.scale.x > 0) {
 				this.attackOffset = this.x + this.ATTACK_SPAWN_OFFSET;
@@ -78,6 +87,8 @@ Player.prototype.update = function() {
 				this.attackOffset = this.x -this.ATTACK_SPAWN_OFFSET;
 				this.attackDirection = -1;
 			}
+
+			//PlayerAttackZone = function(game, x, y, key, strength, direction, outerContext)
 			this.attackZone = new PlayerAttackZone(game, this.attackOffset, this.y, 'attackZone', this.STRIKE_STRENGTH, this.attackDirection, this.outerContext);
 			this.game.add.existing(this.attackZone);
 			this.attackZone.body.setCollisionGroup(this.attackCollisionGroup);
@@ -85,6 +96,7 @@ Player.prototype.update = function() {
 			this.attackGroup.add(this.attackZone);
 		}
 
+	// Player 2 stuff
 	} else if (this.playNum == 2) {
 		
 		if(game.input.keyboard.isDown(Phaser.Keyboard.A)) {

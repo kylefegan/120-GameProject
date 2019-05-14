@@ -3,12 +3,12 @@
 var Play = function(game) {};
 Play.prototype = {
 	create: function() {
-		this.DEBUG_BODIES = false; //this will toggle p2 physics debug bodies in this file. Check player and playerAttackZone for their bodies.
+		this.DEBUG_BODIES = false; //this will toggle p2 physics debug bodies in this file. Check player and playerAttackZone prefabs for their bodies.
 
 
 		game.physics.startSystem(Phaser.Physics.P2JS);
 
-		game.stage.setBackgroundColor('#87CEEB');
+		game.stage.setBackgroundColor('#87CEEB'); //stage background color: light blue
 
 		// make gravity affect all objects, player collides with world, and player never rotates when it collides with anything
 		game.physics.p2.gravity.y = 500; // previously 300
@@ -16,15 +16,15 @@ Play.prototype = {
 		//this prevents players from bumping into each other.
 		game.physics.p2.setPostBroadphaseCallback(this.checkPlayerVsPlayerCollision, this);
 
-
-		//this group will be populated when the player attacks. A group is needed so it can be passed around and also checked out here.
-		this.attackCollisionGroup = game.physics.p2.createCollisionGroup();
+		//collision groups
+		this.attackCollisionGroup = game.physics.p2.createCollisionGroup();//this group will be populated when the player attacks. A group is needed so it can be passed around and also checked out here.
 		this.playerCollisionGroup = game.physics.p2.createCollisionGroup();
 		this.ballCollisionGroup = game.physics.p2.createCollisionGroup();
 		this.terrainCollisionGroup = game.physics.p2.createCollisionGroup();
 		this.hazardCollisionGroup = game.physics.p2.createCollisionGroup();
 		game.physics.p2.updateBoundsCollisionGroup();
 
+		//sprite groups with physics bodies
 		this.terrainGroup = game.add.group();
 		this.terrainGroup.enableBody = true;
 		this.terrainGroup.physicsBodyType = Phaser.Physics.P2JS;
@@ -74,7 +74,7 @@ Play.prototype = {
 		this.ball1.body.collides([this.ballCollisionGroup, this.playerCollisionGroup, this.attackCollisionGroup, this.terrainCollisionGroup, this.hazardCollisionGroup]);
 		this.ballGroup.add(this.ball1);
 
-		//Ball 2
+		// Ball 2
 		//this.ball2 = this.ballGroup.create(this.game.width - 150, 60, 'ball');
 		this.ball2 = game.add.sprite(this.game.width - 230, 300, 'ball');
 		this.ball2.tint = 0xf4ee41;
@@ -90,7 +90,7 @@ Play.prototype = {
 		this.game.add.existing(this.player);
 		this.player.body.collideWorldBounds = true;
 		this.player.body.fixedRotation = true;
-		this.player.body.dynamic = true;
+		this.player.body.dynamic = true; //This may actually be unnecessary.
 		this.player.body.setCollisionGroup(this.playerCollisionGroup);
 		this.player.body.collides([this.ballCollisionGroup, this.terrainCollisionGroup, this.hazardCollisionGroup]);
 		this.playerGroup.add(this.player);
@@ -126,7 +126,7 @@ Play.prototype = {
 	},
 	
 	update: function() {
-
+		//Check prefab update functions for more information on updates.
     	if(game.input.keyboard.isDown(Phaser.Keyboard.DOWN)) {
     		game.state.start('GameOver');
     	}
@@ -147,6 +147,7 @@ Play.prototype = {
 	},
 
 	//player attack handling
+	//this knocks the balls back when a player strikes them
 	playerAttack: function(body1, body2) {
 		body2.sprite.body.velocity.x = body1.sprite.STRIKE_STRENGTH * body1.sprite.direction;
 		body1.safeDestroy = true;
@@ -155,15 +156,20 @@ Play.prototype = {
 	hitByBall: function(receiver, hitter) {
 		//checks ball velocity, if moving >= a percentage of strike strength, kill player.
 		this.strikeThreshold = 0.3; //30%
-		console.log('PlayerVel: ' + receiver.sprite.body.velocity.x);
-		console.log('ballVel: ' + hitter.sprite.body.velocity.x);
+
+		//console.log('PlayerVel: ' + receiver.sprite.body.velocity.x);
+		//console.log('ballVel: ' + hitter.sprite.body.velocity.x);
+
 		if (hitter.sprite.body.velocity.x < 0) {
 			if (hitter.sprite.body.velocity.x <= (receiver.sprite.STRIKE_STRENGTH * this.strikeThreshold * -1)) {
+				receiver.sprite.playerDied.play(); //death audio
 				//receiver.sprite.kill();
-				receiver.sprite.destroy(); //using destroy to prevent players spawning attack zones while dead.
+				receiver.sprite.destroy(); //using destroy to prevent players spawning attack zones while dead. May create custom handling later so that .kill() can be used.
 			}
+
 		} else {
 			if (hitter.sprite.body.velocity.x >= (receiver.sprite.STRIKE_STRENGTH * this.strikeThreshold)) {
+				receiver.sprite.playerDied.play(); //death audio
 				//receiver.sprite.kill();
 				receiver.sprite.destroy(); //using destroy to prevent players spawning attack zones while dead.
 			}
@@ -171,6 +177,9 @@ Play.prototype = {
 	},
 
 	hitByHazard: function(receiver, hitter) {
-		receiver.sprite.kill();
-	}
+		receiver.sprite.playerDied.play(); //death audio
+		//receiver.sprite.kill();
+		receiver.sprite.destroy(); //using destroy to prevent players spawning attack zones while dead.
+	},
+
 };

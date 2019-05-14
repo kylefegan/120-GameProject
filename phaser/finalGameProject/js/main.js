@@ -1,7 +1,11 @@
+//This version was primarily written by only two of three group members due to
+//a case of excused medical leave, so progress is limited.
+
+//GitHub repo:  https://github.com/kylefegan/120-GameProject
+
 "use strict"
 
 var game;
-var canJump;
 
 window.onload = function() {
 	game = new Phaser.Game(1000,800, Phaser.AUTO, 'myGame');

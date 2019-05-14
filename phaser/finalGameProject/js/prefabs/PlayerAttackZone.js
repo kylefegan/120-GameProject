@@ -1,6 +1,6 @@
-//Player prefab
+//PlayerAttackZone prefab
 
-//Player constructor
+//PlayerAttackZone constructor
 var PlayerAttackZone = function(game, x, y, key, strength, direction, outerContext) {
 
 	this.DEBUG_BODIES = false; //toggle for physics body debug
@@ -8,14 +8,16 @@ var PlayerAttackZone = function(game, x, y, key, strength, direction, outerConte
 	// call Sprite constructor within this object
 	// new Sprite(game, x, y, key, frame)
 	Phaser.Sprite.call(this, game, x, y, key);
+
 	game.physics.p2.enable(this, this.DEBUG_BODIES);	// enable physics
-	this.body.data.gravityScale = 0;
+
+	this.body.data.gravityScale = 0; //prevents hitzone from falling due to gravity
 	this.body.setZeroVelocity();
-	this.body.static = true;
-	this.STRIKE_STRENGTH = strength;
-	this.direction = direction;
-	this.outerContext = outerContext;
-	this.lifeTime = 10;
+	this.body.static = true; //prevents movement from kinetic energy
+	this.STRIKE_STRENGTH = strength; //carried over from the player prefab and used in play state function playerAttack()
+	this.direction = direction; //carried over from the player prefab and used in play state function playerAttack()
+	this.outerContext = outerContext; //currently unused in this file but may be needed later.
+	this.lifeTime = 10; //how long the hit zone exists. measured in update cycles.
 
 };
 
@@ -27,7 +29,10 @@ PlayerAttackZone.prototype.constructor = Player;
 
 //override the Phaser.Sprite update function
 PlayerAttackZone.prototype.update = function() {
+	//decrement life timer
 	this.lifeTime--;
+
+	//removes itself when time is up.
 	if (this.lifeTime <= 0) {
 		this.safeDestroy = true;
 		this.destroy();
