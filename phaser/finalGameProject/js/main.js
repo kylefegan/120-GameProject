@@ -1,6 +1,8 @@
 //This version was primarily written by only two of three group members due to
 //a case of excused medical leave, so progress is limited.
 
+//Group 50 members: Derek Jean,David Monroe, Kyle Fegan
+
 //GitHub repo:  https://github.com/kylefegan/120-GameProject
 
 "use strict"

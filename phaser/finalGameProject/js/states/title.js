@@ -7,7 +7,7 @@ Title.prototype = {
 		var titleText = game.add.text(game.width/2, game.height/2, 'final Game Project', {font: 'Helvetica', fontSize: '48px', fill: '#fff'});
 		titleText.anchor.set(0.5);
 
-		var instructText = game.add.text(game.width/2, game.height/2 + 48, 'By Group 50', {font: 'Helvetica', fontSize: '24px', fill: '#fff'});
+		var instructText = game.add.text(game.width/2, game.height/2 + 48, 'By Group 50\nDerek Jean, David Monroe, Kyle Fegan', {font: 'Helvetica', fontSize: '24px', fill: '#fff'});
 		instructText.anchor.set(0.5);
 
 		var playText = game.add.text(game.width/2, game.height*.7, '2 player versus. Fast moving balls kill players. Last one standing wins.', {font: 'Helvetica', fontSize: '24px', fill: '#fff'});
