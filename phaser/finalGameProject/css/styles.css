@@ -1,7 +1,20 @@
 body {
 	font-family: Helvetica;
+	font-size: 16px;
+	color: #333;
+	width: 960px;
+	margin: 0 auto;
+	background-color: #333;
 }
 
-canvas {
-	border: 1px solid black;
+#myGame {
+	border: 5px solid #FFB600;
+	width: 910px;
+}
+
+#gameTitle {
+	color: #FFB600;
+	font-size: 3em;
+	margin-bottom: 0;
+	margin-top: 1em;
 }

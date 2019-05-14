@@ -1,14 +1,19 @@
-var game = new Phaser.Game(800, 600, Phaser.AUTO, '', { preload: preload, create: create, update: update });
+//This version was primarily written by only two of three group members due to
+//a case of excused medical leave, so progress is limited.
 
-function preload() {
-	// preload assets
+//GitHub repo:  https://github.com/kylefegan/120-GameProject
+
+"use strict"
+
+var game;
+
+window.onload = function() {
+	game = new Phaser.Game(1000,800, Phaser.AUTO, 'myGame');
+	
+	// define states
+	game.state.add('Load', Load);
+	game.state.add('Title', Title);
+	game.state.add('Play', Play);
+	game.state.add('GameOver', GameOver);
+	game.state.start('Load');
 }
-
-function create() {
-	// place your assets
-}
-
-function update() {
-	// run game loop
-}
-
