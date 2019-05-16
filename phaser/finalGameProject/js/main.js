@@ -8,6 +8,8 @@
 "use strict"
 
 var game;
+var player1Lives = 3;
+var player2Lives = 3;
 
 window.onload = function() {
 	game = new Phaser.Game(1000,800, Phaser.AUTO, 'myGame');

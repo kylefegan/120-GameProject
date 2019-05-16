@@ -88,6 +88,7 @@ Play.prototype = {
 		//Player = function(game, x, y, key, playerNumber, attackGroup, attackCollisionGroup,ballCollisionGroup, outerContext)
 		this.player = new Player(this.game, this.game.width/2 + 40, this.game.height/2, 'tacoLizard', 1, this.attackGroup, this.attackCollisionGroup, this.ballCollisionGroup, this);
 		this.game.add.existing(this.player);
+		this.player.body.setCircle(18);
 		this.player.body.collideWorldBounds = true;
 		this.player.body.fixedRotation = true;
 		this.player.body.dynamic = true; //This may actually be unnecessary.
@@ -99,6 +100,7 @@ Play.prototype = {
 		//Player = function(game, x, y, key, playerNumber, attackGroup, attackCollisionGroup,ballCollisionGroup, outerContext)
 		this.player2 = new Player(this.game, this.game.width/2 - 40, this.game.height/2, 'tacoLizard', 2, this.attackGroup, this.attackCollisionGroup, this.ballCollisionGroup, this);
 		this.game.add.existing(this.player2);
+		this.player2.body.setCircle(18);
 		this.player2.body.collideWorldBounds = true;
 		this.player2.body.fixedRotation = true;
 		this.player2.body.dynamic = true;
@@ -163,15 +165,31 @@ Play.prototype = {
 		if (hitter.sprite.body.velocity.x < 0) {
 			if (hitter.sprite.body.velocity.x <= (receiver.sprite.STRIKE_STRENGTH * this.strikeThreshold * -1)) {
 				receiver.sprite.playerDied.play(); //death audio
-				//receiver.sprite.kill();
-				receiver.sprite.destroy(); //using destroy to prevent players spawning attack zones while dead. May create custom handling later so that .kill() can be used.
+				//receiver.sprite.destroy(); //using destroy to prevent players spawning attack zones while dead. May create custom handling later so that .kill() can be used.
+				receiver.sprite.kill();
+				if(receiver.sprite.playNum == 1) {
+					player1Lives--;
+				} else {
+					player2Lives--;
+				}
+				var scoreText = game.add.text(game.width/2, game.height/2, 'P1: ' + player1Lives + '  P2: ' + player2Lives, {font: 'Helvetica', fontSize: '48px', fill: '#fff'});
+				scoreText.anchor.set(0.5);
+				game.time.events.add(Phaser.Timer.SECOND * 2, function() { game.state.start('Play')});
 			}
 
 		} else {
 			if (hitter.sprite.body.velocity.x >= (receiver.sprite.STRIKE_STRENGTH * this.strikeThreshold)) {
 				receiver.sprite.playerDied.play(); //death audio
-				//receiver.sprite.kill();
-				receiver.sprite.destroy(); //using destroy to prevent players spawning attack zones while dead.
+				//receiver.sprite.destroy(); //using destroy to prevent players spawning attack zones while dead.
+				receiver.sprite.kill();
+				if(receiver.sprite.playNum == 1) {
+					player1Lives--;
+				} else {
+					player2Lives--;
+				}
+				var scoreText = game.add.text(game.width/2, game.height/2, 'P1: ' + player1Lives + '  P2: ' + player2Lives, {font: 'Helvetica', fontSize: '48px', fill: '#fff'});
+				scoreText.anchor.set(0.5);
+				game.time.events.add(Phaser.Timer.SECOND * 2, function() { game.state.start('Play')});
 			}
 		}
 	},
@@ -179,7 +197,19 @@ Play.prototype = {
 	hitByHazard: function(receiver, hitter) {
 		receiver.sprite.playerDied.play(); //death audio
 		//receiver.sprite.kill();
-		receiver.sprite.destroy(); //using destroy to prevent players spawning attack zones while dead.
+		receiver.sprite.kill();//using destroy to prevent players spawning attack zones while dead.
+		if(receiver.sprite.playNum == 1) {
+			player1Lives--;
+			console.log('player1: ' + player1Lives);
+		} else {
+			player2Lives--;
+			console.log('player2: ' + player2Lives);
+		}
+		var scoreText = game.add.text(game.width/2, game.height/2, 'P1: ' + player1Lives + '  P2: ' + player2Lives, {font: 'Helvetica', fontSize: '48px', fill: '#fff'});
+		scoreText.anchor.set(0.5);
+		game.time.events.add(Phaser.Timer.SECOND * 2, function() { game.state.start('Play')});
 	},
+
+	
 
 };
