@@ -15,9 +15,6 @@ Title.prototype = {
 
 		var playText = game.add.text(game.width/2, game.height*.8, 'P1 = arrows keys to move, numpad 0 knocks balls\nP2 = awd keys to move, left shift knocks balls\ndown arrow to end, can restart after ending\nUp arrow starts', {font: 'Helvetica', fontSize: '24px', fill: '#fff'});
 		playText.anchor.set(0.5);
-
-		var player1Lives = 3;
-		var player2Lives = 3;
 	},
 	update: function() {
 		// check for UP input

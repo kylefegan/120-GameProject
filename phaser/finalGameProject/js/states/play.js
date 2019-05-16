@@ -129,7 +129,7 @@ Play.prototype = {
 	
 	update: function() {
 		//Check prefab update functions for more information on updates.
-    	if(game.input.keyboard.isDown(Phaser.Keyboard.DOWN)) {
+    	if(game.input.keyboard.isDown(Phaser.Keyboard.R)) {
     		game.state.start('GameOver');
     	}
 	},
@@ -172,6 +172,9 @@ Play.prototype = {
 				} else {
 					player2Lives--;
 				}
+				if(player1Lives == 0 || player2Lives == 0) {
+				game.state.start('GameOver');
+				}
 				var scoreText = game.add.text(game.width/2, game.height/2, 'P1: ' + player1Lives + '  P2: ' + player2Lives, {font: 'Helvetica', fontSize: '48px', fill: '#fff'});
 				scoreText.anchor.set(0.5);
 				game.time.events.add(Phaser.Timer.SECOND * 2, function() { game.state.start('Play')});
@@ -186,6 +189,9 @@ Play.prototype = {
 					player1Lives--;
 				} else {
 					player2Lives--;
+				}
+				if(player1Lives == 0 || player2Lives == 0) {
+				game.state.start('GameOver');
 				}
 				var scoreText = game.add.text(game.width/2, game.height/2, 'P1: ' + player1Lives + '  P2: ' + player2Lives, {font: 'Helvetica', fontSize: '48px', fill: '#fff'});
 				scoreText.anchor.set(0.5);
@@ -204,6 +210,9 @@ Play.prototype = {
 		} else {
 			player2Lives--;
 			console.log('player2: ' + player2Lives);
+		}
+		if(player1Lives == 0 || player2Lives == 0) {
+				game.state.start('GameOver');
 		}
 		var scoreText = game.add.text(game.width/2, game.height/2, 'P1: ' + player1Lives + '  P2: ' + player2Lives, {font: 'Helvetica', fontSize: '48px', fill: '#fff'});
 		scoreText.anchor.set(0.5);
