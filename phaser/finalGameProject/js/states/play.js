@@ -57,9 +57,9 @@ Play.prototype = {
 
 		//Hazard
 		//adds static hazard 
-		this.hazard = new  Hazard(this.game, (game.world.width/2)-200, game.world.height*.73, 'fire', this.playerCollisionGroup, this.ballCollisionGroup, this.hazardCollisionGroup);
+		this.hazard = new  Hazard(this.game, (game.world.width/2)-200, game.world.height*.735, 'fire', this.playerCollisionGroup, this.ballCollisionGroup, this.hazardCollisionGroup);
 		this.game.add.existing(this.hazard);
-		this.hazard2 = new  Hazard(this.game, (game.world.width/2)+200, game.world.height*.73, 'fire', this.playerCollisionGroup, this.ballCollisionGroup, this.hazardCollisionGroup);
+		this.hazard2 = new  Hazard(this.game, (game.world.width/2)+200, game.world.height*.735, 'fire', this.playerCollisionGroup, this.ballCollisionGroup, this.hazardCollisionGroup);
 		this.game.add.existing(this.hazard2);
 
 
