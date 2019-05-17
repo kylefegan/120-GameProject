@@ -85,7 +85,7 @@ Play.prototype = {
 
 		//Player 1
 		//Player = function(game, x, y, key, playerNumber, attackGroup, attackCollisionGroup,ballCollisionGroup, outerContext)
-		this.player = new Player(this.game, this.game.width/2 + 40, this.game.height/2, 'tacoLizard', 1, this.attackGroup, this.attackCollisionGroup, this.ballCollisionGroup, this);
+		this.player = new Player(this.game, this.game.width/2 - 40, this.game.height/2, 'tacoLizard', 1, this.attackGroup, this.attackCollisionGroup, this.ballCollisionGroup, this);
 		this.game.add.existing(this.player);
 		this.player.body.setCircle(18);
 		this.player.body.collideWorldBounds = true;
@@ -97,7 +97,7 @@ Play.prototype = {
 
 		//Player 2
 		//Player = function(game, x, y, key, playerNumber, attackGroup, attackCollisionGroup,ballCollisionGroup, outerContext)
-		this.player2 = new Player(this.game, this.game.width/2 - 40, this.game.height/2, 'tacoLizard', 2, this.attackGroup, this.attackCollisionGroup, this.ballCollisionGroup, this);
+		this.player2 = new Player(this.game, this.game.width/2 + 40, this.game.height/2, 'tacoLizard', 2, this.attackGroup, this.attackCollisionGroup, this.ballCollisionGroup, this);
 		this.game.add.existing(this.player2);
 		this.player2.body.setCircle(18);
 		this.player2.body.collideWorldBounds = true;
