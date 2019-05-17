@@ -125,6 +125,17 @@ Play.prototype = {
 		this.player2.body.createGroupCallback(this.ballCollisionGroup, this.hitByBall);
 		this.player.body.createGroupCallback(this.hazardCollisionGroup, this.hitByHazard);
 		this.player2.body.createGroupCallback(this.hazardCollisionGroup, this.hitByHazard);
+
+		for(var i = 0; i < player1Lives; i++) {
+			var healthbar = game.add.sprite((i*64)+32,32, 'heart');
+			healthbar.scale.x = 2;
+			healthbar.scale.y = 2;
+		}
+		for(var j = 0; j < player2Lives; j++) {
+			var healthbar2 = game.add.sprite((game.world.width-224)+(j*64),32, 'heart2');
+			healthbar2.scale.x = 2;
+			healthbar2.scale.y = 2;
+		}
 	},
 	
 	update: function() {
