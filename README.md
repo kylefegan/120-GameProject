@@ -23,7 +23,7 @@ Currently working on DEMO BUILD: Due (5/17-13) @2:00pm
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 **Status:**
 
-(This is where you can note your progress on a given task)
+Level base is complete, working on finishing assets for level and characters
 
 ### Derek Jean:
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
