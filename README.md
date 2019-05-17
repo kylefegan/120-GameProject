@@ -17,7 +17,9 @@ Currently working on DEMO BUILD: Due (5/17-13) @2:00pm
 
 ### Kyle Fegan:
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-- TBD
+- Art & Animation Assets
+- Soundtrack
+- Level Design
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 **Status:**
 
