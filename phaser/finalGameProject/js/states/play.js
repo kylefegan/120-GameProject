@@ -50,18 +50,17 @@ Play.prototype = {
 		this.halfpipe = this.terrainGroup.create(game.world.width/2, game.world.height/2, 'halfpipe');
 		this.game.physics.p2.enable(this.halfpipe, this.DEBUG_BODIES);
         this.halfpipe.body.clearShapes();
-		this.halfpipe.body.loadPolygon("physics", "halfpipe");
+		this.halfpipe.body.loadPolygon("physics", "PyramidLevel");
 		this.halfpipe.body.static = true;
 		this.halfpipe.body.setCollisionGroup(this.terrainCollisionGroup);
 		this.halfpipe.body.collides([this.ballCollisionGroup, this.playerCollisionGroup]);
 
 		//Hazard
 		//adds static hazard 
-		this.hazard = this.hazardGroup.create(game.world.width/2, game.world.height/2 - 200, 'fire');
-		this.game.physics.p2.enable(this.hazard, false);
-		this.hazard.body.static = true;
-		this.hazard.body.setCollisionGroup(this.hazardCollisionGroup);
-		this.hazard.body.collides([this.ballCollisionGroup, this.playerCollisionGroup]);
+		this.hazard = new  Hazard(this.game, (game.world.width/2)-200, game.world.height*.73, 'fire', this.playerCollisionGroup, this.ballCollisionGroup, this.hazardCollisionGroup);
+		this.game.add.existing(this.hazard);
+		this.hazard2 = new  Hazard(this.game, (game.world.width/2)+200, game.world.height*.73, 'fire', this.playerCollisionGroup, this.ballCollisionGroup, this.hazardCollisionGroup);
+		this.game.add.existing(this.hazard2);
 
 
 		// Ball 1
