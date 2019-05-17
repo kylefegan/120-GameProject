@@ -127,13 +127,9 @@ Play.prototype = {
 
 		for(var i = 0; i < player1Lives; i++) {
 			var healthbar = game.add.sprite((game.world.width/2)-(i*64)-64,32, 'heart');
-			healthbar.scale.x = 2;
-			healthbar.scale.y = 2;
 		}
 		for(var j = 0; j < player2Lives; j++) {
 			var healthbar2 = game.add.sprite((game.world.width/2)+(j*64),32, 'heart2');
-			healthbar2.scale.x = 2;
-			healthbar2.scale.y = 2;
 		}
 
 		var playText = game.add.text(game.width/2, 16, 'P1                                             P2', {font: 'Helvetica', fontSize: '24px', fill: '#fff'});
