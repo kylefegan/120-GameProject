@@ -1,7 +1,7 @@
 # 120-GameProject
 GitHub repository for the 120 series final game project
 
-Currently working on DEMO BUILD: Due (5/17-13) @11:59pm
+Currently working on DEMO BUILD: Due (5/17-13) @2:00pm
 
 ### Styling:
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
