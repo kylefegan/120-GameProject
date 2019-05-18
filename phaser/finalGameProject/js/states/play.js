@@ -46,7 +46,7 @@ Play.prototype = {
 		this.ballGroup.physicsBodyType = Phaser.Physics.P2JS;
 
 		//Terrain
-		//adds halfpipe with custom hitbox and is static
+		//adds base terrain with custom hitbox and is static
 		this.halfpipe = this.terrainGroup.create(game.world.width/2, game.world.height/2, 'halfpipe');
 		this.game.physics.p2.enable(this.halfpipe, this.DEBUG_BODIES);
         this.halfpipe.body.clearShapes();
@@ -85,32 +85,39 @@ Play.prototype = {
 
 		//Player 1
 		//Player = function(game, x, y, key, playerNumber, attackGroup, attackCollisionGroup,ballCollisionGroup, outerContext)
-		this.player = new Player(this.game, this.game.width/2 - 40, this.game.height/2, 'tacoLizard', 1, this.attackGroup, this.attackCollisionGroup, this.ballCollisionGroup, this);
+		this.player = new Player(this.game, this.game.width/2 - 40, this.game.height/2, 'golem', 1, this.attackGroup, this.attackCollisionGroup, this.ballCollisionGroup, this);
 		this.game.add.existing(this.player);
-		this.player.body.setCircle(18);
+		this.player.body.setCircle(16);
 		this.player.body.collideWorldBounds = true;
 		this.player.body.fixedRotation = true;
 		this.player.body.dynamic = true; //This may actually be unnecessary.
 		this.player.body.setCollisionGroup(this.playerCollisionGroup);
 		this.player.body.collides([this.ballCollisionGroup, this.terrainCollisionGroup, this.hazardCollisionGroup]);
 		this.playerGroup.add(this.player);
+		//Animation
+			this.player.animations.add('run', [0,1,2,3,4,5,6,7,8,9], 10, true);
+			this.player.animations.play('run');
 
 		//Player 2
 		//Player = function(game, x, y, key, playerNumber, attackGroup, attackCollisionGroup,ballCollisionGroup, outerContext)
-		this.player2 = new Player(this.game, this.game.width/2 + 40, this.game.height/2, 'tacoLizard', 2, this.attackGroup, this.attackCollisionGroup, this.ballCollisionGroup, this);
+		this.player2 = new Player(this.game, this.game.width/2 + 40, this.game.height/2, 'golem', 2, this.attackGroup, this.attackCollisionGroup, this.ballCollisionGroup, this);
 		this.game.add.existing(this.player2);
-		this.player2.body.setCircle(18);
+		this.player2.body.setCircle(16);
 		this.player2.body.collideWorldBounds = true;
 		this.player2.body.fixedRotation = true;
 		this.player2.body.dynamic = true;
 		this.player2.body.setCollisionGroup(this.playerCollisionGroup);
 		this.player2.body.collides([this.ballCollisionGroup, this.terrainCollisionGroup, this.hazardCollisionGroup]);
 		this.playerGroup.add(this.player2);
-
+		//Animation
+			this.player2.animations.add('run', [0,1,2,3,4,5,6,7,8,9], 10, true);
+			this.player2.animations.play('run');
+		
 		//PlayerAttackZone = function(game, x, y, key, strength, direction, outerContext)
-		this.attackZonePlaceHolder = new PlayerAttackZone(this.game, -40, -40, 'attackZone', 0, 0, this);
+		this.attackZonePlaceHolder = new PlayerAttackZone(this.game, -50, 0, 'attackZone', 0, 0, this);
 		this.game.add.existing(this.attackZonePlaceHolder);
 		this.attackZonePlaceHolder.body.setCollisionGroup(this.attackCollisionGroup);
+		//this.attackZonePlaceHolder.body.setCircle(5);
 		this.attackZonePlaceHolder.body.collides(this.ballCollisionGroup, this.playerAttack, this);
 		this.attackGroup.add(this.attackZonePlaceHolder); //don't know if this is truly necessary.
 
