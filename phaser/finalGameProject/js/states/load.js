@@ -10,7 +10,7 @@ Load.prototype = {
 		game.load.image('fire', 'fire.png');
 		game.load.image('acid', 'acidPool.png');
 		game.load.physics("physics", "PyramidLevel.json", null, Phaser.Physics.LIME_CORONA_JSON);
-		game.load.image('ball', 'ball.png');
+		game.load.image('ball', 'Boulder.png');
 		game.load.image('heart', 'heartJar.png');
 		game.load.image('heart2', 'heartJar2.png');
 		game.load.image('attackZone', 'playerAttackZone.png'); //it's a transparent box image.

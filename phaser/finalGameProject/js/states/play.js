@@ -106,7 +106,7 @@ Play.prototype = {
 		// Ball 1
 		//this.ball1 = this.ballGroup.create(150, 60, 'ball');
 		this.ball1 = game.add.sprite(230, 300, 'ball');
-		this.ball1.tint = 0xc242f4;
+		//this.ball1.tint = 0xc242f4;
 		game.physics.p2.enable(this.ball1, this.DEBUG_BODIES);
 		this.ball1.body.setCircle(18);
 		this.ball1.body.setCollisionGroup(this.ballCollisionGroup);
@@ -116,7 +116,7 @@ Play.prototype = {
 		// Ball 2
 		//this.ball2 = this.ballGroup.create(this.game.width - 150, 60, 'ball');
 		this.ball2 = game.add.sprite(this.game.width - 230, 300, 'ball');
-		this.ball2.tint = 0xf4ee41;
+		//this.ball2.tint = 0xf4ee41;
 		game.physics.p2.enable(this.ball2, this.DEBUG_BODIES);
 		this.ball2.body.setCircle(18);
 		this.ball2.body.setCollisionGroup(this.ballCollisionGroup);
