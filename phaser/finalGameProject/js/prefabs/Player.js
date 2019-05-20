@@ -26,7 +26,7 @@ var Player = function(game, x, y, key, playerNumber, attackGroup, attackCollisio
 	this.attackCollisionGroup = attackCollisionGroup;
 	this.ballCollisionGroup = ballCollisionGroup;
 
-	this.ATTACK_SPAWN_OFFSET = 40; //how far in front of the sprite to spawn
+	this.ATTACK_SPAWN_OFFSET = 30; //how far in front of the sprite to spawn
 	//potential issue with attack spawn offset anchor position during spawn, requires investigation.
 
 	//coloring players to differentiate them.

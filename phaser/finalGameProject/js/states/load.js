@@ -8,6 +8,7 @@ Load.prototype = {
 		game.load.image('tacoLizard', 'tacoLizard.png');
 		game.load.image('halfpipe', 'PyramidLevel.png');
 		game.load.image('fire', 'fire.png');
+		game.load.image('acid', 'acidPool.png');
 		game.load.physics("physics", "PyramidLevel.json", null, Phaser.Physics.LIME_CORONA_JSON);
 		game.load.image('ball', 'ball.png');
 		game.load.image('heart', 'heartJar.png');

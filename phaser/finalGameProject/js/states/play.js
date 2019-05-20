@@ -97,9 +97,9 @@ Play.prototype = {
 
 		//Hazard
 		//adds static hazard 
-		this.hazard = new  Hazard(this.game, (game.world.width/2)-200, game.world.height*.735, 'fire', this.playerCollisionGroup, this.ballCollisionGroup, this.hazardCollisionGroup);
+		this.hazard = new  Hazard(this.game, (game.world.width/2)-200, 590, 'acid', this.playerCollisionGroup, this.ballCollisionGroup, this.hazardCollisionGroup);
 		this.game.add.existing(this.hazard);
-		this.hazard2 = new  Hazard(this.game, (game.world.width/2)+200, game.world.height*.735, 'fire', this.playerCollisionGroup, this.ballCollisionGroup, this.hazardCollisionGroup);
+		this.hazard2 = new  Hazard(this.game, (game.world.width/2)+200, 590, 'acid', this.playerCollisionGroup, this.ballCollisionGroup, this.hazardCollisionGroup);
 		this.game.add.existing(this.hazard2);
 
 
@@ -211,48 +211,44 @@ Play.prototype = {
 		body1.safeDestroy = true;
 	},
 
-	hitByBall: function(receiver, hitter) {
-		//checks ball velocity, if moving >= a percentage of strike strength, kill player.
-		this.strikeThreshold = 0.3; //30%
-
-		//console.log('PlayerVel: ' + receiver.sprite.body.velocity.x);
-		//console.log('ballVel: ' + hitter.sprite.body.velocity.x);
-
-		if (hitter.sprite.body.velocity.x < 0) {
-			if (hitter.sprite.body.velocity.x <= (receiver.sprite.STRIKE_STRENGTH * this.strikeThreshold * -1)) {
-				receiver.sprite.playerDied.play(); //death audio
-				//receiver.sprite.destroy(); //using destroy to prevent players spawning attack zones while dead. May create custom handling later so that .kill() can be used.
-				receiver.sprite.kill();
-				if(receiver.sprite.playNum == 1) {
-					player1Lives--;
-				} else {
-					player2Lives--;
-				}
-				if(player1Lives == 0 || player2Lives == 0) {
-				game.state.start('GameOver');
-				}
-				var scoreText = game.add.text(game.width/2, game.height/2, 'P1: ' + player1Lives + '  P2: ' + player2Lives, {font: 'Helvetica', fontSize: '48px', fill: '#fff'});
-				scoreText.anchor.set(0.5);
-				game.time.events.add(Phaser.Timer.SECOND * 2, function() { game.state.start('Play')});
-			}
-
-		} else {
-			if (hitter.sprite.body.velocity.x >= (receiver.sprite.STRIKE_STRENGTH * this.strikeThreshold)) {
-				receiver.sprite.playerDied.play(); //death audio
-				//receiver.sprite.destroy(); //using destroy to prevent players spawning attack zones while dead.
-				receiver.sprite.kill();
-				if(receiver.sprite.playNum == 1) {
-					player1Lives--;
-				} else {
-					player2Lives--;
-				}
-				if(player1Lives == 0 || player2Lives == 0) {
-				game.state.start('GameOver');
-				}
-				var scoreText = game.add.text(game.width/2, game.height/2, 'P1: ' + player1Lives + '  P2: ' + player2Lives, {font: 'Helvetica', fontSize: '48px', fill: '#fff'});
-				scoreText.anchor.set(0.5);
-				game.time.events.add(Phaser.Timer.SECOND * 2, function() { game.state.start('Play')});
-			}
+	hitByBall: function(receiver, hitter)
+	{
+		// NOTES (5/20/19):
+		// -- Kyle Fegan --
+		// I've rewritten the function to take into account horizontal and vertical velocity.
+		// When a player OR a physics object is traveling above lethal velocity when a
+		// collision occurs, the player will die.
+		// CURRENT ISSUES: 
+		//  -> Player/Ball physics interactions cause potential velocity innacuracies on lethal collision.
+		//  -> Players have instant acceleration and therefore run velocity is always lethal.
+		
+		//Velocity Variables
+		var lethalVelocity = 9;
+		var hVelocity = Math.sqrt(Math.abs((hitter.sprite.body.velocity.x)^2 + (hitter.sprite.body.velocity.y)^2));
+		var rVelocity = Math.sqrt(Math.abs((receiver.sprite.body.velocity.x)^2 + (receiver.sprite.body.velocity.y)^2));
+		
+		//DEBUG Console Log
+		console.log('Hitter Velocity: ' + hVelocity + ' || ' + 'Receiver Velocity: ' + rVelocity);
+		
+		//Check for lethal damage
+		if (hVelocity > lethalVelocity || rVelocity > lethalVelocity)
+		{
+			//Death Audio
+			receiver.sprite.playerDied.play();
+			
+			//Kill Player
+			//receiver.sprite.destroy();
+			receiver.sprite.kill();
+			if (receiver.sprite.playNum == 1) player1Lives--;
+			else player2Lives--;
+			
+			//Check Match Status
+			if(player1Lives == 0 || player2Lives == 0) game.state.start('GameOver');
+			
+			//Display Score & Restart
+			var scoreText = game.add.text(game.width/2, game.height/2, 'P1: ' + player1Lives + '  P2: ' + player2Lives, {font: 'Helvetica', fontSize: '48px', fill: '#fff'});
+			scoreText.anchor.set(0.5);
+			game.time.events.add(Phaser.Timer.SECOND * 2, function() { game.state.start('Play')});
 		}
 	},
 
