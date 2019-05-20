@@ -14,6 +14,13 @@ Load.prototype = {
 		game.load.image('heart2', 'heartJar2.png');
 		game.load.image('attackZone', 'playerAttackZone.png'); //it's a transparent box image.
 		
+		game.load.image('cloud1', 'cloud1.png');
+		game.load.image('cloud2', 'cloud2.png');
+		game.load.image('cloud3', 'cloud3.png');
+		game.load.image('cloud4', 'cloud4.png');
+		game.load.image('cloud5', 'cloud5.png');
+		game.load.image('cloud6', 'cloud6.png');
+		
 		game.load.spritesheet('golem', 'golemtest.png', 32, 32);
 
 		// load audio assets

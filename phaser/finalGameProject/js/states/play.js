@@ -44,7 +44,47 @@ Play.prototype = {
 		this.ballGroup = game.add.group();
 		this.ballGroup.enableBody = true;
 		this.ballGroup.physicsBodyType = Phaser.Physics.P2JS;
-
+		
+		//Skybox
+		//Parallax Group #1
+			//Parallax Group #2
+		this.cloud1 = new  Cloud(this.game, 0, 0, 'cloud1', .6);
+		this.game.add.existing(this.cloud1);
+		this.cloud1.sendToBack();
+			this.pcloud1 = new  Cloud(this.game, -1000, 0, 'cloud1', .6);
+			this.game.add.existing(this.pcloud1);
+			this.pcloud1.sendToBack();
+		this.cloud2 = new  Cloud(this.game, 0, 0, 'cloud2', .5);
+		this.game.add.existing(this.cloud2);
+		this.cloud2.sendToBack();
+			this.pcloud2 = new  Cloud(this.game, -1000, 0, 'cloud2', .5);
+			this.game.add.existing(this.pcloud2);
+			this.pcloud2.sendToBack();
+		this.cloud3 = new  Cloud(this.game, 0, 0, 'cloud3', .4);
+		this.game.add.existing(this.cloud3);
+		this.cloud3.sendToBack();
+			this.pcloud3 = new  Cloud(this.game, -1000, 0, 'cloud3', .4);
+			this.game.add.existing(this.pcloud3);
+			this.pcloud3.sendToBack();
+		this.cloud4 = new  Cloud(this.game, 0, 0, 'cloud4', .3);
+		this.game.add.existing(this.cloud4);
+		this.cloud4.sendToBack();
+			this.pcloud4 = new  Cloud(this.game, -1000, 0, 'cloud4', .3);
+			this.game.add.existing(this.pcloud4);
+			this.pcloud4.sendToBack();
+		this.cloud5 = new  Cloud(this.game, 0, 0, 'cloud5', .2);
+		this.game.add.existing(this.cloud5);
+		this.cloud5.sendToBack();
+			this.pcloud5 = new  Cloud(this.game, -1000, 0, 'cloud5', .2);
+			this.game.add.existing(this.pcloud5);
+			this.pcloud5.sendToBack();
+		this.cloud6 = new  Cloud(this.game, 0, 0, 'cloud6', .1);
+		this.game.add.existing(this.cloud6);
+		this.cloud6.sendToBack();
+			this.pcloud6 = new  Cloud(this.game, -1000, 0, 'cloud6', .1);
+			this.game.add.existing(this.pcloud6);
+			this.pcloud6.sendToBack();
+		
 		//Terrain
 		//adds base terrain with custom hitbox and is static
 		this.halfpipe = this.terrainGroup.create(game.world.width/2, game.world.height/2, 'halfpipe');
