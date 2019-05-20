@@ -19,6 +19,8 @@ var Player = function(game, x, y, key, playerNumber, attackGroup, attackCollisio
 	this.JUMP_SPEED = -300; //jump strnegth
 	this.playNum = playerNumber; //which player the instance is for
 	this.playerVel = 200; //player move speed
+	this.MAX_LIVES = 3; //maximum number of lives
+	this.lives = this.MAX_LIVES; //current tracked lives
 	this.outerContext = outerContext; //required to call functions written in play state. Wasn't sure if you can or how to create new functions in prefabs.
 
 	//groups for spawning attack hitbox/hitzone
@@ -47,97 +49,99 @@ Player.prototype.constructor = Player;
 //override the Phaser.Sprite update function
 Player.prototype.update = function() {
 
-	// updates are wrapped within player number cases in order to handle multiple instances of player objects/sprites.
-	//Player 1 stuff
-	if (this.playNum == 1) {
-		//movement controls
-		if(game.input.keyboard.isDown(Phaser.Keyboard.LEFT)) {
+	if (this.alive) {
+		// updates are wrapped within player number cases in order to handle multiple instances of player objects/sprites.
+		//Player 1 stuff
+		if (this.playNum == 1) {
+			//movement controls
+			if(game.input.keyboard.isDown(Phaser.Keyboard.LEFT)) {
 
-			this.body.velocity.x = -this.playerVel;
-			this.scale.x = -this.PLAYER_SCALE; 	// flip sprite
-			
-		} else if (game.input.keyboard.isDown(Phaser.Keyboard.RIGHT)) {
+				this.body.velocity.x = -this.playerVel;
+				this.scale.x = -this.PLAYER_SCALE; 	// flip sprite
+				
+			} else if (game.input.keyboard.isDown(Phaser.Keyboard.RIGHT)) {
 
-			this.body.velocity.x = this.playerVel;
-			this.scale.x = this.PLAYER_SCALE; 	// re-orient sprite
+				this.body.velocity.x = this.playerVel;
+				this.scale.x = this.PLAYER_SCALE; 	// re-orient sprite
 
-		} else {
-			//idles when not controlled
-			this.body.velocity.x = 0;	
-		}
-
-		//jump controls
-		if(this.jumps > 0 && game.input.keyboard.downDuration(Phaser.Keyboard.UP, 150)) {
-		    this.body.velocity.y = this.JUMP_SPEED;
-		    this.jumping = true;
-		}
-
-		//letting go of the UP key subtracts a jump
-		if(this.jumping && game.input.keyboard.upDuration(Phaser.Keyboard.UP)) {
-		  	this.jumps--;
-		   	this.jumping = false;
-		}
-
-		//attack stuff, spawns an invisible hit box to check collisions
-		if (game.input.keyboard.justPressed(Phaser.Keyboard.NUMPAD_0)) {
-			if (this.scale.x > 0) {
-				this.attackOffset = this.x + this.ATTACK_SPAWN_OFFSET;
-				this.attackDirection = 1;
 			} else {
-				this.attackOffset = this.x -this.ATTACK_SPAWN_OFFSET;
-				this.attackDirection = -1;
+				//idles when not controlled
+				this.body.velocity.x = 0;	
 			}
 
-			//PlayerAttackZone = function(game, x, y, key, strength, direction, outerContext)
-			this.attackZone = new PlayerAttackZone(game, this.attackOffset, this.y, 'attackZone', this.STRIKE_STRENGTH, this.attackDirection, this.outerContext);
-			this.game.add.existing(this.attackZone);
-			this.attackZone.body.setCollisionGroup(this.attackCollisionGroup);
-			this.attackZone.body.collides(this.ballCollisionGroup, this.outerContext.playerAttack, this.outerContext);
-			this.attackGroup.add(this.attackZone);
-		}
-
-	// Player 2 stuff
-	} else if (this.playNum == 2) {
-		
-		if(game.input.keyboard.isDown(Phaser.Keyboard.A)) {
-
-			this.body.velocity.x = -this.playerVel;
-			this.scale.x = -this.PLAYER_SCALE; 	// flip sprite
-			
-		} else if (game.input.keyboard.isDown(Phaser.Keyboard.D)) {
-
-			this.body.velocity.x = this.playerVel;
-			this.scale.x = this.PLAYER_SCALE; 	// re-orient sprite
-
-		} else {
-			this.body.velocity.x = 0;
-		}
-
-		if(this.jumps > 0 && game.input.keyboard.downDuration(Phaser.Keyboard.W, 150)) {
-		    this.body.velocity.y = this.JUMP_SPEED;
-		    this.jumping = true;
-		}
-
-		//letting go of the UP key subtracts a jump
-		if(this.jumping && game.input.keyboard.upDuration(Phaser.Keyboard.W)) {
-		  	this.jumps--;
-		   	this.jumping = false;
-		}
-
-		//attack stuff
-		if (game.input.keyboard.justPressed(Phaser.Keyboard.SHIFT)) {
-			if (this.scale.x > 0) {
-				this.attackOffset = this.x + this.ATTACK_SPAWN_OFFSET;
-				this.attackDirection = 1;
-			} else {
-				this.attackOffset = this.x -this.ATTACK_SPAWN_OFFSET;
-				this.attackDirection = -1;
+			//jump controls
+			if(this.jumps > 0 && game.input.keyboard.downDuration(Phaser.Keyboard.UP, 150)) {
+			    this.body.velocity.y = this.JUMP_SPEED;
+			    this.jumping = true;
 			}
-			this.attackZone = new PlayerAttackZone(game, this.attackOffset, this.y, 'attackZone', this.STRIKE_STRENGTH, this.attackDirection, this.outerContext);
-			this.game.add.existing(this.attackZone);
-			this.attackZone.body.setCollisionGroup(this.attackCollisionGroup);
-			this.attackZone.body.collides(this.ballCollisionGroup, this.outerContext.playerAttack, this.outerContext);
-			this.attackGroup.add(this.attackZone);
+
+			//letting go of the UP key subtracts a jump
+			if(this.jumping && game.input.keyboard.upDuration(Phaser.Keyboard.UP)) {
+			  	this.jumps--;
+			   	this.jumping = false;
+			}
+
+			//attack stuff, spawns an invisible hit box to check collisions
+			if (game.input.keyboard.justPressed(Phaser.Keyboard.NUMPAD_0)) {
+				if (this.scale.x > 0) {
+					this.attackOffset = this.x + this.ATTACK_SPAWN_OFFSET;
+					this.attackDirection = 1;
+				} else {
+					this.attackOffset = this.x -this.ATTACK_SPAWN_OFFSET;
+					this.attackDirection = -1;
+				}
+
+				//PlayerAttackZone = function(game, x, y, key, strength, direction, outerContext)
+				this.attackZone = new PlayerAttackZone(game, this.attackOffset, this.y, 'attackZone', this.STRIKE_STRENGTH, this.attackDirection, this.outerContext);
+				this.game.add.existing(this.attackZone);
+				this.attackZone.body.setCollisionGroup(this.attackCollisionGroup);
+				this.attackZone.body.collides(this.ballCollisionGroup, this.outerContext.playerAttack, this.outerContext);
+				this.attackGroup.add(this.attackZone);
+			}
+
+		// Player 2 stuff
+		} else if (this.playNum == 2) {
+			
+			if(game.input.keyboard.isDown(Phaser.Keyboard.A)) {
+
+				this.body.velocity.x = -this.playerVel;
+				this.scale.x = -this.PLAYER_SCALE; 	// flip sprite
+				
+			} else if (game.input.keyboard.isDown(Phaser.Keyboard.D)) {
+
+				this.body.velocity.x = this.playerVel;
+				this.scale.x = this.PLAYER_SCALE; 	// re-orient sprite
+
+			} else {
+				this.body.velocity.x = 0;
+			}
+
+			if(this.jumps > 0 && game.input.keyboard.downDuration(Phaser.Keyboard.W, 150)) {
+			    this.body.velocity.y = this.JUMP_SPEED;
+			    this.jumping = true;
+			}
+
+			//letting go of the UP key subtracts a jump
+			if(this.jumping && game.input.keyboard.upDuration(Phaser.Keyboard.W)) {
+			  	this.jumps--;
+			   	this.jumping = false;
+			}
+
+			//attack stuff
+			if (game.input.keyboard.justPressed(Phaser.Keyboard.SHIFT)) {
+				if (this.scale.x > 0) {
+					this.attackOffset = this.x + this.ATTACK_SPAWN_OFFSET;
+					this.attackDirection = 1;
+				} else {
+					this.attackOffset = this.x -this.ATTACK_SPAWN_OFFSET;
+					this.attackDirection = -1;
+				}
+				this.attackZone = new PlayerAttackZone(game, this.attackOffset, this.y, 'attackZone', this.STRIKE_STRENGTH, this.attackDirection, this.outerContext);
+				this.game.add.existing(this.attackZone);
+				this.attackZone.body.setCollisionGroup(this.attackCollisionGroup);
+				this.attackZone.body.collides(this.ballCollisionGroup, this.outerContext.playerAttack, this.outerContext);
+				this.attackGroup.add(this.attackZone);
+			}
 		}
 	}
 
