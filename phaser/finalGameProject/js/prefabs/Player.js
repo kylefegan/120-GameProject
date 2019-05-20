@@ -54,12 +54,12 @@ Player.prototype.update = function() {
 		//Player 1 stuff
 		if (this.playNum == 1) {
 			//movement controls
-			if(game.input.keyboard.isDown(Phaser.Keyboard.LEFT)) {
+			if(game.input.keyboard.isDown(Phaser.Keyboard.A)) {
 
 				this.body.velocity.x = -this.playerVel;
 				this.scale.x = -this.PLAYER_SCALE; 	// flip sprite
 				
-			} else if (game.input.keyboard.isDown(Phaser.Keyboard.RIGHT)) {
+			} else if (game.input.keyboard.isDown(Phaser.Keyboard.D)) {
 
 				this.body.velocity.x = this.playerVel;
 				this.scale.x = this.PLAYER_SCALE; 	// re-orient sprite
@@ -70,19 +70,19 @@ Player.prototype.update = function() {
 			}
 
 			//jump controls
-			if(this.jumps > 0 && game.input.keyboard.downDuration(Phaser.Keyboard.UP, 150)) {
+			if(this.jumps > 0 && game.input.keyboard.downDuration(Phaser.Keyboard.W, 150)) {
 			    this.body.velocity.y = this.JUMP_SPEED;
 			    this.jumping = true;
 			}
 
 			//letting go of the UP key subtracts a jump
-			if(this.jumping && game.input.keyboard.upDuration(Phaser.Keyboard.UP)) {
+			if(this.jumping && game.input.keyboard.upDuration(Phaser.Keyboard.W)) {
 			  	this.jumps--;
 			   	this.jumping = false;
 			}
 
 			//attack stuff, spawns an invisible hit box to check collisions
-			if (game.input.keyboard.justPressed(Phaser.Keyboard.NUMPAD_0)) {
+			if (game.input.keyboard.justPressed(Phaser.Keyboard.SHIFT)) {
 				if (this.scale.x > 0) {
 					this.attackOffset = this.x + this.ATTACK_SPAWN_OFFSET;
 					this.attackDirection = 1;
@@ -102,12 +102,12 @@ Player.prototype.update = function() {
 		// Player 2 stuff
 		} else if (this.playNum == 2) {
 			
-			if(game.input.keyboard.isDown(Phaser.Keyboard.A)) {
+			if(game.input.keyboard.isDown(Phaser.Keyboard.LEFT)) {
 
 				this.body.velocity.x = -this.playerVel;
 				this.scale.x = -this.PLAYER_SCALE; 	// flip sprite
 				
-			} else if (game.input.keyboard.isDown(Phaser.Keyboard.D)) {
+			} else if (game.input.keyboard.isDown(Phaser.Keyboard.RIGHT)) {
 
 				this.body.velocity.x = this.playerVel;
 				this.scale.x = this.PLAYER_SCALE; 	// re-orient sprite
@@ -116,19 +116,19 @@ Player.prototype.update = function() {
 				this.body.velocity.x = 0;
 			}
 
-			if(this.jumps > 0 && game.input.keyboard.downDuration(Phaser.Keyboard.W, 150)) {
+			if(this.jumps > 0 && game.input.keyboard.downDuration(Phaser.Keyboard.UP, 150)) {
 			    this.body.velocity.y = this.JUMP_SPEED;
 			    this.jumping = true;
 			}
 
 			//letting go of the UP key subtracts a jump
-			if(this.jumping && game.input.keyboard.upDuration(Phaser.Keyboard.W)) {
+			if(this.jumping && game.input.keyboard.upDuration(Phaser.Keyboard.UP)) {
 			  	this.jumps--;
 			   	this.jumping = false;
 			}
 
 			//attack stuff
-			if (game.input.keyboard.justPressed(Phaser.Keyboard.SHIFT)) {
+			if (game.input.keyboard.justPressed(Phaser.Keyboard.NUMPAD_0)) {
 				if (this.scale.x > 0) {
 					this.attackOffset = this.x + this.ATTACK_SPAWN_OFFSET;
 					this.attackDirection = 1;

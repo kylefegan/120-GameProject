@@ -106,7 +106,7 @@ Play.prototype = {
 
 		//Player 1
 		//Player = function(game, x, y, key, playerNumber, attackGroup, attackCollisionGroup,ballCollisionGroup, outerContext)
-		this.player = new Player(this.game, this.game.width/2 + 40, this.game.height/2, 'golem', 1, 
+		this.player = new Player(this.game, this.game.width/2 - 40, this.game.height/2, 'golem', 1, 
 			this.attackGroup, this.attackCollisionGroup, this.ballCollisionGroup, this);
 		if (!this.justStarted) {
 			this.player.lives = this.p1Lives;
@@ -127,7 +127,7 @@ Play.prototype = {
 		//Player 2
 		//Player = function(game, x, y, key, playerNumber, attackGroup, attackCollisionGroup, 
 		//ballCollisionGroup, outerContext)
-		this.player2 = new Player(this.game, this.game.width/2 - 40, this.game.height/2, 'golem', 2, 
+		this.player2 = new Player(this.game, this.game.width/2 + 40, this.game.height/2, 'golem', 2, 
 			this.attackGroup, this.attackCollisionGroup, this.ballCollisionGroup, this);
 		if (!this.justStarted) {
 			this.player2.lives = this.p2Lives;
