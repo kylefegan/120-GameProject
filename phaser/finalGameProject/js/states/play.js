@@ -44,7 +44,47 @@ Play.prototype = {
 		this.ballGroup = game.add.group();
 		this.ballGroup.enableBody = true;
 		this.ballGroup.physicsBodyType = Phaser.Physics.P2JS;
-
+		
+		//Skybox
+		//Parallax Group #1
+			//Parallax Group #2
+		this.cloud1 = new  Cloud(this.game, 0, 0, 'cloud1', .6);
+		this.game.add.existing(this.cloud1);
+		this.cloud1.sendToBack();
+			this.pcloud1 = new  Cloud(this.game, -1000, 0, 'cloud1', .6);
+			this.game.add.existing(this.pcloud1);
+			this.pcloud1.sendToBack();
+		this.cloud2 = new  Cloud(this.game, 0, 0, 'cloud2', .5);
+		this.game.add.existing(this.cloud2);
+		this.cloud2.sendToBack();
+			this.pcloud2 = new  Cloud(this.game, -1000, 0, 'cloud2', .5);
+			this.game.add.existing(this.pcloud2);
+			this.pcloud2.sendToBack();
+		this.cloud3 = new  Cloud(this.game, 0, 0, 'cloud3', .4);
+		this.game.add.existing(this.cloud3);
+		this.cloud3.sendToBack();
+			this.pcloud3 = new  Cloud(this.game, -1000, 0, 'cloud3', .4);
+			this.game.add.existing(this.pcloud3);
+			this.pcloud3.sendToBack();
+		this.cloud4 = new  Cloud(this.game, 0, 0, 'cloud4', .3);
+		this.game.add.existing(this.cloud4);
+		this.cloud4.sendToBack();
+			this.pcloud4 = new  Cloud(this.game, -1000, 0, 'cloud4', .3);
+			this.game.add.existing(this.pcloud4);
+			this.pcloud4.sendToBack();
+		this.cloud5 = new  Cloud(this.game, 0, 0, 'cloud5', .2);
+		this.game.add.existing(this.cloud5);
+		this.cloud5.sendToBack();
+			this.pcloud5 = new  Cloud(this.game, -1000, 0, 'cloud5', .2);
+			this.game.add.existing(this.pcloud5);
+			this.pcloud5.sendToBack();
+		this.cloud6 = new  Cloud(this.game, 0, 0, 'cloud6', .1);
+		this.game.add.existing(this.cloud6);
+		this.cloud6.sendToBack();
+			this.pcloud6 = new  Cloud(this.game, -1000, 0, 'cloud6', .1);
+			this.game.add.existing(this.pcloud6);
+			this.pcloud6.sendToBack();
+		
 		//Terrain
 		//adds base terrain with custom hitbox and is static
 		this.halfpipe = this.terrainGroup.create(game.world.width/2, game.world.height/2, 'halfpipe');
@@ -57,18 +97,18 @@ Play.prototype = {
 
 		//Hazard
 		//adds static hazard 
-		this.hazard = new  Hazard(this.game, (game.world.width/2)-200, game.world.height*.735, 'fire', this.playerCollisionGroup, this.ballCollisionGroup, this.hazardCollisionGroup);
+		this.hazard = new  Hazard(this.game, (game.world.width/2)-200, 590, 'acid', this.playerCollisionGroup, this.ballCollisionGroup, this.hazardCollisionGroup);
 		this.game.add.existing(this.hazard);
-		this.hazard2 = new  Hazard(this.game, (game.world.width/2)+200, game.world.height*.735, 'fire', this.playerCollisionGroup, this.ballCollisionGroup, this.hazardCollisionGroup);
+		this.hazard2 = new  Hazard(this.game, (game.world.width/2)+200, 590, 'acid', this.playerCollisionGroup, this.ballCollisionGroup, this.hazardCollisionGroup);
 		this.game.add.existing(this.hazard2);
 
 
 		// Ball 1
 		//this.ball1 = this.ballGroup.create(150, 60, 'ball');
 		this.ball1 = game.add.sprite(230, 300, 'ball');
-		this.ball1.tint = 0xc242f4;
+		//this.ball1.tint = 0xc242f4;
 		game.physics.p2.enable(this.ball1, this.DEBUG_BODIES);
-		this.ball1.body.setCircle(18);
+		this.ball1.body.setCircle(16);
 		this.ball1.body.setCollisionGroup(this.ballCollisionGroup);
 		this.ball1.body.collides([this.ballCollisionGroup, this.playerCollisionGroup, this.attackCollisionGroup, this.terrainCollisionGroup, this.hazardCollisionGroup]);
 		this.ballGroup.add(this.ball1);
@@ -76,9 +116,9 @@ Play.prototype = {
 		// Ball 2
 		//this.ball2 = this.ballGroup.create(this.game.width - 150, 60, 'ball');
 		this.ball2 = game.add.sprite(this.game.width - 230, 300, 'ball');
-		this.ball2.tint = 0xf4ee41;
+		//this.ball2.tint = 0xf4ee41;
 		game.physics.p2.enable(this.ball2, this.DEBUG_BODIES);
-		this.ball2.body.setCircle(18);
+		this.ball2.body.setCircle(16);
 		this.ball2.body.setCollisionGroup(this.ballCollisionGroup);
 		this.ball2.body.collides([this.ballCollisionGroup, this.playerCollisionGroup, this.attackCollisionGroup, this.terrainCollisionGroup, this.hazardCollisionGroup]);
 		this.ballGroup.add(this.ball2);
@@ -171,48 +211,44 @@ Play.prototype = {
 		body1.safeDestroy = true;
 	},
 
-	hitByBall: function(receiver, hitter) {
-		//checks ball velocity, if moving >= a percentage of strike strength, kill player.
-		this.strikeThreshold = 0.3; //30%
-
-		//console.log('PlayerVel: ' + receiver.sprite.body.velocity.x);
-		//console.log('ballVel: ' + hitter.sprite.body.velocity.x);
-
-		if (hitter.sprite.body.velocity.x < 0) {
-			if (hitter.sprite.body.velocity.x <= (receiver.sprite.STRIKE_STRENGTH * this.strikeThreshold * -1)) {
-				receiver.sprite.playerDied.play(); //death audio
-				//receiver.sprite.destroy(); //using destroy to prevent players spawning attack zones while dead. May create custom handling later so that .kill() can be used.
-				receiver.sprite.kill();
-				if(receiver.sprite.playNum == 1) {
-					player1Lives--;
-				} else {
-					player2Lives--;
-				}
-				if(player1Lives == 0 || player2Lives == 0) {
-				game.state.start('GameOver');
-				}
-				var scoreText = game.add.text(game.width/2, game.height/2, 'P1: ' + player1Lives + '  P2: ' + player2Lives, {font: 'Helvetica', fontSize: '48px', fill: '#fff'});
-				scoreText.anchor.set(0.5);
-				game.time.events.add(Phaser.Timer.SECOND * 2, function() { game.state.start('Play')});
-			}
-
-		} else {
-			if (hitter.sprite.body.velocity.x >= (receiver.sprite.STRIKE_STRENGTH * this.strikeThreshold)) {
-				receiver.sprite.playerDied.play(); //death audio
-				//receiver.sprite.destroy(); //using destroy to prevent players spawning attack zones while dead.
-				receiver.sprite.kill();
-				if(receiver.sprite.playNum == 1) {
-					player1Lives--;
-				} else {
-					player2Lives--;
-				}
-				if(player1Lives == 0 || player2Lives == 0) {
-				game.state.start('GameOver');
-				}
-				var scoreText = game.add.text(game.width/2, game.height/2, 'P1: ' + player1Lives + '  P2: ' + player2Lives, {font: 'Helvetica', fontSize: '48px', fill: '#fff'});
-				scoreText.anchor.set(0.5);
-				game.time.events.add(Phaser.Timer.SECOND * 2, function() { game.state.start('Play')});
-			}
+	hitByBall: function(receiver, hitter)
+	{
+		// NOTES (5/20/19):
+		// -- Kyle Fegan --
+		// I've rewritten the function to take into account horizontal and vertical velocity.
+		// When a player OR a physics object is traveling above lethal velocity when a
+		// collision occurs, the player will die.
+		// CURRENT ISSUES: 
+		//  -> Player/Ball physics interactions cause potential velocity innacuracies on lethal collision.
+		//  -> Players have instant acceleration and therefore run velocity is always lethal.
+		
+		//Velocity Variables
+		var lethalVelocity = 9;
+		var hVelocity = Math.sqrt(Math.abs((hitter.sprite.body.velocity.x)^2 + (hitter.sprite.body.velocity.y)^2));
+		var rVelocity = Math.sqrt(Math.abs((receiver.sprite.body.velocity.x)^2 + (receiver.sprite.body.velocity.y)^2));
+		
+		//DEBUG Console Log
+		console.log('Hitter Velocity: ' + hVelocity + ' || ' + 'Receiver Velocity: ' + rVelocity);
+		
+		//Check for lethal damage
+		if (hVelocity > lethalVelocity || rVelocity > lethalVelocity)
+		{
+			//Death Audio
+			receiver.sprite.playerDied.play();
+			
+			//Kill Player
+			//receiver.sprite.destroy();
+			receiver.sprite.kill();
+			if (receiver.sprite.playNum == 1) player1Lives--;
+			else player2Lives--;
+			
+			//Check Match Status
+			if(player1Lives == 0 || player2Lives == 0) game.state.start('GameOver');
+			
+			//Display Score & Restart
+			var scoreText = game.add.text(game.width/2, game.height/2, 'P1: ' + player1Lives + '  P2: ' + player2Lives, {font: 'Helvetica', fontSize: '48px', fill: '#fff'});
+			scoreText.anchor.set(0.5);
+			game.time.events.add(Phaser.Timer.SECOND * 2, function() { game.state.start('Play')});
 		}
 	},
 

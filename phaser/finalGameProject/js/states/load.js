@@ -8,11 +8,19 @@ Load.prototype = {
 		game.load.image('tacoLizard', 'tacoLizard.png');
 		game.load.image('halfpipe', 'PyramidLevel.png');
 		game.load.image('fire', 'fire.png');
+		game.load.image('acid', 'acidPool.png');
 		game.load.physics("physics", "PyramidLevel.json", null, Phaser.Physics.LIME_CORONA_JSON);
-		game.load.image('ball', 'ball.png');
+		game.load.image('ball', 'Boulder.png');
 		game.load.image('heart', 'heartJar.png');
 		game.load.image('heart2', 'heartJar2.png');
 		game.load.image('attackZone', 'playerAttackZone.png'); //it's a transparent box image.
+		
+		game.load.image('cloud1', 'cloud1.png');
+		game.load.image('cloud2', 'cloud2.png');
+		game.load.image('cloud3', 'cloud3.png');
+		game.load.image('cloud4', 'cloud4.png');
+		game.load.image('cloud5', 'cloud5.png');
+		game.load.image('cloud6', 'cloud6.png');
 		
 		game.load.spritesheet('golem', 'golemtest.png', 32, 32);
 

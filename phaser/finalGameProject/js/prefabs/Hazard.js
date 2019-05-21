@@ -17,9 +17,7 @@ var Hazard = function(game, x, y, key, playerCollisionGroup,ballCollisionGroup, 
 	this.ballCollisionGroup = ballCollisionGroup;
 	this.hazardCollisionGroup = hazardCollisionGroup;
 
-	this.scale.x = 0.3;
-	this.scale.y = 0.3;
-	this.body.setRectangle(90,30);
+	this.body.setRectangle(96,20);
 	this.body.static = true;
 	this.body.setCollisionGroup(hazardCollisionGroup);
 	this.body.collides([ballCollisionGroup, playerCollisionGroup]);
