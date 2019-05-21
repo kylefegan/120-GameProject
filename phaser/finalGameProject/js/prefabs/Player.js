@@ -11,25 +11,34 @@ var Player = function(game, x, y, key, playerNumber, attackGroup, attackCollisio
 
 	game.physics.p2.enable(this, this.DEBUG_BODIES);	// enable physics, I believe this is redundant
 
-	this.playerDied = game.add.audio('playerDied'); //player death audio. temp asset, like everything else.
+	//Constants
+	this.MAX_LIVES = 3; //maximum number of lives
 	this.PLAYER_SCALE = 1; //used to invert player sprite facing direction
 	this.MAX_JUMP = 2; //how many multi jumps a player can make
 	this.STRIKE_STRENGTH = 500; //how hard a player hits the ball objects
-	this.jumps = this.MAX_JUMP; //tracking var for multi jumping
 	this.JUMP_SPEED = -300; //jump strnegth
+	this.PLAYER_DAMPING = 0.6; //velocity lost per second (between 1 and 0; thus percentage based)
+	this.PLAYER_MASS = 6; //weight used in physics calculations
+
+	this.ATTACK_SPAWN_OFFSET = 40; //how far in front of the sprite to spawn
+	//potential issue with attack spawn offset anchor position during spawn, requires investigation.
+
+	//variables
+	this.playerDied = game.add.audio('playerDied'); //player death audio. temp asset, like everything else.
+	this.jumps = this.MAX_JUMP; //tracking var for multi jumping
 	this.playNum = playerNumber; //which player the instance is for
 	this.playerVel = 200; //player move speed
-	this.MAX_LIVES = 3; //maximum number of lives
 	this.lives = this.MAX_LIVES; //current tracked lives
-	this.outerContext = outerContext; //required to call functions written in play state. Wasn't sure if you can or how to create new functions in prefabs.
+	this.body.damping = this.PLAYER_DAMPING;
+	this.body.mass = this.PLAYER_MASS;
+	this.outerContext = outerContext; //required to call functions written in 
+	                                  //play state. Wasn't sure if you can or 
+	                                  //how to create new functions in prefabs.
 
 	//groups for spawning attack hitbox/hitzone
 	this.attackGroup = attackGroup;
 	this.attackCollisionGroup = attackCollisionGroup;
 	this.ballCollisionGroup = ballCollisionGroup;
-
-	this.ATTACK_SPAWN_OFFSET = 40; //how far in front of the sprite to spawn
-	//potential issue with attack spawn offset anchor position during spawn, requires investigation.
 
 	//coloring players to differentiate them.
 	if (this.playNum == 1) {
@@ -66,7 +75,7 @@ Player.prototype.update = function() {
 
 			} else {
 				//idles when not controlled
-				this.body.velocity.x = 0;	
+				//this.body.velocity.x = 0;	//this overwrites P2 physics calculations
 			}
 
 			//jump controls
@@ -113,7 +122,7 @@ Player.prototype.update = function() {
 				this.scale.x = this.PLAYER_SCALE; 	// re-orient sprite
 
 			} else {
-				this.body.velocity.x = 0;
+				//this.body.velocity.x = 0; //this overwrites P2 physics calculations
 			}
 
 			if(this.jumps > 0 && game.input.keyboard.downDuration(Phaser.Keyboard.UP, 150)) {

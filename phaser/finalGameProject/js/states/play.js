@@ -69,14 +69,17 @@ Play.prototype = {
 		//Hazard 1
 		this.hazard = new  Hazard(this.game, (game.world.width/2)-200, game.world.height*.735, 'fire', 
 			this.playerCollisionGroup, this.ballCollisionGroup, this.hazardCollisionGroup);
-		this.hazardMaterial = game.physics.p2.createMaterial('hazardMaterial', this.hazard.body);
+		//this.hazardMaterial = game.physics.p2.createMaterial('hazardMaterial', this.hazard.body);
+		this.hazardMaterial = game.physics.p2.createMaterial('hazardMaterial');
+		this.hazard.body.setMaterial(this.hazardMaterial);
 		this.game.add.existing(this.hazard);
 		this.hazardGroup.add(this.hazard);
 
 		//Hazard 2
 		this.hazard2 = new  Hazard(this.game, (game.world.width/2)+200, game.world.height*.735, 'fire', 
 			this.playerCollisionGroup, this.ballCollisionGroup, this.hazardCollisionGroup);
-		this.hazard2Material = game.physics.p2.createMaterial('hazard2Material', this.hazard2.body);
+		//this.hazard2Material = game.physics.p2.createMaterial('hazard2Material', this.hazard2.body);
+		this.hazard2.body.setMaterial(this.hazardMaterial);
 		this.game.add.existing(this.hazard2);
 		this.hazardGroup.add(this.hazard);
 
@@ -86,7 +89,10 @@ Play.prototype = {
 		this.ball1.tint = 0xc242f4;
 		game.physics.p2.enable(this.ball1, this.DEBUG_BODIES);
 		this.ball1.body.setCircle(18);
-		this.ball1Material = game.physics.p2.createMaterial('ball1Material', this.ball1.body);
+		this.ball1.body.mass = 2;
+		//this.ball1Material = game.physics.p2.createMaterial('ball1Material', this.ball1.body);
+		this.ballMaterial = game.physics.p2.createMaterial('ball1Material');
+		this.ball1.body.setMaterial(this.ballMaterial);
 		this.ball1.body.setCollisionGroup(this.ballCollisionGroup);
 		this.ball1.body.collides([this.ballCollisionGroup, this.playerCollisionGroup, 
 			this.attackCollisionGroup, this.terrainCollisionGroup, this.hazardCollisionGroup]);
@@ -98,7 +104,9 @@ Play.prototype = {
 		this.ball2.tint = 0xf4ee41;
 		game.physics.p2.enable(this.ball2, this.DEBUG_BODIES);
 		this.ball2.body.setCircle(18);
-		this.ball2Material = game.physics.p2.createMaterial('ball2Material', this.ball2.body);
+		this.ball2.body.mass = 2;
+		//this.ball2Material = game.physics.p2.createMaterial('ball2Material', this.ball2.body);
+		this.ball2.body.setMaterial(this.ballMaterial);
 		this.ball2.body.setCollisionGroup(this.ballCollisionGroup);
 		this.ball2.body.collides([this.ballCollisionGroup, this.playerCollisionGroup, 
 			this.attackCollisionGroup, this.terrainCollisionGroup, this.hazardCollisionGroup]);
@@ -116,7 +124,9 @@ Play.prototype = {
 		this.player.body.collideWorldBounds = true;
 		this.player.body.fixedRotation = true;
 		this.player.body.dynamic = true; //This may actually be unnecessary.
-		this.playerMaterial = game.physics.p2.createMaterial('playerMaterial', this.player.body);
+		//this.playerMaterial = game.physics.p2.createMaterial('playerMaterial', this.player.body);
+		this.playerMaterial = game.physics.p2.createMaterial('playerMaterial');
+		this.player.body.setMaterial(this.playerMaterial);
 		this.player.body.setCollisionGroup(this.playerCollisionGroup);
 		this.player.body.collides([this.ballCollisionGroup, this.terrainCollisionGroup, 
 			this.hazardCollisionGroup]);
@@ -137,7 +147,8 @@ Play.prototype = {
 		this.player2.body.collideWorldBounds = true;
 		this.player2.body.fixedRotation = true;
 		this.player2.body.dynamic = true;
-		this.player2Material = game.physics.p2.createMaterial('player2Material', this.player2.body);
+		//this.player2Material = game.physics.p2.createMaterial('player2Material', this.player2.body);
+		this.player2.body.setMaterial(this.playerMaterial);
 		this.player2.body.setCollisionGroup(this.playerCollisionGroup);
 		this.player2.body.collides([this.ballCollisionGroup, this.terrainCollisionGroup, 
 			this.hazardCollisionGroup]);
@@ -163,11 +174,11 @@ Play.prototype = {
 		this.baseTerVsPlayContact = game.physics.p2.createContactMaterial(this.playerMaterial, 
 			this.baseTerrainMaterial);
 		// Friction to use in the contact of these two materials.
-		this.baseTerVsPlayContact.friction = 0.01;
+		this.baseTerVsPlayContact.friction = 1.0;
 		// Restitution (i.e. how bouncy it is!) to use in the contact of these two materials.
-	    this.baseTerVsPlayContact.restitution = 0.5;
+	    this.baseTerVsPlayContact.restitution = 0.0; //mostly works. Flat surfaces: yes, angles: no
 	    // Stiffness of the resulting ContactEquation that this baseTerVsPlayContact generate.
-	    this.baseTerVsPlayContact.stiffness = 1e7;
+	    this.baseTerVsPlayContact.stiffness = 1e7; //causes clipping with buoyant fluid motions
 	    // Relaxation of the resulting ContactEquation that this baseTerVsPlayContact generate.
 	    this.baseTerVsPlayContact.relaxation = 3;
 	    // Stiffness of the resulting FrictionEquation that this baseTerVsPlayContact generate.   
@@ -176,9 +187,29 @@ Play.prototype = {
 	    this.baseTerVsPlayContact.frictionRelaxation = 3;
 	    // Will add surface velocity to this material. If bodyA rests on top of bodyB, and the 
 	    // surface velocity is positive, bodyA will slide to the right. 
-	    this.baseTerVsPlayContact.surfaceVelocity = 3000;
+	    this.baseTerVsPlayContact.surfaceVelocity = 0;
 
-	    //
+	    // Terrain Vs Ball contact
+	    this.baseTerVsBallContact = game.physics.p2.createContactMaterial(this.ballMaterial, 
+	    	this.baseTerrainMaterial);
+		this.baseTerVsBallContact.friction = 1.0;
+	    this.baseTerVsBallContact.restitution = 0.5;
+	    this.baseTerVsBallContact.stiffness = 1e7;
+	    this.baseTerVsBallContact.relaxation = 3;  
+	    this.baseTerVsBallContact.frictionStiffness = 1e7;   
+	    this.baseTerVsBallContact.frictionRelaxation = 3;
+	    this.baseTerVsBallContact.surfaceVelocity = 0;
+
+	    // Hazard Vs Ball contact, same as terrain vs ball.
+	    this.hazardVsBallContact = game.physics.p2.createContactMaterial(this.ballMaterial, 
+	    	this.hazardMaterial);
+		this.hazardVsBallContact.friction = 1.0;
+	    this.hazardVsBallContact.restitution = 0.5;
+	    this.hazardVsBallContact.stiffness = 1e7;
+	    this.hazardVsBallContact.relaxation = 3;  
+	    this.hazardVsBallContact.frictionStiffness = 1e7;   
+	    this.hazardVsBallContact.frictionRelaxation = 3;
+	    this.hazardVsBallContact.surfaceVelocity = 0;
 
 		// create callback event if player hits baseTerrain
 		game.physics.p2.setImpactEvents(true);
