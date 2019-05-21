@@ -19,7 +19,8 @@ Title.prototype = {
 	update: function() {
 		// check for UP input
 		if(game.input.keyboard.justPressed(Phaser.Keyboard.UP)) {
-			game.state.start('Play');
+			//clear world: true, clear cache: false, freshStart: true, playerOneLives: 0 (will be overwritten), playerTwoLives: 0 (will be overwritten)
+			game.state.start('Play', true, false, true, 0, 0);
 		}
 	}
 };
