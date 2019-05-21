@@ -19,7 +19,7 @@ var Player = function(game, x, y, key, playerNumber, attackGroup, attackCollisio
 	this.JUMP_SPEED = -300; //jump strnegth
 	this.PLAYER_MASS = 6; //weight used in physics calculations
 	this.PLAYER_DAMPING = 0.6; //velocity lost per second (between 1 and 0; thus percentage based)
-	this.ATTACK_SPAWN_OFFSET = 40; //how far in front of the sprite to spawn
+	this.ATTACK_SPAWN_OFFSET = 30; //how far in front of the sprite to spawn
 	//potential issue with attack spawn offset anchor position during spawn, requires investigation.
 
 	//variables
