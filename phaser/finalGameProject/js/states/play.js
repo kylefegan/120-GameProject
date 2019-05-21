@@ -124,6 +124,8 @@ Play.prototype = {
 		this.player.body.collideWorldBounds = true;
 		this.player.body.fixedRotation = true;
 		this.player.body.dynamic = true; //This may actually be unnecessary.
+		this.player.body.mass = this.player.PLAYER_MASS;
+		this.player.body.damping = this.player.PLAYER_DAMPING;
 		//this.playerMaterial = game.physics.p2.createMaterial('playerMaterial', this.player.body);
 		this.playerMaterial = game.physics.p2.createMaterial('playerMaterial');
 		this.player.body.setMaterial(this.playerMaterial);
@@ -147,6 +149,8 @@ Play.prototype = {
 		this.player2.body.collideWorldBounds = true;
 		this.player2.body.fixedRotation = true;
 		this.player2.body.dynamic = true;
+		this.player2.body.mass = this.player2.PLAYER_MASS;
+		this.player2.body.damping = this.player2.PLAYER_DAMPING;
 		//this.player2Material = game.physics.p2.createMaterial('player2Material', this.player2.body);
 		this.player2.body.setMaterial(this.playerMaterial);
 		this.player2.body.setCollisionGroup(this.playerCollisionGroup);
@@ -167,7 +171,6 @@ Play.prototype = {
 		//NOTE: there is no material setup up here because as far as I know you have to
 		// create a material for each instance of something and attack zones are repeatedly created
 		// and destroyed. If a material is needed, it will have to go in the attack zone or player prefab.
-
 
 		//contact material setup
 		// Terrain Vs Player contact

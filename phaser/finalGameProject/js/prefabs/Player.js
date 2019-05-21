@@ -17,9 +17,8 @@ var Player = function(game, x, y, key, playerNumber, attackGroup, attackCollisio
 	this.MAX_JUMP = 2; //how many multi jumps a player can make
 	this.STRIKE_STRENGTH = 500; //how hard a player hits the ball objects
 	this.JUMP_SPEED = -300; //jump strnegth
-	this.PLAYER_DAMPING = 0.6; //velocity lost per second (between 1 and 0; thus percentage based)
 	this.PLAYER_MASS = 6; //weight used in physics calculations
-
+	this.PLAYER_DAMPING = 0.6; //velocity lost per second (between 1 and 0; thus percentage based)
 	this.ATTACK_SPAWN_OFFSET = 40; //how far in front of the sprite to spawn
 	//potential issue with attack spawn offset anchor position during spawn, requires investigation.
 
@@ -29,8 +28,8 @@ var Player = function(game, x, y, key, playerNumber, attackGroup, attackCollisio
 	this.playNum = playerNumber; //which player the instance is for
 	this.playerVel = 200; //player move speed
 	this.lives = this.MAX_LIVES; //current tracked lives
-	this.body.damping = this.PLAYER_DAMPING;
-	this.body.mass = this.PLAYER_MASS;
+	//this.body.mass = this.PLAYER_MASS; //this doesn't work for some reason
+	//this.body.damping = this.PLAYER_DAMPING; //this doesn't work for some reason
 	this.outerContext = outerContext; //required to call functions written in 
 	                                  //play state. Wasn't sure if you can or 
 	                                  //how to create new functions in prefabs.
