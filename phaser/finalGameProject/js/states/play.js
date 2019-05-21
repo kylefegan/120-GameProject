@@ -9,7 +9,8 @@ Play.prototype = {
 	},
 
 	create: function() {
-		//this will toggle p2 physics debug bodies in this file. Check player and playerAttackZone prefabs for their bodies.
+		//this will toggle p2 physics debug bodies in this file. Check player and 
+		// playerAttackZone prefabs for their bodies.
 		this.DEBUG_BODIES = false; 
 
 		game.stage.setBackgroundColor('#87CEEB'); //stage background color: light blue
@@ -26,7 +27,8 @@ Play.prototype = {
 		game.physics.p2.setPostBroadphaseCallback(this.checkPlayerVsPlayerCollision, this);
 
 		//collision groups
-		//the attack group will be populated when the player attacks. A group is needed so it can be passed around and also checked out here.
+		//the attack group will be populated when the player attacks. A group is needed so it 
+		//can be passed around and also checked out here.
 		this.attackCollisionGroup = game.physics.p2.createCollisionGroup();
 		this.playerCollisionGroup = game.physics.p2.createCollisionGroup();
 		this.ballCollisionGroup = game.physics.p2.createCollisionGroup();
@@ -113,14 +115,15 @@ Play.prototype = {
 		this.ballGroup.add(this.ball2);
 
 		//Player 1
-		//Player = function(game, x, y, key, playerNumber, attackGroup, attackCollisionGroup,ballCollisionGroup, outerContext)
+		//Player = function(game, x, y, key, playerNumber, attackGroup, attackCollisionGroup,
+		// ballCollisionGroup, outerContext)
 		this.player = new Player(this.game, this.game.width/2 - 40, this.game.height/2, 'golem', 1, 
 			this.attackGroup, this.attackCollisionGroup, this.ballCollisionGroup, this);
 		if (!this.justStarted) {
 			this.player.lives = this.p1Lives;
 		}
 		this.game.add.existing(this.player);
-		this.player.body.setCircle(16);
+		this.player.body.setCircle(16); //may want to make the parameter a constant in the player prefab.
 		this.player.body.collideWorldBounds = true;
 		this.player.body.fixedRotation = true;
 		this.player.body.dynamic = true; //This may actually be unnecessary.
@@ -253,7 +256,8 @@ Play.prototype = {
 
 	//this will need to change when new assets come in.
 	checkPlayerVsPlayerCollision: function(body1, body2) {
-		if ((body1.sprite === this.player && body2.sprite === this.player2) || (body2.sprite === this.player && body1.sprite === this.player2)) {
+		if ((body1.sprite === this.player && body2.sprite === this.player2) || 
+			(body2.sprite === this.player && body1.sprite === this.player2)) {
 			return false;
 		}
 		return true;
@@ -276,17 +280,27 @@ Play.prototype = {
 		if (hitter.sprite.body.velocity.x < 0) {
 			if (hitter.sprite.body.velocity.x <= (receiver.sprite.STRIKE_STRENGTH * this.strikeThreshold * -1)) {
 				receiver.sprite.playerDied.play(); //death audio
-				//receiver.sprite.destroy(); //using destroy to prevent players spawning attack zones while dead. May create custom handling later so that .kill() can be used.
+				//receiver.sprite.destroy(); //using destroy to prevent players spawning attack zones while
+				                             // dead. May create custom handling later so that .kill() can 
+				                             //be used.
 				receiver.sprite.kill();
 				receiver.sprite.lives--;
-				console.log('Player ' + receiver.sprite.playNum + ': ' + receiver.sprite.lives + ' lives remaining.');
+				console.log('Player ' + receiver.sprite.playNum + ': ' + 
+					receiver.sprite.lives + ' lives remaining.');
 
-				if(receiver.sprite.outerContext.player.lives == 0 || receiver.sprite.outerContext.player2.lives == 0) {
-				game.state.start('GameOver', true, false, receiver.sprite.outerContext.player.lives, receiver.sprite.outerContext.player2.lives);
+				if(receiver.sprite.outerContext.player.lives == 0 || 
+					receiver.sprite.outerContext.player2.lives == 0) {
+				game.state.start('GameOver', true, false, receiver.sprite.outerContext.player.lives, 
+					receiver.sprite.outerContext.player2.lives);
 				}
-				var scoreText = game.add.text(game.width/2, game.height/2, 'P1: ' + receiver.sprite.outerContext.player.lives + '  P2: ' + receiver.sprite.outerContext.player2.lives, {font: 'Helvetica', fontSize: '48px', fill: '#fff'});
+				var scoreText = game.add.text(game.width/2, game.height/2, 'P1: ' + 
+					receiver.sprite.outerContext.player.lives + '  P2: ' + 
+					receiver.sprite.outerContext.player2.lives, {font: 'Helvetica', 
+					fontSize: '48px', fill: '#fff'});
 				scoreText.anchor.set(0.5);
-				game.time.events.add(Phaser.Timer.SECOND * 2, function() { game.state.start('Play', true, false, false, receiver.sprite.outerContext.player.lives, receiver.sprite.outerContext.player2.lives)});
+				game.time.events.add(Phaser.Timer.SECOND * 2, function() { game.state.start('Play', 
+					true, false, false, receiver.sprite.outerContext.player.lives, 
+					receiver.sprite.outerContext.player2.lives)});
 			}
 
 		} else {
@@ -295,14 +309,22 @@ Play.prototype = {
 				//receiver.sprite.destroy(); //using destroy to prevent players spawning attack zones while dead.
 				receiver.sprite.kill();
 				receiver.sprite.lives--;
-				console.log('Player ' + receiver.sprite.playNum + ': ' + receiver.sprite.lives + ' lives remaining.');
+				console.log('Player ' + receiver.sprite.playNum + ': ' + 
+					receiver.sprite.lives + ' lives remaining.');
 
-				if(receiver.sprite.outerContext.player.lives == 0 || receiver.sprite.outerContext.player2.lives == 0) {
-				game.state.start('GameOver', true, false, receiver.sprite.outerContext.player.lives, receiver.sprite.outerContext.player2.lives);
+				if(receiver.sprite.outerContext.player.lives == 0 || 
+					receiver.sprite.outerContext.player2.lives == 0) {
+				game.state.start('GameOver', true, false, receiver.sprite.outerContext.player.lives, 
+					receiver.sprite.outerContext.player2.lives);
 				}
-				var scoreText = game.add.text(game.width/2, game.height/2, 'P1: ' + receiver.sprite.outerContext.player.lives + '  P2: ' + receiver.sprite.outerContext.player2.lives, {font: 'Helvetica', fontSize: '48px', fill: '#fff'});
+				var scoreText = game.add.text(game.width/2, game.height/2, 'P1: ' + 
+					receiver.sprite.outerContext.player.lives + '  P2: ' + 
+					receiver.sprite.outerContext.player2.lives, {font: 'Helvetica', fontSize: '48px', 
+					fill: '#fff'});
 				scoreText.anchor.set(0.5);
-				game.time.events.add(Phaser.Timer.SECOND * 2, function() { game.state.start('Play', true, false, false, receiver.sprite.outerContext.player.lives, receiver.sprite.outerContext.player2.lives)});
+				game.time.events.add(Phaser.Timer.SECOND * 2, function() { game.state.start('Play', 
+					true, false, false, receiver.sprite.outerContext.player.lives, 
+					receiver.sprite.outerContext.player2.lives)});
 			}
 		}
 	},
@@ -315,11 +337,16 @@ Play.prototype = {
 		console.log('Player ' + receiver.sprite.playNum + ': ' + receiver.sprite.lives + ' lives remaining.');
 
 		if(receiver.sprite.outerContext.player.lives == 0 || receiver.sprite.outerContext.player2.lives == 0) {
-				game.state.start('GameOver', true, false, receiver.sprite.outerContext.player.lives, receiver.sprite.outerContext.player2.lives);
+				game.state.start('GameOver', true, false, receiver.sprite.outerContext.player.lives, 
+					receiver.sprite.outerContext.player2.lives);
 		}
-		var scoreText = game.add.text(game.width/2, game.height/2, 'P1: ' + receiver.sprite.outerContext.player.lives + '  P2: ' + receiver.sprite.outerContext.player2.lives, {font: 'Helvetica', fontSize: '48px', fill: '#fff'});
+		var scoreText = game.add.text(game.width/2, game.height/2, 'P1: ' + 
+			receiver.sprite.outerContext.player.lives + '  P2: ' + 
+			receiver.sprite.outerContext.player2.lives, {font: 'Helvetica', fontSize: '48px', fill: '#fff'});
 		scoreText.anchor.set(0.5);
-		game.time.events.add(Phaser.Timer.SECOND * 2, function() { game.state.start('Play', true, false, false, receiver.sprite.outerContext.player.lives, receiver.sprite.outerContext.player2.lives)});
+		game.time.events.add(Phaser.Timer.SECOND * 2, function() { game.state.start('Play', 
+			true, false, false, receiver.sprite.outerContext.player.lives, 
+			receiver.sprite.outerContext.player2.lives)});
 	},
 
 	
