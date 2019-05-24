@@ -8,6 +8,8 @@
 "use strict"
 
 var game;
+var playButton;
+var contolButton;
 
 window.onload = function() {
 	game = new Phaser.Game(1000,800, Phaser.AUTO, 'myGame');

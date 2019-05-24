@@ -7,7 +7,7 @@ Load.prototype = {
 		game.load.path = 'assets/img/';
 		game.load.image('tacoLizard', 'tacoLizard.png');
 		game.load.image('baseTerrain', 'PyramidLevel.png');
-		game.load.image('fire', 'fire.png');
+		//game.load.image('fire', 'fire.png');
 		game.load.image('acid', 'acidPool.png');
 		game.load.physics("physics", "PyramidLevel.json", null, Phaser.Physics.LIME_CORONA_JSON);
 		game.load.image('ball', 'Boulder.png');
@@ -16,6 +16,7 @@ Load.prototype = {
 		game.load.image('attackZone', 'playerAttackZone.png'); //it's a transparent box image.
 		game.load.spritesheet('playbutton', 'Play button.png', 400, 150);
 		game.load.spritesheet('controlbutton', 'Controls button.png', 400, 150);
+		game.load.spritesheet('screenTransition', 'screenTransition.png',250,200);
 		
 		game.load.image('cloud1', 'cloud1.png');
 		game.load.image('cloud2', 'cloud2.png');
