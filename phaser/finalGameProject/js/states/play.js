@@ -306,14 +306,14 @@ Play.prototype = {
 		this.player2.body.createGroupCallback(this.hazardCollisionGroup, this.hitByHazard);
 
 		for(var i = 0; i < this.player.lives; i++) {
-			var healthbar = game.add.sprite((game.world.width/2)-(i*64)-64,32, 'heart');
+			var healthbar = game.add.sprite((game.world.width/2)-(i*64)-128,32, 'heart');
 		}
 		for(var j = 0; j < this.player2.lives; j++) {
-			var healthbar2 = game.add.sprite((game.world.width/2)+(j*64),32, 'heart2');
+			var healthbar2 = game.add.sprite((game.world.width/2)+(j*64)+64,32, 'heart2');
 		}
 
 		var playText = game.add.text(game.width/2, 16, 
-			'P1                                             P2', 
+			'P1                                            P2', 
 			{font: 'Helvetica', fontSize: '24px', fill: '#fff'});
 		playText.anchor.set(0.5);
 	},
