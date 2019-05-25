@@ -11,7 +11,8 @@ Play.prototype = {
 	create: function() {
 		//this will toggle p2 physics debug bodies in this file. Check player and 
 		// playerAttackZone prefabs for their bodies.
-		this.DEBUG_BODIES = false; 
+		this.DEBUG_BODIES = false;
+		this.BALL_MASS = 1; //was 2;
 
 		game.stage.setBackgroundColor('#87CEEB'); //stage background color: light blue
 
@@ -34,6 +35,7 @@ Play.prototype = {
 		this.ballCollisionGroup = game.physics.p2.createCollisionGroup();
 		this.terrainCollisionGroup = game.physics.p2.createCollisionGroup();
 		this.hazardCollisionGroup = game.physics.p2.createCollisionGroup();
+		this.bubbleCollisionGroup = game.physics.p2.createCollisionGroup();
 		game.physics.p2.updateBoundsCollisionGroup();
 
 		//sprite groups with physics bodies
@@ -56,6 +58,10 @@ Play.prototype = {
 		this.ballGroup = game.add.group();
 		this.ballGroup.enableBody = true;
 		this.ballGroup.physicsBodyType = Phaser.Physics.P2JS;
+
+		this.bubbleGroup = game.add.group();
+		this.bubbleGroup.enableBody = true;
+		this.bubbleGroup.phsyicsBodyType = Phaser.Physics.P2JS;
 		
 		//Skybox
 		//Parallax Group #1
@@ -131,13 +137,14 @@ Play.prototype = {
 		//this.ball1.tint = 0xc242f4;
 		game.physics.p2.enable(this.ball1, this.DEBUG_BODIES);
 		this.ball1.body.setCircle(16);
-		this.ball1.body.mass = 2;
+		this.ball1.body.mass = this.BALL_MASS;
 		//this.ball1Material = game.physics.p2.createMaterial('ball1Material', this.ball1.body);
 		this.ballMaterial = game.physics.p2.createMaterial('ball1Material');
 		this.ball1.body.setMaterial(this.ballMaterial);
 		this.ball1.body.setCollisionGroup(this.ballCollisionGroup);
 		this.ball1.body.collides([this.ballCollisionGroup, this.playerCollisionGroup, 
-			this.attackCollisionGroup, this.terrainCollisionGroup, this.hazardCollisionGroup]);
+			this.attackCollisionGroup, this.terrainCollisionGroup, this.hazardCollisionGroup, 
+			this.bubbleCollisionGroup]);
 		this.ballGroup.add(this.ball1);
 
 		// Ball 2
@@ -146,19 +153,33 @@ Play.prototype = {
 		//this.ball2.tint = 0xf4ee41;
 		game.physics.p2.enable(this.ball2, this.DEBUG_BODIES);
 		this.ball2.body.setCircle(16);
-		this.ball2.body.mass = 2;
+		this.ball2.body.mass = this.BALL_MASS;
 		//this.ball2Material = game.physics.p2.createMaterial('ball2Material', this.ball2.body);
 		this.ball2.body.setMaterial(this.ballMaterial);
 		this.ball2.body.setCollisionGroup(this.ballCollisionGroup);
 		this.ball2.body.collides([this.ballCollisionGroup, this.playerCollisionGroup, 
-			this.attackCollisionGroup, this.terrainCollisionGroup, this.hazardCollisionGroup]);
+			this.attackCollisionGroup, this.terrainCollisionGroup, this.hazardCollisionGroup, 
+			this.bubbleCollisionGroup]);
 		this.ballGroup.add(this.ball2);
+
+		//Player bubble
+		//This place holder bubble is only here to configure the collision mechanics and
+		// is never truly used by anything else; it actually terminates itself shortly after creation
+		//PlayerBubble = function(game, x, y, key, outerContext)
+		this.bubblePlaceHolder = new PlayerBubble(this.game, -50, 0, 'playerBubble', this);
+		this.game.add.existing(this.bubblePlaceHolder);
+		this.bubbleMaterial = game.physics.p2.createMaterial('bubbleMaterial');
+		this.bubblePlaceHolder.body.setMaterial(this.bubbleMaterial);
+		this.bubblePlaceHolder.body.setCollisionGroup(this.bubbleCollisionGroup);
+		this.bubblePlaceHolder.body.collides([this.ballCollisionGroup]);
+		this.bubbleGroup.add(this.bubblePlaceHolder);
 
 		//Player 1
 		//Player = function(game, x, y, key, playerNumber, attackGroup, attackCollisionGroup,
-		// ballCollisionGroup, outerContext)
+		// ballCollisionGroup, ballCollisionGroup, bubbleGroup, bubbleCollisionGroup, bubbleMaterial, outerContext)
 		this.player = new Player(this.game, this.game.width/2 - 40, this.game.height/2, 'golem', 1, 
-			this.attackGroup, this.attackCollisionGroup, this.ballCollisionGroup, this);
+			this.attackGroup, this.attackCollisionGroup, this.ballCollisionGroup, 
+			this.bubbleGroup, this.bubbleCollisionGroup, this.bubbleMaterial, this);
 		if (!this.justStarted) {
 			this.player.lives = this.p1Lives;
 		}
@@ -181,9 +202,10 @@ Play.prototype = {
 
 		//Player 2
 		//Player = function(game, x, y, key, playerNumber, attackGroup, attackCollisionGroup, 
-		//ballCollisionGroup, outerContext)
+		//ballCollisionGroup, ballCollisionGroup, bubbleGroup, bubbleCollisionGroup, bubbleMaterial, outerContext)
 		this.player2 = new Player(this.game, this.game.width/2 + 40, this.game.height/2, 'golem', 2, 
-			this.attackGroup, this.attackCollisionGroup, this.ballCollisionGroup, this);
+			this.attackGroup, this.attackCollisionGroup, this.ballCollisionGroup, 
+			this.bubbleGroup, this.bubbleCollisionGroup, this.bubbleMaterial, this);
 		if (!this.justStarted) {
 			this.player2.lives = this.p2Lives;
 		}
@@ -209,28 +231,32 @@ Play.prototype = {
 		this.attackZonePlaceHolder = new PlayerAttackZone(this.game, -50, 0, 'attackZone', 0, 0, this);
 		this.game.add.existing(this.attackZonePlaceHolder);
 		this.attackZonePlaceHolder.body.setCollisionGroup(this.attackCollisionGroup);
-		this.attackZonePlaceHolder.body.collides(this.ballCollisionGroup, this.playerAttack, this);
+		this.attackZonePlaceHolder.body.collides([this.ballCollisionGroup, this.playerAttack, this]);
 		this.attackGroup.add(this.attackZonePlaceHolder); //don't know if this is truly necessary.
-		//NOTE: there is no material setup up here because as far as I know you have to
-		// create a material for each instance of something and attack zones are repeatedly created
-		// and destroyed. If a material is needed, it will have to go in the attack zone or player prefab.
 
 		//contact material setup
 		// Terrain Vs Player contact
 		this.baseTerVsPlayContact = game.physics.p2.createContactMaterial(this.playerMaterial, 
 			this.baseTerrainMaterial);
+
 		// Friction to use in the contact of these two materials.
 		this.baseTerVsPlayContact.friction = 1.0;
+
 		// Restitution (i.e. how bouncy it is!) to use in the contact of these two materials.
 	    this.baseTerVsPlayContact.restitution = 0.0; //mostly works. Flat surfaces: yes, angles: no
+	    
 	    // Stiffness of the resulting ContactEquation that this baseTerVsPlayContact generate.
-	    this.baseTerVsPlayContact.stiffness = 1e7; //causes clipping with buoyant fluid motions
+	    this.baseTerVsPlayContact.stiffness = 1e7; //causes some clipping with buoyant fluid motions
+	    
 	    // Relaxation of the resulting ContactEquation that this baseTerVsPlayContact generate.
 	    this.baseTerVsPlayContact.relaxation = 3;
+	    
 	    // Stiffness of the resulting FrictionEquation that this baseTerVsPlayContact generate.   
 	    this.baseTerVsPlayContact.frictionStiffness = 1e7; 
+	    
 	    // Relaxation of the resulting FrictionEquation that this baseTerVsPlayContact generate.   
 	    this.baseTerVsPlayContact.frictionRelaxation = 3;
+	    
 	    // Will add surface velocity to this material. If bodyA rests on top of bodyB, and the 
 	    // surface velocity is positive, bodyA will slide to the right. 
 	    this.baseTerVsPlayContact.surfaceVelocity = 0;
@@ -239,7 +265,7 @@ Play.prototype = {
 	    this.baseTerVsBallContact = game.physics.p2.createContactMaterial(this.ballMaterial, 
 	    	this.baseTerrainMaterial);
 		this.baseTerVsBallContact.friction = 1.0;
-	    this.baseTerVsBallContact.restitution = 0.5;
+	    this.baseTerVsBallContact.restitution = 0.5; //provides some bounce
 	    this.baseTerVsBallContact.stiffness = 1e7;
 	    this.baseTerVsBallContact.relaxation = 3;  
 	    this.baseTerVsBallContact.frictionStiffness = 1e7;   
@@ -251,11 +277,22 @@ Play.prototype = {
 	    	this.hazardMaterial);
 		this.hazardVsBallContact.friction = 1.0;
 	    this.hazardVsBallContact.restitution = 0.5;
-	    this.hazardVsBallContact.stiffness = 1e7;
+	    this.hazardVsBallContact.stiffness = 100; //gives the balls a buoyant movement on hazards.
 	    this.hazardVsBallContact.relaxation = 3;  
 	    this.hazardVsBallContact.frictionStiffness = 1e7;   
 	    this.hazardVsBallContact.frictionRelaxation = 3;
 	    this.hazardVsBallContact.surfaceVelocity = 0;
+
+	    // Bubble Vs Ball contact
+	    this.bubbleVsBallContact = game.physics.p2.createContactMaterial(this.ballMaterial, 
+	    	this.bubbleMaterial);
+		this.bubbleVsBallContact.friction = 1.0;
+	    this.bubbleVsBallContact.restitution = 0.5;
+	    this.bubbleVsBallContact.stiffness = 1e7;
+	    this.bubbleVsBallContact.relaxation = 3;  
+	    this.bubbleVsBallContact.frictionStiffness = 1e7;   
+	    this.bubbleVsBallContact.frictionRelaxation = 3;
+	    this.bubbleVsBallContact.surfaceVelocity = 0;
 
 		// create callback event if player hits baseTerrain
 		game.physics.p2.setImpactEvents(true);
@@ -300,6 +337,7 @@ Play.prototype = {
 			(body2.sprite === this.player && body1.sprite === this.player2)) {
 			return false;
 		}
+
 		return true;
 	},
 
@@ -346,9 +384,11 @@ Play.prototype = {
 			}
 			
 			//Display Score & Restart
-      var scoreText = game.add.text(game.width/2, game.height/2, 'P1: ' + receiver.sprite.outerContext.player.lives + '  P2: ' + receiver.sprite.outerContext.player2.lives, {font: 'Helvetica', fontSize: '48px', fill: '#fff'});
+      var scoreText = game.add.text(game.width/2, game.height/2, 'P1: ' + receiver.sprite.outerContext.player.lives + '  P2: ' + 
+      	receiver.sprite.outerContext.player2.lives, {font: 'Helvetica', fontSize: '48px', fill: '#fff'});
 			scoreText.anchor.set(0.5);
-			game.time.events.add(Phaser.Timer.SECOND * 2, function() { game.state.start('Play', true, false, false, receiver.sprite.outerContext.player.lives, receiver.sprite.outerContext.player2.lives)});
+			game.time.events.add(Phaser.Timer.SECOND * 2, function() { game.state.start('Play', true, false, false, 
+				receiver.sprite.outerContext.player.lives, receiver.sprite.outerContext.player2.lives)});
 		}
 	},
 
