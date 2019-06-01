@@ -9,10 +9,10 @@ Controls.prototype = {
 		controlsAnimate.animations.add('cycle', [0,1,2,3,4,5,6,7,8], 1, true);
 		controlsAnimate.animations.play('cycle');
 
-		var playText = game.add.text(game.width/2, game.height*.1, 'Fast moving balls kill players. Last one standing wins.', {font: 'Helvetica', fontSize: '24px', fill: '#fff'});
+		var playText = game.add.text(game.width/2, game.height*.1, 'Fast moving balls kill players. Last one standing wins.', {font: 'Palatino', fontSize: '24px', fill: '#000'});
 		playText.anchor.set(0.5);
 
-		var playText = game.add.text(game.width/2, game.height*.2, 'P1 = wasd keys to move, "c" knocks balls\nP2 = arrow keys to move, "," knocks balls\nPress "w" to start playing', {font: 'Helvetica', fontSize: '24px', fill: '#fff'});
+		var playText = game.add.text(game.width/2, game.height*.2, 'P1 = wasd keys to move, "c" knocks balls\nP2 = arrow keys to move, "," knocks balls\nPress "w" to start playing', {font: 'Palatino', fontSize: '24px', fill: '#000'});
 		playText.anchor.set(0.5);
 
 		// creates play button
