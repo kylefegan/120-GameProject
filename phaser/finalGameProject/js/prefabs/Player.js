@@ -26,11 +26,13 @@ var Player = function(game, x, y, key, playerNumber, attackGroup, attackCollisio
 
 	//variables
 	//this.fastFall = 0;
-	this.playerDied = game.add.audio('playerDied'); //player death audio. temp asset, like everything else.
+	this.playerDied = game.add.audio('playerDied'); //player death audio.
 	this.jumps = this.MAX_JUMP; //tracking var for multi jumping
 	this.playNum = playerNumber; //which player the instance is for
 	this.playerVel = 200; //player move speed
 	this.lives = this.MAX_LIVES; //current tracked lives
+	this.jumping = false;
+	//this.jumped = false;
 	//this.body.mass = this.PLAYER_MASS; //this doesn't work for some reason
 	//this.body.damping = this.PLAYER_DAMPING; //this doesn't work for some reason
 	this.outerContext = outerContext; //required to call functions written in 
@@ -83,15 +85,23 @@ Player.prototype.update = function() {
 			if (game.input.keyboard.justPressed(Phaser.Keyboard.S)) {
 				//this.body.data.gravityScale = this.FORCED_GRAVITY;
 				this.body.velocity.y = 1000;
+
+				//used to prevent fast fall sliding
+				this.outerContext.baseTerVsPlayContact.friction = 1e7;
 			} else {
 				//this.body.data.gravityScale = 1;
 			}
 
+			//resets friction if not fast falling
+			if (this.body.velocity.y < 900) {
+				this.outerContext.baseTerVsPlayContact.friction = 1.0;
+			}
 
 			//jump controls
 			if(this.jumps > 0 && game.input.keyboard.downDuration(Phaser.Keyboard.W, 150)) {
 			    this.body.velocity.y = this.JUMP_SPEED;
 			    this.jumping = true;
+			    //this.jumped = true;
 			    //console.log('Jumping: ' + this.jumping);
 			}
 
@@ -155,6 +165,9 @@ Player.prototype.update = function() {
 			if (game.input.keyboard.justPressed(Phaser.Keyboard.DOWN)) {
 				//this.body.data.gravityScale = this.FORCED_GRAVITY;
 				this.body.velocity.y = 1000;
+
+				//used to prevent fast fall sliding
+				this.outerContext.baseTerVsPlay2Contact.friction = 1e7;
 			} else {
 				//this.body.data.gravityScale = 1;
 			}
@@ -162,8 +175,14 @@ Player.prototype.update = function() {
 			if(this.jumps > 0 && game.input.keyboard.downDuration(Phaser.Keyboard.UP, 150)) {
 			    this.body.velocity.y = this.JUMP_SPEED;
 			    this.jumping = true;
+			    //this.jumped = true;
 			}
 
+			//resets friction if not fast falling
+			if (this.body.velocity.y < 900) {
+				this.outerContext.baseTerVsPlay2Contact.friction = 1.0;
+			}
+			
 			//letting go of the UP key subtracts a jump
 			if(this.jumping && game.input.keyboard.upDuration(Phaser.Keyboard.UP)) {
 			  	this.jumps--;
@@ -200,6 +219,8 @@ Player.prototype.update = function() {
 			}
 		}
 	}
+
+
 
 }
 

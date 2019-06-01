@@ -216,8 +216,9 @@ Play.prototype = {
 		this.player2.body.dynamic = true;
 		this.player2.body.mass = this.player2.PLAYER_MASS;
 		this.player2.body.damping = this.player2.PLAYER_DAMPING;
-		//this.player2Material = game.physics.p2.createMaterial('player2Material', this.player2.body);
-		this.player2.body.setMaterial(this.playerMaterial);
+		this.player2Material = game.physics.p2.createMaterial('player2Material', this.player2.body);
+		this.player2.body.setMaterial(this.player2Material);
+		//this.player2.body.setMaterial(this.playerMaterial);
 		this.player2.body.setCollisionGroup(this.playerCollisionGroup);
 		this.player2.body.collides([this.ballCollisionGroup, this.terrainCollisionGroup, 
 			this.hazardCollisionGroup]);
@@ -231,7 +232,7 @@ Play.prototype = {
 		this.attackZonePlaceHolder = new PlayerAttackZone(this.game, -50, 0, 'attackZone', 0, 0, this);
 		this.game.add.existing(this.attackZonePlaceHolder);
 		this.attackZonePlaceHolder.body.setCollisionGroup(this.attackCollisionGroup);
-		this.attackZonePlaceHolder.body.collides([this.ballCollisionGroup, this.playerAttack, this]);
+		this.attackZonePlaceHolder.body.collides(this.ballCollisionGroup, this.playerAttack, this);
 		this.attackGroup.add(this.attackZonePlaceHolder); //don't know if this is truly necessary.
 
 		//contact material setup
@@ -246,7 +247,7 @@ Play.prototype = {
 	    this.baseTerVsPlayContact.restitution = 0.0; //mostly works. Flat surfaces: yes, angles: no
 	    
 	    // Stiffness of the resulting ContactEquation that this baseTerVsPlayContact generate.
-	    this.baseTerVsPlayContact.stiffness = 1e7; //causes some clipping with buoyant fluid motions
+	    this.baseTerVsPlayContact.stiffness = 1e7 * 2; //causes some clipping with buoyant fluid motions
 	    
 	    // Relaxation of the resulting ContactEquation that this baseTerVsPlayContact generate.
 	    this.baseTerVsPlayContact.relaxation = 3;
@@ -260,6 +261,17 @@ Play.prototype = {
 	    // Will add surface velocity to this material. If bodyA rests on top of bodyB, and the 
 	    // surface velocity is positive, bodyA will slide to the right. 
 	    this.baseTerVsPlayContact.surfaceVelocity = 0;
+
+	    // Terrain Vs Player 2 contact
+		this.baseTerVsPlay2Contact = game.physics.p2.createContactMaterial(this.player2Material, 
+			this.baseTerrainMaterial);
+		this.baseTerVsPlay2Contact.friction = 1.0;
+	    this.baseTerVsPlay2Contact.restitution = 0.0;
+	    this.baseTerVsPlay2Contact.stiffness = 1e7 * 2;
+	    this.baseTerVsPlay2Contact.relaxation = 3; 
+	    this.baseTerVsPlay2Contact.frictionStiffness = 1e7;
+	    this.baseTerVsPlay2Contact.frictionRelaxation = 3;
+	    this.baseTerVsPlay2Contact.surfaceVelocity = 0;
 
 	    // Terrain Vs Ball contact
 	    this.baseTerVsBallContact = game.physics.p2.createContactMaterial(this.ballMaterial, 

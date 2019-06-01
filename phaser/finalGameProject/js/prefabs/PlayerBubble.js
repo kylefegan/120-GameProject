@@ -39,7 +39,7 @@ PlayerBubble.prototype.update = function() {
 			this.lockConstraint = null;
 		}
 		this.safeDestroy = true;
-		console.log('about to destroy');
+		//console.log('about to destroy');
 		this.destroy();
 	}
 }
