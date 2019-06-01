@@ -137,7 +137,8 @@ Player.prototype.update = function() {
 			//defense bubble
 			if (game.input.keyboard.justPressed(Phaser.Keyboard.Z)) {
 				//PlayerBubble = function(game, x, y, key, outerContext)
-				this.bubble = new PlayerBubble(game, this.x, this.y, 'playerBubble', this.outerContext);
+				this.bubble = new PlayerBubble(game, this.x, this.y, 'playerBubble', 
+					this.playNum, this.outerContext);
 				this.game.add.existing(this.bubble);
 				//this.bubble.anchor.set(0.5); //P2 may do this automatically.
 				this.bubble.lockConstraint = this.game.physics.p2.createLockConstraint(this.bubble, this, [0,0]);
@@ -208,7 +209,8 @@ Player.prototype.update = function() {
 			//defense bubble
 			if (game.input.keyboard.justPressed(Phaser.Keyboard.NUMPAD_1)) {
 				//PlayerBubble = function(game, x, y, key, outerContext)
-				this.bubble = new PlayerBubble(game, this.x, this.y, 'playerBubble', this.outerContext);
+				this.bubble = new PlayerBubble(game, this.x, this.y, 'playerBubble', 
+					this.playNum, this.outerContext);
 				this.game.add.existing(this.bubble);
 				//this.bubble.anchor.set(0.5); //P2 may do this automatically.
 				this.bubble.lockConstraint = this.game.physics.p2.createLockConstraint(this.bubble, this, [0,0]);

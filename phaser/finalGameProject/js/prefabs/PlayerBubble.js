@@ -1,7 +1,7 @@
 //PlayerBubble prefab
 
 //PlayerBubble constructor
-var PlayerBubble = function(game, x, y, key, outerContext) {
+var PlayerBubble = function(game, x, y, key, playNum, outerContext) {
 
 	this.DEBUG_BODIES = false; //toggle for physics body debug
 	
@@ -11,6 +11,7 @@ var PlayerBubble = function(game, x, y, key, outerContext) {
 
 	game.physics.p2.enable(this, this.DEBUG_BODIES);	// enable physics
 
+	this.playNum = playNum;
 	this.scale.x = 2;
 	this.scale.y = 2;
 	this.body.setCircle(40);

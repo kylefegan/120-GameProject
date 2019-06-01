@@ -166,7 +166,9 @@ Play.prototype = {
 		//This place holder bubble is only here to configure the collision mechanics and
 		// is never truly used by anything else; it actually terminates itself shortly after creation
 		//PlayerBubble = function(game, x, y, key, outerContext)
-		this.bubblePlaceHolder = new PlayerBubble(this.game, -50, 0, 'playerBubble', this);
+		this.bubblePlaceHolder = new PlayerBubble(this.game, 50, this.game.height - 100, 
+			'playerBubble', this);
+		this.bubblePlaceHolder.alpha = 0;
 		this.game.add.existing(this.bubblePlaceHolder);
 		this.bubbleMaterial = game.physics.p2.createMaterial('bubbleMaterial');
 		this.bubblePlaceHolder.body.setMaterial(this.bubbleMaterial);
@@ -229,7 +231,9 @@ Play.prototype = {
 		//This place holder attackZone is only here to configure the collision mechanics and
 		// is never truly used by anything else; it actually terminates itself after a few update cycles
 		//PlayerAttackZone = function(game, x, y, key, strength, direction, outerContext)
-		this.attackZonePlaceHolder = new PlayerAttackZone(this.game, -50, 0, 'attackZone', 0, 0, this);
+		this.attackZonePlaceHolder = new PlayerAttackZone(this.game, 50, this.game.height - 100, 
+			'attackZone', 0, 0, this);
+		this.attackZonePlaceHolder.alpha = 0;
 		this.game.add.existing(this.attackZonePlaceHolder);
 		this.attackZonePlaceHolder.body.setCollisionGroup(this.attackCollisionGroup);
 		this.attackZonePlaceHolder.body.collides(this.ballCollisionGroup, this.playerAttack, this);
@@ -384,6 +388,19 @@ Play.prototype = {
 		{
 			//Death Audio
 			receiver.sprite.playerDied.play();
+
+			//removing any existing bubble attack constraints in order to avoid a crash when the
+			// owning player dies first.
+			receiver.sprite.outerContext.bubbleGroup.forEachAlive(function(bubble){
+				if (bubble.playNum == receiver.sprite.playNum) {
+					if (bubble.lockConstraint != null) {
+						game.physics.p2.removeConstraint(bubble.lockConstraint);
+						bubble.lockConstraint = null;
+					}
+					bubble.safeDestroy = true;
+					bubble.destroy();
+				}
+			});
 			
 			//Kill Player
 			//receiver.sprite.destroy();
@@ -406,6 +423,20 @@ Play.prototype = {
 
 	hitByHazard: function(receiver, hitter) {
 		receiver.sprite.playerDied.play(); //death audio
+
+		//removing any existing bubble attack constraints in order to avoid a crash when the
+		// owning player dies first.
+		receiver.sprite.outerContext.bubbleGroup.forEachAlive(function(bubble){
+			if (bubble.playNum == receiver.sprite.playNum) {
+				if (bubble.lockConstraint != null) {
+					game.physics.p2.removeConstraint(bubble.lockConstraint);
+					bubble.lockConstraint = null;
+				}
+				bubble.safeDestroy = true;
+				bubble.destroy();
+			}
+		});
+
 		receiver.sprite.kill();
 		//receiver.sprite.destroy();//using destroy to prevent players spawning attack zones while dead.
 		receiver.sprite.lives--;
