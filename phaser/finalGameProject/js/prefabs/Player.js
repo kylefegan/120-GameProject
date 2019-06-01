@@ -21,6 +21,7 @@ var Player = function(game, x, y, key, playerNumber, attackGroup, attackCollisio
 	this.JUMP_SPEED = -300; //jump strnegth
 	this.PLAYER_MASS = 6; //weight used in physics calculations
 	this.PLAYER_DAMPING = 0.6; //velocity lost per second (between 1 and 0; thus percentage based)
+	this.BUBBLE_COOLDOWN = 200; //about 3.5 SECONDS. This an inelegant solution.
 	this.ATTACK_SPAWN_OFFSET = 30; //how far in front of the sprite to spawn
 	//potential issue with attack spawn offset anchor position during spawn, requires investigation.
 
@@ -33,11 +34,13 @@ var Player = function(game, x, y, key, playerNumber, attackGroup, attackCollisio
 	this.lives = this.MAX_LIVES; //current tracked lives
 	this.jumping = false;
 	//this.jumped = false;
+	this.bubbleCooldown = 0;
 	//this.body.mass = this.PLAYER_MASS; //this doesn't work for some reason
 	//this.body.damping = this.PLAYER_DAMPING; //this doesn't work for some reason
 	this.outerContext = outerContext; //required to call functions written in 
-	                                  //play state. Wasn't sure if you can or 
-	                                  //how to create new functions in prefabs.
+	                                  //play state. Didn't know if you could, or 
+	                                  //how to, create new functions in prefabs at
+	                                  //the time of building the initial prefab.
 
 	//groups and materials for player spawned sprites
 	this.attackGroup = attackGroup;
@@ -64,6 +67,7 @@ Player.prototype.constructor = Player;
 
 //override the Phaser.Sprite update function
 Player.prototype.update = function() {
+	this.bubbleCooldown--;
 
 	if (this.alive) {
 		// updates are wrapped within player number cases in order to handle multiple instances of player objects/sprites.
@@ -113,7 +117,7 @@ Player.prototype.update = function() {
 			}
 
 			//attack stuff, spawns an invisible hit box to check collisions
-			if (game.input.keyboard.justPressed(Phaser.Keyboard.SHIFT)) {
+			if (game.input.keyboard.justPressed(Phaser.Keyboard.C)) {
 				if (this.scale.x > 0) {
 					this.attackOffset = this.x + this.ATTACK_SPAWN_OFFSET;
 					this.attackDirection = 1;
@@ -135,7 +139,7 @@ Player.prototype.update = function() {
 			}
 
 			//defense bubble
-			if (game.input.keyboard.justPressed(Phaser.Keyboard.Z)) {
+			if (game.input.keyboard.justPressed(Phaser.Keyboard.V) && (this.bubbleCooldown <= 0)) {
 				//PlayerBubble = function(game, x, y, key, outerContext)
 				this.bubble = new PlayerBubble(game, this.x, this.y, 'playerBubble', 
 					this.playNum, this.outerContext);
@@ -146,6 +150,7 @@ Player.prototype.update = function() {
 				this.bubble.body.setMaterial(this.bubbleMaterial);
 				this.bubble.body.collides([this.ballCollisionGroup]);
 				this.bubbleGroup.add(this.bubble);
+				this.bubbleCooldown = this.BUBBLE_COOLDOWN;
 			}
 
 		// Player 2 stuff
@@ -191,7 +196,7 @@ Player.prototype.update = function() {
 			}
 
 			//attack stuff
-			if (game.input.keyboard.justPressed(Phaser.Keyboard.NUMPAD_0)) {
+			if (game.input.keyboard.justPressed(Phaser.Keyboard.COMMA)) {
 				if (this.scale.x > 0) {
 					this.attackOffset = this.x + this.ATTACK_SPAWN_OFFSET;
 					this.attackDirection = 1;
@@ -207,7 +212,7 @@ Player.prototype.update = function() {
 			}
 
 			//defense bubble
-			if (game.input.keyboard.justPressed(Phaser.Keyboard.NUMPAD_1)) {
+			if (game.input.keyboard.justPressed(Phaser.Keyboard.PERIOD) && (this.bubbleCooldown <= 0)) {
 				//PlayerBubble = function(game, x, y, key, outerContext)
 				this.bubble = new PlayerBubble(game, this.x, this.y, 'playerBubble', 
 					this.playNum, this.outerContext);
@@ -218,6 +223,7 @@ Player.prototype.update = function() {
 				this.bubble.body.setMaterial(this.bubbleMaterial);
 				this.bubble.body.collides([this.ballCollisionGroup]);
 				this.bubbleGroup.add(this.bubble);
+				this.bubbleCooldown = this.BUBBLE_COOLDOWN;
 			}
 		}
 	}
