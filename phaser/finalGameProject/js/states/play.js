@@ -36,6 +36,7 @@ Play.prototype = {
 		this.terrainCollisionGroup = game.physics.p2.createCollisionGroup();
 		this.hazardCollisionGroup = game.physics.p2.createCollisionGroup();
 		this.bubbleCollisionGroup = game.physics.p2.createCollisionGroup();
+		//this.breakableCollisionGroup = game.physics.p2.createCollisionGroup();
 		game.physics.p2.updateBoundsCollisionGroup();
 
 		//sprite groups with physics bodies
@@ -62,6 +63,10 @@ Play.prototype = {
 		this.bubbleGroup = game.add.group();
 		this.bubbleGroup.enableBody = true;
 		this.bubbleGroup.phsyicsBodyType = Phaser.Physics.P2JS;
+
+		this.breakableGroup = game.add.group();
+		this.breakableGroup.enableBody = true;
+		this.breakableGroup.phsyicsBodyType = Phaser.Physics.P2JS;
 		
 		//Skybox
 		//Parallax Group #1
@@ -176,6 +181,18 @@ Play.prototype = {
 		this.bubblePlaceHolder.body.collides([this.ballCollisionGroup]);
 		this.bubbleGroup.add(this.bubblePlaceHolder);
 
+		//Breakable stage object
+		this.breakable = new Breakable(this.game, this.game.width/2, this.game.height/2 + 20, 'playerBubble', this);
+		this.game.add.existing(this.breakable);
+		this.breakable.body.setCircle(16);
+		this.breakable.body.mass = this.BALL_MASS;
+		this.breakable.body.setMaterial(this.ballMaterial);
+		this.breakable.body.setCollisionGroup(this.ballCollisionGroup);
+		this.breakable.body.collides([this.ballCollisionGroup, this.playerCollisionGroup, 
+			this.attackCollisionGroup, this.terrainCollisionGroup, this.hazardCollisionGroup, 
+			this.bubbleCollisionGroup]);
+		this.breakableGroup.add(this.breakable);
+
 		//Player 1
 		//Player = function(game, x, y, key, playerNumber, attackGroup, attackCollisionGroup,
 		// ballCollisionGroup, ballCollisionGroup, bubbleGroup, bubbleCollisionGroup, bubbleMaterial, outerContext)
@@ -266,7 +283,7 @@ Play.prototype = {
 	    // surface velocity is positive, bodyA will slide to the right. 
 	    this.baseTerVsPlayContact.surfaceVelocity = 0;
 
-	    // Terrain Vs Player 2 contact
+	    // Terrain Vs Player 2 contact, same as player 1
 		this.baseTerVsPlay2Contact = game.physics.p2.createContactMaterial(this.player2Material, 
 			this.baseTerrainMaterial);
 		this.baseTerVsPlay2Contact.friction = 1.0;
@@ -360,7 +377,12 @@ Play.prototype = {
 	//player attack handling
 	//this knocks the balls back when a player strikes them
 	playerAttack: function(body1, body2) {
+		if (body2.sprite.key == 'playerBubble') {
+			body2.sprite.unbroken = false;
+			body2.sprite.body.fixedRotation = false;
+		}
 		body2.sprite.body.velocity.x = body1.sprite.STRIKE_STRENGTH * body1.sprite.direction;
+		body2.sprite.body.velocity.y -= body1.sprite.STRIKE_STRENGTH / 4;
 		body1.safeDestroy = true;
 	},
 
