@@ -4,10 +4,10 @@ var Title = function(game) {};
 Title.prototype = {
 	create: function() {
 		// add title screen text
-		var titleText = game.add.text(game.width/2, game.height*.2, 'final Game Project', {font: 'Helvetica', fontSize: '48px', fill: '#fff'});
+		var titleText = game.add.text(game.width/2, game.height*.2, 'final Game Project', {font: 'Palatino', fontSize: '48px', fill: '#fff'});
 		titleText.anchor.set(0.5);
 
-		var instructText = game.add.text(game.width/2, game.height*.3, 'By Group 50\nDerek Jean, David Monroe, Kyle Fegan', {font: 'Helvetica', fontSize: '24px', fill: '#fff'});
+		var instructText = game.add.text(game.width/2, game.height*.3, 'By Group 50\nDerek Jean, David Monroe, Kyle Fegan', {font: 'Palatino', fontSize: '24px', fill: '#fff'});
 		instructText.anchor.set(0.5);
 		// creates play button with sounds when the cursor is hovering and pressed down the button
 		playButton = game.add.button(game.width/2, game.height*.6, 'playbutton', this.goPlay, this,1, 0, 2);

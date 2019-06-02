@@ -3,30 +3,32 @@
 var Controls = function(game) {};
 Controls.prototype = {
 	create: function() {
-		// add title screen text
-		/*var titleText = game.add.text(game.width/2, game.height*.2, 'final Game Project', {font: 'Helvetica', fontSize: '48px', fill: '#fff'});
-		titleText.anchor.set(0.5);
+		var controls = game.add.sprite(0, 0, 'ControlMenu');
 
-		var instructText = game.add.text(game.width/2, game.height*.3, 'By Group 50\nDerek Jean, David Monroe, Kyle Fegan', {font: 'Helvetica', fontSize: '24px', fill: '#fff'});
-		instructText.anchor.set(0.5);*/
+		var controlsAnimate = game.add.sprite(0, 250, 'ControlAnimation');
+		controlsAnimate.animations.add('cycle', [0,1,2,3,4,5,6,7,8], 1, true);
+		controlsAnimate.animations.play('cycle');
 
-		var playText = game.add.text(game.width/2, game.height*.3, '2 player versus. Fast moving balls kill players. Last one standing wins.', {font: 'Helvetica', fontSize: '24px', fill: '#fff'});
+		var playText = game.add.text(game.width/2, game.height*.1, 'Fast moving balls kill players. Last one standing wins.', {font: 'Palatino', fontSize: '30px', fill: '#000'});
 		playText.anchor.set(0.5);
 
-		var playText = game.add.text(game.width/2, game.height*.4, 'P1 = arrows keys to move, numpad 0 knocks balls\nP2 = awd keys to move, left shift knocks balls\n Press r to end, can restart after ending', {font: 'Helvetica', fontSize: '24px', fill: '#fff'});
+		var playText = game.add.text(game.width/2, game.height*.2, 'P1 = wasd keys to move, "c" knocks balls, "v" creates a shield\nP2 = arrow keys to move, "," knocks balls, "." creates a shield\nPress "w" to start playing, Press "r" to end the game', {font: 'Palatino', fontSize: '24px', fill: '#000'});
 		playText.anchor.set(0.5);
 
 		// creates play button
-		var playButton = game.add.button(game.width/2, game.height*.7, 'playbutton', this.goPlay, this,1, 0, 2);
-		playButton.anchor.set(0.5);
+		/*var playButton = game.add.button(game.width/2, game.height*.7, 'playbutton', this.goPlay, this,1, 0, 2);
+		playButton.anchor.set(0.5);*/
 
 	},
 	update: function() {
-	},
-	goPlay: function() {
+		if(game.input.keyboard.isDown(Phaser.Keyboard.W)) {
+			game.state.start('Play', true, false, true, 0, 0);
+		}
+	}
+	/*goPlay: function() {
 		//clear world: true, clear cache: false, freshStart: true, playerOneLives: 0 (will be overwritten), playerTwoLives: 0 (will be overwritten)
 		//game.time.events.add(Phaser.Timer.SECOND * 2, function() {
 			game.state.start('Play', true, false, true, 0, 0);
 		//});
-	}
+	}*/
 };
