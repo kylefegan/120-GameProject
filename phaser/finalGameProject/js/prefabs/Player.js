@@ -128,11 +128,14 @@ Player.prototype.update = function() {
 					this.attackAnchor = 1;
 				}
 
-				//PlayerAttackZone = function(game, x, y, key, strength, direction, outerContext)
-				this.attackZone = new PlayerAttackZone(game, this.attackOffset, this.y, 'attackZone', this.STRIKE_STRENGTH, this.attackDirection, this.outerContext);
+				//PlayerAttackZone = function(game, x, y, key, playNum, strength, direction, outerContext)
+				this.attackZone = new PlayerAttackZone(game, this.attackOffset, this.y, 'attackZone', this.playNum, 
+					this.STRIKE_STRENGTH, this.attackDirection, this.outerContext);
 				this.attackZone.anchor.x = this.attackAnchor;
 				this.attackZone.anchor.y = 0.5;
 				this.game.add.existing(this.attackZone);
+				this.attackZone.lockConstraint = this.game.physics.p2.createLockConstraint(this.attackZone, this, 
+					[this.attackDirection*this.ATTACK_SPAWN_OFFSET, 0]);
 				this.attackZone.body.setCollisionGroup(this.attackCollisionGroup);
 				this.attackZone.body.collides(this.ballCollisionGroup, this.outerContext.playerAttack, this.outerContext);
 				this.attackGroup.add(this.attackZone);
@@ -204,8 +207,13 @@ Player.prototype.update = function() {
 					this.attackOffset = this.x -this.ATTACK_SPAWN_OFFSET;
 					this.attackDirection = -1;
 				}
-				this.attackZone = new PlayerAttackZone(game, this.attackOffset, this.y, 'attackZone', this.STRIKE_STRENGTH, this.attackDirection, this.outerContext);
+				this.attackZone = new PlayerAttackZone(game, this.attackOffset, this.y, 'attackZone', this.playNum, 
+					this.STRIKE_STRENGTH, this.attackDirection, this.outerContext);
+				this.attackZone.anchor.x = this.attackAnchor;
+				this.attackZone.anchor.y = 0.5;
 				this.game.add.existing(this.attackZone);
+				this.attackZone.lockConstraint = this.game.physics.p2.createLockConstraint(this.attackZone, this, 
+					[this.attackDirection*this.ATTACK_SPAWN_OFFSET, 0]);
 				this.attackZone.body.setCollisionGroup(this.attackCollisionGroup);
 				this.attackZone.body.collides(this.ballCollisionGroup, this.outerContext.playerAttack, this.outerContext);
 				this.attackGroup.add(this.attackZone);

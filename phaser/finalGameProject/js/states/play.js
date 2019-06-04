@@ -237,7 +237,7 @@ Play.prototype = {
 		// is never truly used by anything else; it actually terminates itself after a few update cycles
 		//PlayerAttackZone = function(game, x, y, key, strength, direction, outerContext)
 		this.attackZonePlaceHolder = new PlayerAttackZone(this.game, 50, this.game.height - 100, 
-			'attackZone', 0, 0, this);
+			'attackZone', 0, 0, 0, this);
 		this.attackZonePlaceHolder.alpha = 0;
 		this.game.add.existing(this.attackZonePlaceHolder);
 		this.attackZonePlaceHolder.body.setCollisionGroup(this.attackCollisionGroup);
@@ -389,12 +389,25 @@ Play.prototype = {
 	hitByBall: function(receiver, hitter)
 	{
 		if (!hitter.sprite.isBreakable || (hitter.sprite.isBreakable && !hitter.sprite.unbroken)) {
-			console.log('!isBreakable || isBreakable && !unbroken');
+			//console.log('!isBreakable || isBreakable && !unbroken');
 			if (hitter.sprite.isLethal) {
-				console.log('isLethal');
-				console.log(hitter);
+				//console.log('isLethal');
+				//console.log(hitter);
 				//Death Audio
 				receiver.sprite.playerDied.play();
+
+				//removing any existing attackZone constraints in order to avoid a crash when the
+				// owning player sprite dies first.
+				receiver.sprite.outerContext.attackGroup.forEachAlive(function(attack){
+					if (attack.playNum == receiver.sprite.playNum) {
+						if (attack.lockConstraint != null) {
+							game.physics.p2.removeConstraint(attack.lockConstraint);
+							attack.lockConstraint = null;
+						}
+						attack.safeDestroy = true;
+						attack.destroy();
+					}
+				});
 
 				//removing any existing bubble attack constraints in order to avoid a crash when the
 				// owning player sprite dies first.
@@ -490,6 +503,19 @@ Play.prototype = {
 
 	hitByHazard: function(receiver, hitter) {
 		receiver.sprite.playerDied.play(); //death audio
+
+		//removing any existing attackZone constraints in order to avoid a crash when the
+		// owning player sprite dies first.
+		receiver.sprite.outerContext.attackGroup.forEachAlive(function(attack){
+			if (attack.playNum == receiver.sprite.playNum) {
+				if (attack.lockConstraint != null) {
+					game.physics.p2.removeConstraint(attack.lockConstraint);
+					attack.lockConstraint = null;
+				}
+				attack.safeDestroy = true;
+				attack.destroy();
+			}
+		});
 
 		//removing any existing bubble attack constraints in order to avoid a crash when the
 		// owning player sprite dies first.
