@@ -388,55 +388,57 @@ Play.prototype = {
 
 	hitByBall: function(receiver, hitter)
 	{
-		if (!hitter.sprite.isBreakable || (hitter.sprite.isBreakable && !hitter.sprite.unbroken)) {
-			//console.log('!isBreakable || isBreakable && !unbroken');
-			if (hitter.sprite.isLethal) {
-				//console.log('isLethal');
-				//console.log(hitter);
-				//Death Audio
-				receiver.sprite.playerDied.play();
+		if (receiver.sprite.outerContext.player.alive && receiver.sprite.outerContext.player2.alive) {
+			if (!hitter.sprite.isBreakable || (hitter.sprite.isBreakable && !hitter.sprite.unbroken)) {
+				//console.log('!isBreakable || isBreakable && !unbroken');
+				if (hitter.sprite.isLethal) {
+					//console.log('isLethal');
+					//console.log(hitter);
+					//Death Audio
+					receiver.sprite.playerDied.play();
 
-				//removing any existing attackZone constraints in order to avoid a crash when the
-				// owning player sprite dies first.
-				receiver.sprite.outerContext.attackGroup.forEachAlive(function(attack){
-					if (attack.playNum == receiver.sprite.playNum) {
-						if (attack.lockConstraint != null) {
-							game.physics.p2.removeConstraint(attack.lockConstraint);
-							attack.lockConstraint = null;
+					//removing any existing attackZone constraints in order to avoid a crash when the
+					// owning player sprite dies first.
+					receiver.sprite.outerContext.attackGroup.forEachAlive(function(attack){
+						if (attack.playNum == receiver.sprite.playNum) {
+							if (attack.lockConstraint != null) {
+								game.physics.p2.removeConstraint(attack.lockConstraint);
+								attack.lockConstraint = null;
+							}
+							attack.safeDestroy = true;
+							attack.destroy();
 						}
-						attack.safeDestroy = true;
-						attack.destroy();
-					}
-				});
+					});
 
-				//removing any existing bubble attack constraints in order to avoid a crash when the
-				// owning player sprite dies first.
-				receiver.sprite.outerContext.bubbleGroup.forEachAlive(function(bubble){
-					if (bubble.playNum == receiver.sprite.playNum) {
-						if (bubble.lockConstraint != null) {
-							game.physics.p2.removeConstraint(bubble.lockConstraint);
-							bubble.lockConstraint = null;
+					//removing any existing bubble attack constraints in order to avoid a crash when the
+					// owning player sprite dies first.
+					receiver.sprite.outerContext.bubbleGroup.forEachAlive(function(bubble){
+						if (bubble.playNum == receiver.sprite.playNum) {
+							if (bubble.lockConstraint != null) {
+								game.physics.p2.removeConstraint(bubble.lockConstraint);
+								bubble.lockConstraint = null;
+							}
+							bubble.safeDestroy = true;
+							bubble.destroy();
 						}
-						bubble.safeDestroy = true;
-						bubble.destroy();
-					}
-				});
-			
-				//Kill Player
-				receiver.sprite.kill();
-				receiver.sprite.lives--;
+					});
 				
-				//Check Match Status
-				if(receiver.sprite.outerContext.player.lives == 0 || receiver.sprite.outerContext.player2.lives == 0) {
-					game.state.start('GameOver', true, false, receiver.sprite.outerContext.player.lives, receiver.sprite.outerContext.player2.lives);
+					//Kill Player
+					receiver.sprite.kill();
+					receiver.sprite.lives--;
+					
+					//Check Match Status
+					if(receiver.sprite.outerContext.player.lives == 0 || receiver.sprite.outerContext.player2.lives == 0) {
+						game.state.start('GameOver', true, false, receiver.sprite.outerContext.player.lives, receiver.sprite.outerContext.player2.lives);
+					}
+				
+					//Display Score & Restart
+	      			var scoreText = game.add.text(game.width/2, game.height/2, 'P1: ' + receiver.sprite.outerContext.player.lives + '  P2: ' + 
+	      				receiver.sprite.outerContext.player2.lives, {font: 'Helvetica', fontSize: '48px', fill: '#fff'});
+					scoreText.anchor.set(0.5);
+					game.time.events.add(Phaser.Timer.SECOND * 2, function() { game.state.start('Play', true, false, false, 
+						receiver.sprite.outerContext.player.lives, receiver.sprite.outerContext.player2.lives)});
 				}
-			
-				//Display Score & Restart
-      			var scoreText = game.add.text(game.width/2, game.height/2, 'P1: ' + receiver.sprite.outerContext.player.lives + '  P2: ' + 
-      				receiver.sprite.outerContext.player2.lives, {font: 'Helvetica', fontSize: '48px', fill: '#fff'});
-				scoreText.anchor.set(0.5);
-				game.time.events.add(Phaser.Timer.SECOND * 2, function() { game.state.start('Play', true, false, false, 
-					receiver.sprite.outerContext.player.lives, receiver.sprite.outerContext.player2.lives)});
 			}
 		}
 
@@ -502,49 +504,52 @@ Play.prototype = {
 	},
 
 	hitByHazard: function(receiver, hitter) {
-		receiver.sprite.playerDied.play(); //death audio
 
-		//removing any existing attackZone constraints in order to avoid a crash when the
-		// owning player sprite dies first.
-		receiver.sprite.outerContext.attackGroup.forEachAlive(function(attack){
-			if (attack.playNum == receiver.sprite.playNum) {
-				if (attack.lockConstraint != null) {
-					game.physics.p2.removeConstraint(attack.lockConstraint);
-					attack.lockConstraint = null;
+		if (receiver.sprite.outerContext.player.alive && receiver.sprite.outerContext.player2.alive) {
+			receiver.sprite.playerDied.play(); //death audio
+
+			//removing any existing attackZone constraints in order to avoid a crash when the
+			// owning player sprite dies first.
+			receiver.sprite.outerContext.attackGroup.forEachAlive(function(attack){
+				if (attack.playNum == receiver.sprite.playNum) {
+					if (attack.lockConstraint != null) {
+						game.physics.p2.removeConstraint(attack.lockConstraint);
+						attack.lockConstraint = null;
+					}
+					attack.safeDestroy = true;
+					attack.destroy();
 				}
-				attack.safeDestroy = true;
-				attack.destroy();
-			}
-		});
+			});
 
-		//removing any existing bubble attack constraints in order to avoid a crash when the
-		// owning player sprite dies first.
-		receiver.sprite.outerContext.bubbleGroup.forEachAlive(function(bubble){
-			if (bubble.playNum == receiver.sprite.playNum) {
-				if (bubble.lockConstraint != null) {
-					game.physics.p2.removeConstraint(bubble.lockConstraint);
-					bubble.lockConstraint = null;
+			//removing any existing bubble attack constraints in order to avoid a crash when the
+			// owning player sprite dies first.
+			receiver.sprite.outerContext.bubbleGroup.forEachAlive(function(bubble){
+				if (bubble.playNum == receiver.sprite.playNum) {
+					if (bubble.lockConstraint != null) {
+						game.physics.p2.removeConstraint(bubble.lockConstraint);
+						bubble.lockConstraint = null;
+					}
+					bubble.safeDestroy = true;
+					bubble.destroy();
 				}
-				bubble.safeDestroy = true;
-				bubble.destroy();
+			});
+
+			receiver.sprite.kill();
+			receiver.sprite.lives--;
+			console.log('Player ' + receiver.sprite.playNum + ': ' + receiver.sprite.lives + ' lives remaining.');
+
+			if(receiver.sprite.outerContext.player.lives == 0 || receiver.sprite.outerContext.player2.lives == 0) {
+					game.state.start('GameOver', true, false, receiver.sprite.outerContext.player.lives, 
+						receiver.sprite.outerContext.player2.lives);
 			}
-		});
-
-		receiver.sprite.kill();
-		receiver.sprite.lives--;
-		console.log('Player ' + receiver.sprite.playNum + ': ' + receiver.sprite.lives + ' lives remaining.');
-
-		if(receiver.sprite.outerContext.player.lives == 0 || receiver.sprite.outerContext.player2.lives == 0) {
-				game.state.start('GameOver', true, false, receiver.sprite.outerContext.player.lives, 
-					receiver.sprite.outerContext.player2.lives);
+			var scoreText = game.add.text(game.width/2, game.height/2, 'P1: ' + 
+				receiver.sprite.outerContext.player.lives + '  P2: ' + 
+				receiver.sprite.outerContext.player2.lives, {font: 'Helvetica', fontSize: '48px', fill: '#fff'});
+			scoreText.anchor.set(0.5);
+			game.time.events.add(Phaser.Timer.SECOND * 2, function() { game.state.start('Play', 
+				true, false, false, receiver.sprite.outerContext.player.lives, 
+				receiver.sprite.outerContext.player2.lives)});
 		}
-		var scoreText = game.add.text(game.width/2, game.height/2, 'P1: ' + 
-			receiver.sprite.outerContext.player.lives + '  P2: ' + 
-			receiver.sprite.outerContext.player2.lives, {font: 'Helvetica', fontSize: '48px', fill: '#fff'});
-		scoreText.anchor.set(0.5);
-		game.time.events.add(Phaser.Timer.SECOND * 2, function() { game.state.start('Play', 
-			true, false, false, receiver.sprite.outerContext.player.lives, 
-			receiver.sprite.outerContext.player2.lives)});
 	},
 
 	
