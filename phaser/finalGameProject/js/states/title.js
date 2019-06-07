@@ -3,19 +3,17 @@
 var Title = function(game) {};
 Title.prototype = {
 	create: function() {
-		// add title screen text
-		var titleText = game.add.text(game.width/2, game.height*.2, 'final Game Project', {font: 'Palatino', fontSize: '48px', fill: '#fff'});
-		titleText.anchor.set(0.5);
+		var MainMenu = game.add.sprite(0,0, 'Title');
 
-		var instructText = game.add.text(game.width/2, game.height*.3, 'By Group 50\nDerek Jean, David Monroe, Kyle Fegan', {font: 'Palatino', fontSize: '24px', fill: '#fff'});
+		var instructText = game.add.text(3.01*game.width/4, game.height*.45, 'By Group 50\nDerek Jean, David Monroe,\n Kyle Fegan', {font: 'Palatino', fontSize: '24px', fill: '#FFF'});
 		instructText.anchor.set(0.5);
 		// creates play button with sounds when the cursor is hovering and pressed down the button
-		playButton = game.add.button(game.width/2, game.height*.6, 'playbutton', this.goPlay, this,1, 0, 2);
+		playButton = game.add.button(game.width/2, game.height*.67, 'playbutton', this.goPlay, this,1, 0, 2);
 		playButton.anchor.set(0.5);
 		playButton.onOverSound = game.add.audio('buttonHover');
 		playButton.onDownSound = game.add.audio('buttonDown');
 		// creates control button with sounds when the cursor is hovering and pressed down the button
-		controlButton = game.add.button(game.width/2, game.height*.8, 'controlbutton', this.goControl, this,1, 0, 2);
+		controlButton = game.add.button(game.width/2, game.height*.86, 'controlbutton', this.goControl, this,1, 0, 2);
 		controlButton.anchor.set(0.5);
 		controlButton.onOverSound = game.add.audio('buttonHover');
 		controlButton.onDownSound = game.add.audio('buttonDown');

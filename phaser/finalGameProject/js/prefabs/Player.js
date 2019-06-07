@@ -17,7 +17,7 @@ var Player = function(game, x, y, key, playerNumber, attackGroup, attackCollisio
 	this.MAX_LIVES = 3; //maximum number of lives
 	this.PLAYER_SCALE = 1; //used to invert player sprite facing direction
 	this.MAX_JUMP = 2; //how many multi jumps a player can make
-	this.STRIKE_STRENGTH = 500; //how hard a player hits the ball objects
+	this.STRIKE_STRENGTH = 500; //how hard a player hits the ball objects //500
 	this.JUMP_SPEED = -300; //jump strnegth
 	this.PLAYER_MASS = 6; //weight used in physics calculations
 	this.PLAYER_DAMPING = 0.6; //velocity lost per second (between 1 and 0; thus percentage based)
@@ -128,11 +128,14 @@ Player.prototype.update = function() {
 					this.attackAnchor = 1;
 				}
 
-				//PlayerAttackZone = function(game, x, y, key, strength, direction, outerContext)
-				this.attackZone = new PlayerAttackZone(game, this.attackOffset, this.y, 'attackZone', this.STRIKE_STRENGTH, this.attackDirection, this.outerContext);
+				//PlayerAttackZone = function(game, x, y, key, playNum, strength, direction, outerContext)
+				this.attackZone = new PlayerAttackZone(game, this.attackOffset, this.y, 'attackZone', this.playNum, 
+					this.STRIKE_STRENGTH, this.attackDirection, this.outerContext);
 				this.attackZone.anchor.x = this.attackAnchor;
 				this.attackZone.anchor.y = 0.5;
 				this.game.add.existing(this.attackZone);
+				this.attackZone.lockConstraint = this.game.physics.p2.createLockConstraint(this.attackZone, this, 
+					[this.attackDirection*this.ATTACK_SPAWN_OFFSET, 0]);
 				this.attackZone.body.setCollisionGroup(this.attackCollisionGroup);
 				this.attackZone.body.collides(this.ballCollisionGroup, this.outerContext.playerAttack, this.outerContext);
 				this.attackGroup.add(this.attackZone);
@@ -204,8 +207,13 @@ Player.prototype.update = function() {
 					this.attackOffset = this.x -this.ATTACK_SPAWN_OFFSET;
 					this.attackDirection = -1;
 				}
-				this.attackZone = new PlayerAttackZone(game, this.attackOffset, this.y, 'attackZone', this.STRIKE_STRENGTH, this.attackDirection, this.outerContext);
+				this.attackZone = new PlayerAttackZone(game, this.attackOffset, this.y, 'attackZone', this.playNum, 
+					this.STRIKE_STRENGTH, this.attackDirection, this.outerContext);
+				this.attackZone.anchor.x = this.attackAnchor;
+				this.attackZone.anchor.y = 0.5;
 				this.game.add.existing(this.attackZone);
+				this.attackZone.lockConstraint = this.game.physics.p2.createLockConstraint(this.attackZone, this, 
+					[this.attackDirection*this.ATTACK_SPAWN_OFFSET, 0]);
 				this.attackZone.body.setCollisionGroup(this.attackCollisionGroup);
 				this.attackZone.body.collides(this.ballCollisionGroup, this.outerContext.playerAttack, this.outerContext);
 				this.attackGroup.add(this.attackZone);

@@ -12,7 +12,6 @@ Play.prototype = {
 		//this will toggle p2 physics debug bodies in this file. Check player and 
 		// playerAttackZone prefabs for their bodies.
 		this.DEBUG_BODIES = false;
-		this.BALL_MASS = 1; //was 2;
 
 		game.stage.setBackgroundColor('#87CEEB'); //stage background color: light blue
 
@@ -36,6 +35,7 @@ Play.prototype = {
 		this.terrainCollisionGroup = game.physics.p2.createCollisionGroup();
 		this.hazardCollisionGroup = game.physics.p2.createCollisionGroup();
 		this.bubbleCollisionGroup = game.physics.p2.createCollisionGroup();
+		//this.breakableCollisionGroup = game.physics.p2.createCollisionGroup();
 		game.physics.p2.updateBoundsCollisionGroup();
 
 		//sprite groups with physics bodies
@@ -62,6 +62,10 @@ Play.prototype = {
 		this.bubbleGroup = game.add.group();
 		this.bubbleGroup.enableBody = true;
 		this.bubbleGroup.phsyicsBodyType = Phaser.Physics.P2JS;
+
+		this.breakableGroup = game.add.group();
+		this.breakableGroup.enableBody = true;
+		this.breakableGroup.phsyicsBodyType = Phaser.Physics.P2JS;
 		
 		//Skybox
 		//Parallax Group #1
@@ -117,7 +121,6 @@ Play.prototype = {
 		//Hazard 1
 		this.hazard = new  Hazard(this.game, (game.world.width/2)-200, 590, 'acid', 
 			this.playerCollisionGroup, this.ballCollisionGroup, this.hazardCollisionGroup);
-		//this.hazardMaterial = game.physics.p2.createMaterial('hazardMaterial', this.hazard.body);
 		this.hazardMaterial = game.physics.p2.createMaterial('hazardMaterial');
 		this.hazard.body.setMaterial(this.hazardMaterial);
 		this.game.add.existing(this.hazard);
@@ -126,19 +129,14 @@ Play.prototype = {
 		//Hazard 2
 		this.hazard2 = new  Hazard(this.game, (game.world.width/2)+200,  590, 'acid', 
 			this.playerCollisionGroup, this.ballCollisionGroup, this.hazardCollisionGroup);
-		//this.hazard2Material = game.physics.p2.createMaterial('hazard2Material', this.hazard2.body);
 		this.hazard2.body.setMaterial(this.hazardMaterial);
 		this.game.add.existing(this.hazard2);
 		this.hazardGroup.add(this.hazard);
 
 		// Ball 1
-		//this.ball1 = this.ballGroup.create(150, 60, 'ball');
-		this.ball1 = game.add.sprite(230, 300, 'ball');
-		//this.ball1.tint = 0xc242f4;
+		this.ball1 = new Projectile(this.game, 230, 300, 'ball', false, this);
 		game.physics.p2.enable(this.ball1, this.DEBUG_BODIES);
 		this.ball1.body.setCircle(16);
-		this.ball1.body.mass = this.BALL_MASS;
-		//this.ball1Material = game.physics.p2.createMaterial('ball1Material', this.ball1.body);
 		this.ballMaterial = game.physics.p2.createMaterial('ball1Material');
 		this.ball1.body.setMaterial(this.ballMaterial);
 		this.ball1.body.setCollisionGroup(this.ballCollisionGroup);
@@ -148,13 +146,9 @@ Play.prototype = {
 		this.ballGroup.add(this.ball1);
 
 		// Ball 2
-		//this.ball2 = this.ballGroup.create(this.game.width - 150, 60, 'ball');
-		this.ball2 = game.add.sprite(this.game.width - 230, 300, 'ball');
-		//this.ball2.tint = 0xf4ee41;
+		this.ball2 = new Projectile(this.game, this.game.width - 230, 300, 'ball', false, this);
 		game.physics.p2.enable(this.ball2, this.DEBUG_BODIES);
 		this.ball2.body.setCircle(16);
-		this.ball2.body.mass = this.BALL_MASS;
-		//this.ball2Material = game.physics.p2.createMaterial('ball2Material', this.ball2.body);
 		this.ball2.body.setMaterial(this.ballMaterial);
 		this.ball2.body.setCollisionGroup(this.ballCollisionGroup);
 		this.ball2.body.collides([this.ballCollisionGroup, this.playerCollisionGroup, 
@@ -175,6 +169,17 @@ Play.prototype = {
 		this.bubblePlaceHolder.body.setCollisionGroup(this.bubbleCollisionGroup);
 		this.bubblePlaceHolder.body.collides([this.ballCollisionGroup]);
 		this.bubbleGroup.add(this.bubblePlaceHolder);
+
+		//Breakable stage object
+		this.breakable = new Projectile(this.game, this.game.width/2, this.game.height/2 - 20, 'playerBubble', true, this);
+		this.game.add.existing(this.breakable);
+		this.breakable.body.setCircle(16);
+		this.breakable.body.setMaterial(this.ballMaterial);
+		this.breakable.body.setCollisionGroup(this.ballCollisionGroup);
+		this.breakable.body.collides([this.ballCollisionGroup, this.playerCollisionGroup, 
+			this.attackCollisionGroup, this.terrainCollisionGroup, this.hazardCollisionGroup, 
+			this.bubbleCollisionGroup]);
+		this.breakableGroup.add(this.breakable);
 
 		//Player 1
 		//Player = function(game, x, y, key, playerNumber, attackGroup, attackCollisionGroup,
@@ -232,7 +237,7 @@ Play.prototype = {
 		// is never truly used by anything else; it actually terminates itself after a few update cycles
 		//PlayerAttackZone = function(game, x, y, key, strength, direction, outerContext)
 		this.attackZonePlaceHolder = new PlayerAttackZone(this.game, 50, this.game.height - 100, 
-			'attackZone', 0, 0, this);
+			'attackZone', 0, 0, 0, this);
 		this.attackZonePlaceHolder.alpha = 0;
 		this.game.add.existing(this.attackZonePlaceHolder);
 		this.attackZonePlaceHolder.body.setCollisionGroup(this.attackCollisionGroup);
@@ -266,7 +271,7 @@ Play.prototype = {
 	    // surface velocity is positive, bodyA will slide to the right. 
 	    this.baseTerVsPlayContact.surfaceVelocity = 0;
 
-	    // Terrain Vs Player 2 contact
+	    // Terrain Vs Player 2 contact, same as player 1
 		this.baseTerVsPlay2Contact = game.physics.p2.createContactMaterial(this.player2Material, 
 			this.baseTerrainMaterial);
 		this.baseTerVsPlay2Contact.friction = 1.0;
@@ -281,7 +286,7 @@ Play.prototype = {
 	    this.baseTerVsBallContact = game.physics.p2.createContactMaterial(this.ballMaterial, 
 	    	this.baseTerrainMaterial);
 		this.baseTerVsBallContact.friction = 1.0;
-	    this.baseTerVsBallContact.restitution = 0.5; //provides some bounce
+	    this.baseTerVsBallContact.restitution = 0.5; //provides some bounce //0.5
 	    this.baseTerVsBallContact.stiffness = 1e7;
 	    this.baseTerVsBallContact.relaxation = 3;  
 	    this.baseTerVsBallContact.frictionStiffness = 1e7;   
@@ -347,7 +352,7 @@ Play.prototype = {
 		thisBody.sprite.jumps = thisBody.sprite.MAX_JUMP;
 	},
 
-	//this will need to change when new assets come in.
+	//this makes players move through each other.
 	checkPlayerVsPlayerCollision: function(body1, body2) {
 		if ((body1.sprite === this.player && body2.sprite === this.player2) || 
 			(body2.sprite === this.player && body1.sprite === this.player2)) {
@@ -358,14 +363,90 @@ Play.prototype = {
 	},
 
 	//player attack handling
-	//this knocks the balls back when a player strikes them
+	//this knocks the balls back when a player strikes them.
+	//was written here early on when it was unclear if new
+	//functions could be added to prefabs and has not yet
+	//been refactored.
 	playerAttack: function(body1, body2) {
+
+		//if striking a breakable, make it break
+		if (body2.sprite.isBreakable) {
+			body2.sprite.unbroken = false;
+			body2.sprite.body.fixedRotation = false;
+		}
+
+		//apply strike force
 		body2.sprite.body.velocity.x = body1.sprite.STRIKE_STRENGTH * body1.sprite.direction;
+		body2.sprite.body.velocity.y -= body1.sprite.STRIKE_STRENGTH / 4;
+
+		//set projectile to lethal
+		body2.sprite.isLethal = true;
+
+		//the hitbox destroys itself
 		body1.safeDestroy = true;
 	},
 
 	hitByBall: function(receiver, hitter)
 	{
+		if (receiver.sprite.outerContext.player.alive && receiver.sprite.outerContext.player2.alive) {
+			if (!hitter.sprite.isBreakable || (hitter.sprite.isBreakable && !hitter.sprite.unbroken)) {
+				//console.log('!isBreakable || isBreakable && !unbroken');
+				if (hitter.sprite.isLethal) {
+					//console.log('isLethal');
+					//console.log(hitter);
+					//Death Audio
+					receiver.sprite.playerDied.play();
+
+					//removing any existing attackZone constraints in order to avoid a crash when the
+					// owning player sprite dies first.
+					receiver.sprite.outerContext.attackGroup.forEachAlive(function(attack){
+						if (attack.playNum == receiver.sprite.playNum) {
+							if (attack.lockConstraint != null) {
+								game.physics.p2.removeConstraint(attack.lockConstraint);
+								attack.lockConstraint = null;
+							}
+							attack.safeDestroy = true;
+							attack.destroy();
+						}
+					});
+
+					//removing any existing bubble attack constraints in order to avoid a crash when the
+					// owning player sprite dies first.
+					receiver.sprite.outerContext.bubbleGroup.forEachAlive(function(bubble){
+						if (bubble.playNum == receiver.sprite.playNum) {
+							if (bubble.lockConstraint != null) {
+								game.physics.p2.removeConstraint(bubble.lockConstraint);
+								bubble.lockConstraint = null;
+							}
+							bubble.safeDestroy = true;
+							bubble.destroy();
+						}
+					});
+				
+					//Kill Player
+					receiver.sprite.kill();
+					receiver.sprite.lives--;
+					
+					//Check Match Status
+					if(receiver.sprite.outerContext.player.lives == 0 || receiver.sprite.outerContext.player2.lives == 0) {
+						game.state.start('GameOver', true, false, receiver.sprite.outerContext.player.lives, receiver.sprite.outerContext.player2.lives);
+					}
+				
+					//Display Score & Restart
+	      			var scoreText = game.add.text(game.width/2, game.height/2, 'P1: ' + receiver.sprite.outerContext.player.lives + '  P2: ' + 
+	      				receiver.sprite.outerContext.player2.lives, {font: 'Helvetica', fontSize: '48px', fill: '#fff'});
+					scoreText.anchor.set(0.5);
+					game.time.events.add(Phaser.Timer.SECOND * 2, function() { game.state.start('Play', true, false, false, 
+						receiver.sprite.outerContext.player.lives, receiver.sprite.outerContext.player2.lives)});
+				}
+			}
+		}
+
+		//*****************************************************************************************
+		//(David Monroe, 06/04/19) The CODE BELOW IS now DEPRECATED and is only here for reference.
+		//Note: There are other active functions below this deprecated section.
+		/******************************************************************************************
+
 		// NOTES (5/20/19):
 		// -- Kyle Fegan --
 		// I've rewritten the function to take into account horizontal and vertical velocity.
@@ -390,7 +471,7 @@ Play.prototype = {
 			receiver.sprite.playerDied.play();
 
 			//removing any existing bubble attack constraints in order to avoid a crash when the
-			// owning player dies first.
+			// owning player sprite dies first.
 			receiver.sprite.outerContext.bubbleGroup.forEachAlive(function(bubble){
 				if (bubble.playNum == receiver.sprite.playNum) {
 					if (bubble.lockConstraint != null) {
@@ -413,46 +494,62 @@ Play.prototype = {
 			}
 			
 			//Display Score & Restart
-      var scoreText = game.add.text(game.width/2, game.height/2, 'P1: ' + receiver.sprite.outerContext.player.lives + '  P2: ' + 
-      	receiver.sprite.outerContext.player2.lives, {font: 'Helvetica', fontSize: '48px', fill: '#fff'});
+      		var scoreText = game.add.text(game.width/2, game.height/2, 'P1: ' + receiver.sprite.outerContext.player.lives + '  P2: ' + 
+      			receiver.sprite.outerContext.player2.lives, {font: 'Helvetica', fontSize: '48px', fill: '#fff'});
 			scoreText.anchor.set(0.5);
 			game.time.events.add(Phaser.Timer.SECOND * 2, function() { game.state.start('Play', true, false, false, 
 				receiver.sprite.outerContext.player.lives, receiver.sprite.outerContext.player2.lives)});
 		}
+		*/
 	},
 
 	hitByHazard: function(receiver, hitter) {
-		receiver.sprite.playerDied.play(); //death audio
 
-		//removing any existing bubble attack constraints in order to avoid a crash when the
-		// owning player dies first.
-		receiver.sprite.outerContext.bubbleGroup.forEachAlive(function(bubble){
-			if (bubble.playNum == receiver.sprite.playNum) {
-				if (bubble.lockConstraint != null) {
-					game.physics.p2.removeConstraint(bubble.lockConstraint);
-					bubble.lockConstraint = null;
+		if (receiver.sprite.outerContext.player.alive && receiver.sprite.outerContext.player2.alive) {
+			receiver.sprite.playerDied.play(); //death audio
+
+			//removing any existing attackZone constraints in order to avoid a crash when the
+			// owning player sprite dies first.
+			receiver.sprite.outerContext.attackGroup.forEachAlive(function(attack){
+				if (attack.playNum == receiver.sprite.playNum) {
+					if (attack.lockConstraint != null) {
+						game.physics.p2.removeConstraint(attack.lockConstraint);
+						attack.lockConstraint = null;
+					}
+					attack.safeDestroy = true;
+					attack.destroy();
 				}
-				bubble.safeDestroy = true;
-				bubble.destroy();
+			});
+
+			//removing any existing bubble attack constraints in order to avoid a crash when the
+			// owning player sprite dies first.
+			receiver.sprite.outerContext.bubbleGroup.forEachAlive(function(bubble){
+				if (bubble.playNum == receiver.sprite.playNum) {
+					if (bubble.lockConstraint != null) {
+						game.physics.p2.removeConstraint(bubble.lockConstraint);
+						bubble.lockConstraint = null;
+					}
+					bubble.safeDestroy = true;
+					bubble.destroy();
+				}
+			});
+
+			receiver.sprite.kill();
+			receiver.sprite.lives--;
+			console.log('Player ' + receiver.sprite.playNum + ': ' + receiver.sprite.lives + ' lives remaining.');
+
+			if(receiver.sprite.outerContext.player.lives == 0 || receiver.sprite.outerContext.player2.lives == 0) {
+					game.state.start('GameOver', true, false, receiver.sprite.outerContext.player.lives, 
+						receiver.sprite.outerContext.player2.lives);
 			}
-		});
-
-		receiver.sprite.kill();
-		//receiver.sprite.destroy();//using destroy to prevent players spawning attack zones while dead.
-		receiver.sprite.lives--;
-		console.log('Player ' + receiver.sprite.playNum + ': ' + receiver.sprite.lives + ' lives remaining.');
-
-		if(receiver.sprite.outerContext.player.lives == 0 || receiver.sprite.outerContext.player2.lives == 0) {
-				game.state.start('GameOver', true, false, receiver.sprite.outerContext.player.lives, 
-					receiver.sprite.outerContext.player2.lives);
+			var scoreText = game.add.text(game.width/2, game.height/2, 'P1: ' + 
+				receiver.sprite.outerContext.player.lives + '  P2: ' + 
+				receiver.sprite.outerContext.player2.lives, {font: 'Helvetica', fontSize: '48px', fill: '#fff'});
+			scoreText.anchor.set(0.5);
+			game.time.events.add(Phaser.Timer.SECOND * 2, function() { game.state.start('Play', 
+				true, false, false, receiver.sprite.outerContext.player.lives, 
+				receiver.sprite.outerContext.player2.lives)});
 		}
-		var scoreText = game.add.text(game.width/2, game.height/2, 'P1: ' + 
-			receiver.sprite.outerContext.player.lives + '  P2: ' + 
-			receiver.sprite.outerContext.player2.lives, {font: 'Helvetica', fontSize: '48px', fill: '#fff'});
-		scoreText.anchor.set(0.5);
-		game.time.events.add(Phaser.Timer.SECOND * 2, function() { game.state.start('Play', 
-			true, false, false, receiver.sprite.outerContext.player.lives, 
-			receiver.sprite.outerContext.player2.lives)});
 	},
 
 	

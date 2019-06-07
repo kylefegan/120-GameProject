@@ -16,6 +16,7 @@ Load.prototype = {
 		game.load.image('heart2', 'heartJar2.png');
 		game.load.image('attackZone', 'playerAttackZone.png'); //it's a transparent box image.
 		game.load.image('ControlMenu', 'Controls Menu.png');
+		game.load.image('Title', 'Title Screen.png');
 		game.load.spritesheet('ControlAnimation', 'Controls animation.png', 1000, 550);
 		game.load.spritesheet('playbutton', 'Play button.png', 400, 150);
 		game.load.spritesheet('controlbutton', 'Controls button.png', 400, 150);
