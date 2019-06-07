@@ -128,7 +128,7 @@ Play.prototype = {
 		this.testPlatform.body.static = true;
 		this.testPlatform.body.setCollisionGroup(this.platformCollisionGroup);
 		this.testPlatform.body.collides([this.platformCollisionGroup, this.playerCollisionGroup, this.ballCollisionGroup]);
-		//this.baseTerrainMaterial = game.physics.p2.createMaterial('baseTerrainMaterial', this.baseTerrain.body);
+		//this.plateformMaterial = game.physics.p2.createMaterial('platformMaterial');
 
 		//Hazard 1
 		this.hazard = new  Hazard(this.game, (game.world.width/2)-200, 590, 'acid', 
@@ -298,7 +298,7 @@ Play.prototype = {
 	    this.baseTerVsBallContact = game.physics.p2.createContactMaterial(this.ballMaterial, 
 	    	this.baseTerrainMaterial);
 		this.baseTerVsBallContact.friction = 1.0;
-	    this.baseTerVsBallContact.restitution = 0.5; //provides some bounce //0.5
+	    this.baseTerVsBallContact.restitution = 0.0; //provides some bounce //was 0.5 //this is the reason the ball slowly clips the floating platform
 	    this.baseTerVsBallContact.stiffness = 1e7;
 	    this.baseTerVsBallContact.relaxation = 3;  
 	    this.baseTerVsBallContact.frictionStiffness = 1e7;   
