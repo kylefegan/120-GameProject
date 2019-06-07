@@ -106,7 +106,7 @@ Player.prototype.update = function() {
 			    this.body.velocity.y = this.JUMP_SPEED;
 			    this.jumping = true;
 			    //this.jumped = true;
-			    //console.log('Jumping: ' + this.jumping);
+			    //console.log(this.body.velocity.y);
 			}
 
 			//letting go of the UP key subtracts a jump
@@ -185,6 +185,7 @@ Player.prototype.update = function() {
 			    this.body.velocity.y = this.JUMP_SPEED;
 			    this.jumping = true;
 			    //this.jumped = true;
+			    //console.log(this.body.velocity.y);
 			}
 
 			//resets friction if not fast falling

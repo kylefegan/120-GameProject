@@ -24,7 +24,7 @@ Play.prototype = {
 		game.physics.p2.gravity.y = 500;
 
 		//this prevents players from bumping into each other.
-		game.physics.p2.setPostBroadphaseCallback(this.checkPlayerVsPlayerCollision, this);
+		game.physics.p2.setPostBroadphaseCallback(this.checkCollision, this);
 
 		//collision groups
 		//the attack group will be populated when the player attacks. A group is needed so it 
@@ -35,6 +35,7 @@ Play.prototype = {
 		this.terrainCollisionGroup = game.physics.p2.createCollisionGroup();
 		this.hazardCollisionGroup = game.physics.p2.createCollisionGroup();
 		this.bubbleCollisionGroup = game.physics.p2.createCollisionGroup();
+		this.platformCollisionGroup = game.physics.p2.createCollisionGroup();
 		//this.breakableCollisionGroup = game.physics.p2.createCollisionGroup();
 		game.physics.p2.updateBoundsCollisionGroup();
 
@@ -118,6 +119,17 @@ Play.prototype = {
 		this.baseTerrain.body.collides([this.ballCollisionGroup, this.playerCollisionGroup]);
 		this.baseTerrainMaterial = game.physics.p2.createMaterial('baseTerrainMaterial', this.baseTerrain.body);
 
+		//physics toggle test platform
+		this.testPlatform = this.game.add.sprite(game.world.width/2 + 300, game.world.height/2 + 80, 'acid');
+		this.game.physics.p2.enable(this.testPlatform, this.DEBUG_BODIES);
+		this.testPlatform.body.setMaterial(this.baseTerrainMaterial);
+        //this.testPlatform.body.clearShapes();
+		//this.testPlatform.body.loadPolygon("physics", "PyramidLevel");
+		this.testPlatform.body.static = true;
+		this.testPlatform.body.setCollisionGroup(this.platformCollisionGroup);
+		this.testPlatform.body.collides([this.platformCollisionGroup, this.playerCollisionGroup, this.ballCollisionGroup]);
+		//this.baseTerrainMaterial = game.physics.p2.createMaterial('baseTerrainMaterial', this.baseTerrain.body);
+
 		//Hazard 1
 		this.hazard = new  Hazard(this.game, (game.world.width/2)-200, 590, 'acid', 
 			this.playerCollisionGroup, this.ballCollisionGroup, this.hazardCollisionGroup);
@@ -142,7 +154,7 @@ Play.prototype = {
 		this.ball1.body.setCollisionGroup(this.ballCollisionGroup);
 		this.ball1.body.collides([this.ballCollisionGroup, this.playerCollisionGroup, 
 			this.attackCollisionGroup, this.terrainCollisionGroup, this.hazardCollisionGroup, 
-			this.bubbleCollisionGroup]);
+			this.bubbleCollisionGroup, this.platformCollisionGroup]);
 		this.ballGroup.add(this.ball1);
 
 		// Ball 2
@@ -153,7 +165,7 @@ Play.prototype = {
 		this.ball2.body.setCollisionGroup(this.ballCollisionGroup);
 		this.ball2.body.collides([this.ballCollisionGroup, this.playerCollisionGroup, 
 			this.attackCollisionGroup, this.terrainCollisionGroup, this.hazardCollisionGroup, 
-			this.bubbleCollisionGroup]);
+			this.bubbleCollisionGroup, this.platformCollisionGroup]);
 		this.ballGroup.add(this.ball2);
 
 		//Player bubble
@@ -178,7 +190,7 @@ Play.prototype = {
 		this.breakable.body.setCollisionGroup(this.ballCollisionGroup);
 		this.breakable.body.collides([this.ballCollisionGroup, this.playerCollisionGroup, 
 			this.attackCollisionGroup, this.terrainCollisionGroup, this.hazardCollisionGroup, 
-			this.bubbleCollisionGroup]);
+			this.bubbleCollisionGroup, this.platformCollisionGroup]);
 		this.breakableGroup.add(this.breakable);
 
 		//Player 1
@@ -202,7 +214,7 @@ Play.prototype = {
 		this.player.body.setMaterial(this.playerMaterial);
 		this.player.body.setCollisionGroup(this.playerCollisionGroup);
 		this.player.body.collides([this.ballCollisionGroup, this.terrainCollisionGroup, 
-			this.hazardCollisionGroup]);
+			this.hazardCollisionGroup, this.platformCollisionGroup]);
 		this.playerGroup.add(this.player);
 		this.player.animations.add('run', [0,1,2,3,4,5,6,7,8,9], 10, true);
 		this.player.animations.play('run');
@@ -228,7 +240,7 @@ Play.prototype = {
 		//this.player2.body.setMaterial(this.playerMaterial);
 		this.player2.body.setCollisionGroup(this.playerCollisionGroup);
 		this.player2.body.collides([this.ballCollisionGroup, this.terrainCollisionGroup, 
-			this.hazardCollisionGroup]);
+			this.hazardCollisionGroup, this.platformCollisionGroup]);
 		this.playerGroup.add(this.player2);
 		this.player2.animations.add('run', [0,1,2,3,4,5,6,7,8,9], 10, true);
 		this.player2.animations.play('run');
@@ -320,6 +332,10 @@ Play.prototype = {
 		this.player.body.createBodyCallback(this.baseTerrain, this.jumpReset);
 		this.player2.body.createBodyCallback(this.baseTerrain, this.jumpReset);
 
+		//test callbacks
+		this.player.body.createBodyCallback(this.testPlatform, this.jumpReset);
+		this.player2.body.createBodyCallback(this.testPlatform, this.jumpReset);
+
 		//create callback for ball or hazards with players to kill players when hit
 		this.player.body.createGroupCallback(this.ballCollisionGroup, this.hitByBall);
 		this.player2.body.createGroupCallback(this.ballCollisionGroup, this.hitByBall);
@@ -340,6 +356,28 @@ Play.prototype = {
 	},
 	
 	update: function() {
+		/* This did not work, just so ya know.
+		if (this.player.body.velocity.y < -100) {
+			this.player.body.collides([this.ballCollisionGroup, this.terrainCollisionGroup, 
+				this.hazardCollisionGroup]);
+			this.testPlatform.body.collides([this.platformCollisionGroup]);
+		} else {
+			this.player.body.collides([this.ballCollisionGroup, this.terrainCollisionGroup, 
+				this.hazardCollisionGroup, this.platformCollisionGroup]);
+			this.testPlatform.body.collides([this.platformCollisionGroup, this.playerCollisionGroup]);
+		}
+
+		if (this.player2.body.velocity.y < -100) {
+			this.player2.body.collides([this.ballCollisionGroup, this.terrainCollisionGroup, 
+				this.hazardCollisionGroup]);
+			this.testPlatform.body.collides([this.platformCollisionGroup]);
+		} else {
+			this.player2.body.collides([this.ballCollisionGroup, this.terrainCollisionGroup, 
+				this.hazardCollisionGroup, this.platformCollisionGroup]);
+			this.testPlatform.body.collides([this.platformCollisionGroup, this.playerCollisionGroup]);
+		}
+		*/
+
 		//Check prefab update functions for more information on updates.
     	if(game.input.keyboard.isDown(Phaser.Keyboard.R)) {
     		game.state.start('GameOver', true, false, this.player.lives, this.player2.lives);
@@ -352,13 +390,33 @@ Play.prototype = {
 		thisBody.sprite.jumps = thisBody.sprite.MAX_JUMP;
 	},
 
-	//this makes players move through each other.
-	checkPlayerVsPlayerCollision: function(body1, body2) {
+	//this processes the collisions and determines whether we want it to
+	// be considered a valid collision (true) or not (false).
+	checkCollision: function(body1, body2) {
+		//if both bodies are player sprites, return false
 		if ((body1.sprite === this.player && body2.sprite === this.player2) || 
 			(body2.sprite === this.player && body1.sprite === this.player2)) {
+
 			return false;
+
+		//if the first body is a player, a ball, or a breakable and the second is a platform; return false
+		} else if ((body1.sprite === this.player || body1.sprite === this.player2 || body1.sprite === this.ball1 ||  
+			body1.sprite === this.ball2 ||  body1.sprite === this.breakable) && body2.sprite === this.testPlatform) {
+
+			if (body1.sprite.body.velocity.y < 0) {
+				return false;
+			}
+
+		//if the second body is a player, a ball, or a breakable and the first is a platform; return false
+		} else if ((body2.sprite === this.player || body2.sprite === this.player2 || body2.sprite === this.ball1 ||  
+			body2.sprite === this.ball2 ||  body2.sprite === this.breakable) && body1.sprite === this.testPlatform) {
+
+			if (body2.sprite.body.velocity.y < 0) {
+				return false;
+			}
 		}
 
+		//otherwise this collision is valid
 		return true;
 	},
 
@@ -377,7 +435,7 @@ Play.prototype = {
 
 		//apply strike force
 		body2.sprite.body.velocity.x = body1.sprite.STRIKE_STRENGTH * body1.sprite.direction;
-		body2.sprite.body.velocity.y -= body1.sprite.STRIKE_STRENGTH / 4;
+		body2.sprite.body.velocity.y -= body1.sprite.STRIKE_STRENGTH / 2;
 
 		//set projectile to lethal
 		body2.sprite.isLethal = true;
