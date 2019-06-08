@@ -23,7 +23,7 @@ Play.prototype = {
 
 		game.physics.p2.gravity.y = 500;
 
-		//this prevents players from bumping into each other.
+		//this allows us to set specific conditions for valid collisions.
 		game.physics.p2.setPostBroadphaseCallback(this.checkCollision, this);
 
 		//collision groups
