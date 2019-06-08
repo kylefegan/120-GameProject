@@ -91,14 +91,17 @@ Player.prototype.update = function() {
 				this.body.velocity.y = 1000;
 
 				//used to prevent fast fall sliding
-				this.outerContext.baseTerVsPlayContact.friction = 1e7;
+				//this.outerContext.baseTerVsPlayContact.friction = 1e7;
+				this.outerContext.playTerrContact[1].friction = 1e7;
+				
 			} else {
 				//this.body.data.gravityScale = 1;
 			}
 
 			//resets friction if not fast falling
 			if (this.body.velocity.y < 900) {
-				this.outerContext.baseTerVsPlayContact.friction = 1.0;
+				//this.outerContext.baseTerVsPlayContact.friction = 1.0;
+				this.outerContext.playTerrContact[1].friction = 1.0;
 			}
 
 			//jump controls
@@ -176,7 +179,8 @@ Player.prototype.update = function() {
 				this.body.velocity.y = 1000;
 
 				//used to prevent fast fall sliding
-				this.outerContext.baseTerVsPlay2Contact.friction = 1e7;
+				//this.outerContext.baseTerVsPlay2Contact.friction = 1e7;
+				this.outerContext.playTerrContact[2].friction = 1e7;
 			} else {
 				//this.body.data.gravityScale = 1;
 			}
@@ -190,7 +194,8 @@ Player.prototype.update = function() {
 
 			//resets friction if not fast falling
 			if (this.body.velocity.y < 900) {
-				this.outerContext.baseTerVsPlay2Contact.friction = 1.0;
+				//this.outerContext.baseTerVsPlay2Contact.friction = 1.0;
+				this.outerContext.playTerrContact[2].friction = 1.0;
 			}
 			
 			//letting go of the UP key subtracts a jump

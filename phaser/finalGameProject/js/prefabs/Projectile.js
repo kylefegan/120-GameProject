@@ -1,7 +1,7 @@
 //Projectile prefab
 
 //Projectile constructor
-var Projectile = function(game, x, y, key, breakable, outerContext) {
+var Projectile = function(game, x, y, key, breakable, proNum, outerContext) {
 
 	this.DEBUG_BODIES = false; //toggle for physics body debug
 	
@@ -13,11 +13,15 @@ var Projectile = function(game, x, y, key, breakable, outerContext) {
 
 	this.OBJECT_MASS = 1; //mass of projectile objects
 	this.VEL_CHECK = 5; //velocity check for cancelling lethality
+	this.BOUNCE_THRESHOLD_MAX = 10; //used to prevent object clipping/slipping through platforms
+	this.BOUNCE_THRESHOLD_MIN = -4; //used to prevent object clipping/slipping through platforms
 
 	this.xPos = x;
 	this.yPos = y;
 	this.isBreakable = breakable;
+	this.outerContext = outerContext;
 	this.unbroken = true;
+	this.proNum = proNum;
 	this.body.mass = this.OBJECT_MASS;
 	this.isLethal = false; //toggle used to check if a player should die on collision,
 						   //check play state's playerAttack for details on triggers
@@ -62,6 +66,14 @@ Projectile.prototype.update = function() {
 		} else {
 			this.tint = 0xFFFFFF; //white, removes tint
 		}
+	}
+
+	//checks y velocity to prevent sinking into floating platforms.
+	if (this.body.velocity.y < this.BOUNCE_THRESHOLD_MAX && this.body.velocity.y > this.BOUNCE_THRESHOLD_MIN) {
+		//console.log(this.proNum + ': y velocity: ' + this.body.velocity.y);
+		this.outerContext.proPlatContact[this.proNum].restitution = 0;
+	} else {
+		this.outerContext.proPlatContact[this.proNum].restitution = 0.5;
 	}
 
 }
