@@ -13,6 +13,21 @@ Play.prototype = {
 		// playerAttackZone prefabs for their bodies.
 		this.DEBUG_BODIES = false;
 
+		//---------------------
+		// Material containers
+		//---------------------
+		this.playerMaterials = new Array();
+		this.projectileMaterials = new Array();
+		this.bubbleMaterials = new Array();
+		this.playTerrContact = new Array(); //Player/Terrain contact
+		this.playPlatContact = new Array(); //Player/Platform contact
+		this.proTerrContact = new Array();  //Projectile/Terrain contact
+		this.proPlatContact = new Array();  //Projectile/Platform contact
+		this.proHazContact = new Array();   //Projectile/Hazard contact
+		this.bubProContact = new Array();   //Bubble/Projectile container
+		//this.bubProContact[1] = new Array();//Player 1 Bubble/Projectile contacts
+		//this.bubProContact[2] = new Array();//player 2 Bubble/Projectile contacts
+
 		game.stage.setBackgroundColor('#87CEEB'); //stage background color: light blue
 
 		game.physics.startSystem(Phaser.Physics.P2JS);
@@ -24,7 +39,7 @@ Play.prototype = {
 		game.physics.p2.gravity.y = 500;
 
 		//this prevents players from bumping into each other.
-		game.physics.p2.setPostBroadphaseCallback(this.checkPlayerVsPlayerCollision, this);
+		game.physics.p2.setPostBroadphaseCallback(this.checkCollision, this);
 
 		//collision groups
 		//the attack group will be populated when the player attacks. A group is needed so it 
@@ -35,6 +50,7 @@ Play.prototype = {
 		this.terrainCollisionGroup = game.physics.p2.createCollisionGroup();
 		this.hazardCollisionGroup = game.physics.p2.createCollisionGroup();
 		this.bubbleCollisionGroup = game.physics.p2.createCollisionGroup();
+		this.platformCollisionGroup = game.physics.p2.createCollisionGroup();
 		//this.breakableCollisionGroup = game.physics.p2.createCollisionGroup();
 		game.physics.p2.updateBoundsCollisionGroup();
 
@@ -118,6 +134,18 @@ Play.prototype = {
 		this.baseTerrain.body.collides([this.ballCollisionGroup, this.playerCollisionGroup]);
 		this.baseTerrainMaterial = game.physics.p2.createMaterial('baseTerrainMaterial', this.baseTerrain.body);
 
+		//physics toggle test platform
+		this.testPlatform = this.game.add.sprite(game.world.width/2 + 300, game.world.height/2 + 80, 'acid');
+		this.game.physics.p2.enable(this.testPlatform, this.DEBUG_BODIES);
+		//this.testPlatform.body.setMaterial(this.baseTerrainMaterial);
+        //this.testPlatform.body.clearShapes();
+		//this.testPlatform.body.loadPolygon("physics", "PyramidLevel");
+		this.testPlatform.body.static = true;
+		this.testPlatform.body.setCollisionGroup(this.platformCollisionGroup);
+		this.testPlatform.body.collides([this.platformCollisionGroup, this.playerCollisionGroup, this.ballCollisionGroup]);
+		this.platformMaterial = game.physics.p2.createMaterial('platformMaterial');
+		this.testPlatform.body.setMaterial(this.platformMaterial);
+
 		//Hazard 1
 		this.hazard = new  Hazard(this.game, (game.world.width/2)-200, 590, 'acid', 
 			this.playerCollisionGroup, this.ballCollisionGroup, this.hazardCollisionGroup);
@@ -134,26 +162,27 @@ Play.prototype = {
 		this.hazardGroup.add(this.hazard);
 
 		// Ball 1
-		this.ball1 = new Projectile(this.game, 230, 300, 'ball', false, this);
+		this.ball1 = new Projectile(this.game, 230, 300, 'ball', false, 1, this);
 		game.physics.p2.enable(this.ball1, this.DEBUG_BODIES);
 		this.ball1.body.setCircle(16);
-		this.ballMaterial = game.physics.p2.createMaterial('ball1Material');
-		this.ball1.body.setMaterial(this.ballMaterial);
+		this.projectileMaterials[1] = game.physics.p2.createMaterial('ball1Material');
+		this.ball1.body.setMaterial(this.projectileMaterials[1]);
 		this.ball1.body.setCollisionGroup(this.ballCollisionGroup);
 		this.ball1.body.collides([this.ballCollisionGroup, this.playerCollisionGroup, 
 			this.attackCollisionGroup, this.terrainCollisionGroup, this.hazardCollisionGroup, 
-			this.bubbleCollisionGroup]);
+			this.bubbleCollisionGroup, this.platformCollisionGroup]);
 		this.ballGroup.add(this.ball1);
 
 		// Ball 2
-		this.ball2 = new Projectile(this.game, this.game.width - 230, 300, 'ball', false, this);
+		this.ball2 = new Projectile(this.game, this.game.width - 230, 300, 'ball', false, 2, this);
 		game.physics.p2.enable(this.ball2, this.DEBUG_BODIES);
 		this.ball2.body.setCircle(16);
-		this.ball2.body.setMaterial(this.ballMaterial);
+		this.projectileMaterials[2] = game.physics.p2.createMaterial('ball2Material');
+		this.ball2.body.setMaterial(this.projectileMaterials[2]);
 		this.ball2.body.setCollisionGroup(this.ballCollisionGroup);
 		this.ball2.body.collides([this.ballCollisionGroup, this.playerCollisionGroup, 
 			this.attackCollisionGroup, this.terrainCollisionGroup, this.hazardCollisionGroup, 
-			this.bubbleCollisionGroup]);
+			this.bubbleCollisionGroup, this.platformCollisionGroup]);
 		this.ballGroup.add(this.ball2);
 
 		//Player bubble
@@ -161,24 +190,26 @@ Play.prototype = {
 		// is never truly used by anything else; it actually terminates itself shortly after creation
 		//PlayerBubble = function(game, x, y, key, outerContext)
 		this.bubblePlaceHolder = new PlayerBubble(this.game, 50, this.game.height - 100, 
-			'playerBubble', this);
+			'playerBubble', 1, this);
 		this.bubblePlaceHolder.alpha = 0;
 		this.game.add.existing(this.bubblePlaceHolder);
-		this.bubbleMaterial = game.physics.p2.createMaterial('bubbleMaterial');
-		this.bubblePlaceHolder.body.setMaterial(this.bubbleMaterial);
+		this.bubbleMaterials[1] = game.physics.p2.createMaterial('bubbleMaterial');
+		this.bubbleMaterials[2] = this.bubbleMaterials[1];
+		this.bubblePlaceHolder.body.setMaterial(this.bubbleMaterials[1]);
 		this.bubblePlaceHolder.body.setCollisionGroup(this.bubbleCollisionGroup);
 		this.bubblePlaceHolder.body.collides([this.ballCollisionGroup]);
 		this.bubbleGroup.add(this.bubblePlaceHolder);
 
 		//Breakable stage object
-		this.breakable = new Projectile(this.game, this.game.width/2, this.game.height/2 - 20, 'playerBubble', true, this);
+		this.breakable = new Projectile(this.game, this.game.width/2, this.game.height/2 - 20, 'playerBubble', true, 3, this);
 		this.game.add.existing(this.breakable);
 		this.breakable.body.setCircle(16);
-		this.breakable.body.setMaterial(this.ballMaterial);
+		this.projectileMaterials[3] = game.physics.p2.createMaterial('breakable1Material');
+		this.breakable.body.setMaterial(this.projectileMaterials[3]);
 		this.breakable.body.setCollisionGroup(this.ballCollisionGroup);
 		this.breakable.body.collides([this.ballCollisionGroup, this.playerCollisionGroup, 
 			this.attackCollisionGroup, this.terrainCollisionGroup, this.hazardCollisionGroup, 
-			this.bubbleCollisionGroup]);
+			this.bubbleCollisionGroup, this.platformCollisionGroup]);
 		this.breakableGroup.add(this.breakable);
 
 		//Player 1
@@ -198,11 +229,11 @@ Play.prototype = {
 		this.player.body.mass = this.player.PLAYER_MASS;
 		this.player.body.damping = this.player.PLAYER_DAMPING;
 		//this.playerMaterial = game.physics.p2.createMaterial('playerMaterial', this.player.body);
-		this.playerMaterial = game.physics.p2.createMaterial('playerMaterial');
-		this.player.body.setMaterial(this.playerMaterial);
+		this.playerMaterials[1] = game.physics.p2.createMaterial('player1Material');
+		this.player.body.setMaterial(this.playerMaterials[1]);
 		this.player.body.setCollisionGroup(this.playerCollisionGroup);
 		this.player.body.collides([this.ballCollisionGroup, this.terrainCollisionGroup, 
-			this.hazardCollisionGroup]);
+			this.hazardCollisionGroup, this.platformCollisionGroup]);
 		this.playerGroup.add(this.player);
 		this.player.animations.add('run', [0,1,2,3,4,5,6,7,8,9], 10, true);
 		this.player.animations.play('run');
@@ -223,12 +254,12 @@ Play.prototype = {
 		this.player2.body.dynamic = true;
 		this.player2.body.mass = this.player2.PLAYER_MASS;
 		this.player2.body.damping = this.player2.PLAYER_DAMPING;
-		this.player2Material = game.physics.p2.createMaterial('player2Material', this.player2.body);
-		this.player2.body.setMaterial(this.player2Material);
+		this.playerMaterials[2] = game.physics.p2.createMaterial('player2Material');
+		this.player2.body.setMaterial(this.playerMaterials[2]);
 		//this.player2.body.setMaterial(this.playerMaterial);
 		this.player2.body.setCollisionGroup(this.playerCollisionGroup);
 		this.player2.body.collides([this.ballCollisionGroup, this.terrainCollisionGroup, 
-			this.hazardCollisionGroup]);
+			this.hazardCollisionGroup, this.platformCollisionGroup]);
 		this.playerGroup.add(this.player2);
 		this.player2.animations.add('run', [0,1,2,3,4,5,6,7,8,9], 10, true);
 		this.player2.animations.play('run');
@@ -244,81 +275,105 @@ Play.prototype = {
 		this.attackZonePlaceHolder.body.collides(this.ballCollisionGroup, this.playerAttack, this);
 		this.attackGroup.add(this.attackZonePlaceHolder); //don't know if this is truly necessary.
 
-		//contact material setup
-		// Terrain Vs Player contact
-		this.baseTerVsPlayContact = game.physics.p2.createContactMaterial(this.playerMaterial, 
-			this.baseTerrainMaterial);
+		//======Material configuration section======
+		//-----Contact Materials key-----
+		// FRICTION to use in the contact of these two materials.
+		// RESTITUTION (i.e. how bouncy it is!) to use in the contact of these two materials. //mostly works. Flat 
+																							  //surfaces: yes, angles: no
+		// STIFFNESS of the resulting ContactEquation that this baseTerVsPlayContact generate.//causes some clipping with 
+																							  //buoyant fluid motions
+		// RELAXATION of the resulting ContactEquation that this baseTerVsPlayContact generate.
+		// STIFFNESS of the resulting FrictionEquation that this baseTerVsPlayContact generate.
+		// RELAXATION of the resulting FrictionEquation that this baseTerVsPlayContact generate.
+		// Will add SURFACE VELOCITY to this material. If bodyA rests on top of bodyB, and the 
+	    // surface velocity is positive, bodyA will slide to the right.
 
-		// Friction to use in the contact of these two materials.
-		this.baseTerVsPlayContact.friction = 1.0;
+		// Terrain Vs Players contact
+		for (var i = 1; i < 3; i++) { //2 players
+			this.playTerrContact[i] = game.physics.p2.createContactMaterial(this.playerMaterials[i], 
+				this.baseTerrainMaterial);
+			this.playTerrContact[i].friction = 1.0;
+		    this.playTerrContact[i].restitution = 0.0;
+		    this.playTerrContact[i].stiffness = 1e7 * 2;
+		    this.playTerrContact[i].relaxation = 3; 
+		    this.playTerrContact[i].frictionStiffness = 1e7;
+		    this.playTerrContact[i].frictionRelaxation = 3;
+		    this.playTerrContact[i].surfaceVelocity = 0;
+		}
 
-		// Restitution (i.e. how bouncy it is!) to use in the contact of these two materials.
-	    this.baseTerVsPlayContact.restitution = 0.0; //mostly works. Flat surfaces: yes, angles: no
-	    
-	    // Stiffness of the resulting ContactEquation that this baseTerVsPlayContact generate.
-	    this.baseTerVsPlayContact.stiffness = 1e7 * 2; //causes some clipping with buoyant fluid motions
-	    
-	    // Relaxation of the resulting ContactEquation that this baseTerVsPlayContact generate.
-	    this.baseTerVsPlayContact.relaxation = 3;
-	    
-	    // Stiffness of the resulting FrictionEquation that this baseTerVsPlayContact generate.   
-	    this.baseTerVsPlayContact.frictionStiffness = 1e7; 
-	    
-	    // Relaxation of the resulting FrictionEquation that this baseTerVsPlayContact generate.   
-	    this.baseTerVsPlayContact.frictionRelaxation = 3;
-	    
-	    // Will add surface velocity to this material. If bodyA rests on top of bodyB, and the 
-	    // surface velocity is positive, bodyA will slide to the right. 
-	    this.baseTerVsPlayContact.surfaceVelocity = 0;
-
-	    // Terrain Vs Player 2 contact, same as player 1
-		this.baseTerVsPlay2Contact = game.physics.p2.createContactMaterial(this.player2Material, 
-			this.baseTerrainMaterial);
-		this.baseTerVsPlay2Contact.friction = 1.0;
-	    this.baseTerVsPlay2Contact.restitution = 0.0;
-	    this.baseTerVsPlay2Contact.stiffness = 1e7 * 2;
-	    this.baseTerVsPlay2Contact.relaxation = 3; 
-	    this.baseTerVsPlay2Contact.frictionStiffness = 1e7;
-	    this.baseTerVsPlay2Contact.frictionRelaxation = 3;
-	    this.baseTerVsPlay2Contact.surfaceVelocity = 0;
+		// Platform Vs Players contact
+		for (var i = 1; i < 3; i++) { //2 players
+			this.playPlatContact[i] = game.physics.p2.createContactMaterial(this.playerMaterials[i], 
+				this.platformMaterial);
+			this.playPlatContact[i].friction = 1.0;
+		    this.playPlatContact[i].restitution = 0.0;
+		    this.playPlatContact[i].stiffness = 1e7 * 2;
+		    this.playPlatContact[i].relaxation = 3; 
+		    this.playPlatContact[i].frictionStiffness = 1e7;
+		    this.playPlatContact[i].frictionRelaxation = 3;
+		    this.playPlatContact[i].surfaceVelocity = 0;
+		}
 
 	    // Terrain Vs Ball contact
-	    this.baseTerVsBallContact = game.physics.p2.createContactMaterial(this.ballMaterial, 
-	    	this.baseTerrainMaterial);
-		this.baseTerVsBallContact.friction = 1.0;
-	    this.baseTerVsBallContact.restitution = 0.5; //provides some bounce //0.5
-	    this.baseTerVsBallContact.stiffness = 1e7;
-	    this.baseTerVsBallContact.relaxation = 3;  
-	    this.baseTerVsBallContact.frictionStiffness = 1e7;   
-	    this.baseTerVsBallContact.frictionRelaxation = 3;
-	    this.baseTerVsBallContact.surfaceVelocity = 0;
+	    for (var i = 1; i < 4; i++) { //this count will need to be change when/if more objects are added
+		    this.proTerrContact[i] = game.physics.p2.createContactMaterial(this.projectileMaterials[i], 
+		    	this.baseTerrainMaterial);
+			this.proTerrContact[i].friction = 1.0;
+		    this.proTerrContact[i].restitution = 0.5; //provides some bounce
+		    this.proTerrContact[i].stiffness = 1e7;
+		    this.proTerrContact[i].relaxation = 3;  
+		    this.proTerrContact[i].frictionStiffness = 1e7;   
+		    this.proTerrContact[i].frictionRelaxation = 3;
+		    this.proTerrContact[i].surfaceVelocity = 0;
+		}
+
+		// Platform Vs Ball contact
+	    for (var i = 1; i < 4; i++) {
+		    this.proPlatContact[i] = game.physics.p2.createContactMaterial(this.projectileMaterials[i], 
+		    	this.platformMaterial);
+			this.proPlatContact[i].friction = 1.0;
+		    this.proPlatContact[i].restitution = 0.5; //provides some bounce
+		    this.proPlatContact[i].stiffness = 1e7;
+		    this.proPlatContact[i].relaxation = 3;  
+		    this.proPlatContact[i].frictionStiffness = 1e7;   
+		    this.proPlatContact[i].frictionRelaxation = 3;
+		    this.proPlatContact[i].surfaceVelocity = 0;
+		}
 
 	    // Hazard Vs Ball contact, same as terrain vs ball.
-	    this.hazardVsBallContact = game.physics.p2.createContactMaterial(this.ballMaterial, 
-	    	this.hazardMaterial);
-		this.hazardVsBallContact.friction = 1.0;
-	    this.hazardVsBallContact.restitution = 0.5;
-	    this.hazardVsBallContact.stiffness = 100; //gives the balls a buoyant movement on hazards.
-	    this.hazardVsBallContact.relaxation = 3;  
-	    this.hazardVsBallContact.frictionStiffness = 1e7;   
-	    this.hazardVsBallContact.frictionRelaxation = 3;
-	    this.hazardVsBallContact.surfaceVelocity = 0;
+	    for (var i = 1; i < 4; i++) {
+		    this.proHazContact[i] = game.physics.p2.createContactMaterial(this.projectileMaterials[i], 
+		    	this.hazardMaterial);
+			this.proHazContact[i].friction = 1.0;
+		    this.proHazContact[i].restitution = 0.5;
+		    this.proHazContact[i].stiffness = 100; //gives the balls a buoyant movement on hazards.
+		    this.proHazContact[i].relaxation = 3;  
+		    this.proHazContact[i].frictionStiffness = 1e7;   
+		    this.proHazContact[i].frictionRelaxation = 3;
+		    this.proHazContact[i].surfaceVelocity = 0;
+		}
 
 	    // Bubble Vs Ball contact
-	    this.bubbleVsBallContact = game.physics.p2.createContactMaterial(this.ballMaterial, 
-	    	this.bubbleMaterial);
-		this.bubbleVsBallContact.friction = 1.0;
-	    this.bubbleVsBallContact.restitution = 0.5;
-	    this.bubbleVsBallContact.stiffness = 1e7;
-	    this.bubbleVsBallContact.relaxation = 3;  
-	    this.bubbleVsBallContact.frictionStiffness = 1e7;   
-	    this.bubbleVsBallContact.frictionRelaxation = 3;
-	    this.bubbleVsBallContact.surfaceVelocity = 0;
+	    for (var i = 1; i < 3; i++) {
+		    this.bubProContact[i] = game.physics.p2.createContactMaterial(this.projectileMaterials[i], 
+		    	this.bubbleMaterials[i]);
+			this.bubProContact[i].friction = 1.0;
+		    this.bubProContact[i].restitution = 0.5;
+		    this.bubProContact[i].stiffness = 1e7;
+		    this.bubProContact[i].relaxation = 3;  
+		    this.bubProContact[i].frictionStiffness = 1e7;   
+		    this.bubProContact[i].frictionRelaxation = 3;
+		    this.bubProContact[i].surfaceVelocity = 0;
+		}
 
 		// create callback event if player hits baseTerrain
 		game.physics.p2.setImpactEvents(true);
 		this.player.body.createBodyCallback(this.baseTerrain, this.jumpReset);
 		this.player2.body.createBodyCallback(this.baseTerrain, this.jumpReset);
+
+		//test callbacks
+		this.player.body.createBodyCallback(this.testPlatform, this.jumpReset);
+		this.player2.body.createBodyCallback(this.testPlatform, this.jumpReset);
 
 		//create callback for ball or hazards with players to kill players when hit
 		this.player.body.createGroupCallback(this.ballCollisionGroup, this.hitByBall);
@@ -340,6 +395,28 @@ Play.prototype = {
 	},
 	
 	update: function() {
+		/* This did not work, just so ya know.
+		if (this.player.body.velocity.y < -100) {
+			this.player.body.collides([this.ballCollisionGroup, this.terrainCollisionGroup, 
+				this.hazardCollisionGroup]);
+			this.testPlatform.body.collides([this.platformCollisionGroup]);
+		} else {
+			this.player.body.collides([this.ballCollisionGroup, this.terrainCollisionGroup, 
+				this.hazardCollisionGroup, this.platformCollisionGroup]);
+			this.testPlatform.body.collides([this.platformCollisionGroup, this.playerCollisionGroup]);
+		}
+
+		if (this.player2.body.velocity.y < -100) {
+			this.player2.body.collides([this.ballCollisionGroup, this.terrainCollisionGroup, 
+				this.hazardCollisionGroup]);
+			this.testPlatform.body.collides([this.platformCollisionGroup]);
+		} else {
+			this.player2.body.collides([this.ballCollisionGroup, this.terrainCollisionGroup, 
+				this.hazardCollisionGroup, this.platformCollisionGroup]);
+			this.testPlatform.body.collides([this.platformCollisionGroup, this.playerCollisionGroup]);
+		}
+		*/
+
 		//Check prefab update functions for more information on updates.
     	if(game.input.keyboard.isDown(Phaser.Keyboard.R)) {
     		game.state.start('GameOver', true, false, this.player.lives, this.player2.lives);
@@ -352,13 +429,33 @@ Play.prototype = {
 		thisBody.sprite.jumps = thisBody.sprite.MAX_JUMP;
 	},
 
-	//this makes players move through each other.
-	checkPlayerVsPlayerCollision: function(body1, body2) {
+	//this processes the collisions and determines whether we want it to
+	// be considered a valid collision (true) or not (false).
+	checkCollision: function(body1, body2) {
+		//if both bodies are player sprites, return false
 		if ((body1.sprite === this.player && body2.sprite === this.player2) || 
 			(body2.sprite === this.player && body1.sprite === this.player2)) {
+
 			return false;
+
+		//if the first body is a player, a ball, or a breakable and the second is a platform; return false
+		} else if ((body1.sprite === this.player || body1.sprite === this.player2 || body1.sprite === this.ball1 ||  
+			body1.sprite === this.ball2 ||  body1.sprite === this.breakable) && body2.sprite === this.testPlatform) {
+
+			if (body1.sprite.body.velocity.y < 0) {
+				return false;
+			}
+
+		//if the second body is a player, a ball, or a breakable and the first is a platform; return false
+		} else if ((body2.sprite === this.player || body2.sprite === this.player2 || body2.sprite === this.ball1 ||  
+			body2.sprite === this.ball2 ||  body2.sprite === this.breakable) && body1.sprite === this.testPlatform) {
+
+			if (body2.sprite.body.velocity.y < 0) {
+				return false;
+			}
 		}
 
+		//otherwise this collision is valid
 		return true;
 	},
 
@@ -377,7 +474,7 @@ Play.prototype = {
 
 		//apply strike force
 		body2.sprite.body.velocity.x = body1.sprite.STRIKE_STRENGTH * body1.sprite.direction;
-		body2.sprite.body.velocity.y -= body1.sprite.STRIKE_STRENGTH / 4;
+		body2.sprite.body.velocity.y -= body1.sprite.STRIKE_STRENGTH / 2;
 
 		//set projectile to lethal
 		body2.sprite.isLethal = true;
