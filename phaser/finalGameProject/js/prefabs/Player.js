@@ -2,7 +2,7 @@
 
 //Player constructor
 var Player = function(game, x, y, key, playerNumber, attackGroup, attackCollisionGroup, ballCollisionGroup,  
-			bubbleGroup, bubbleCollisionGroup, bubbleMaterial, outerContext) {
+			bubbleGroup, bubbleCollisionGroup, outerContext) {
 
 	this.DEBUG_BODIES = false; //toggle for physics body debug
 
@@ -13,7 +13,6 @@ var Player = function(game, x, y, key, playerNumber, attackGroup, attackCollisio
 	game.physics.p2.enable(this, this.DEBUG_BODIES);	// enable physics, I believe this is redundant
 
 	//Constants
-	this.FORCED_GRAVITY = 5; //gravity scale used when player wants to go down faster
 	this.MAX_LIVES = 3; //maximum number of lives
 	this.PLAYER_SCALE = 1; //used to invert player sprite facing direction
 	this.MAX_JUMP = 2; //how many multi jumps a player can make
@@ -23,20 +22,17 @@ var Player = function(game, x, y, key, playerNumber, attackGroup, attackCollisio
 	this.PLAYER_DAMPING = 0.6; //velocity lost per second (between 1 and 0; thus percentage based)
 	this.BUBBLE_COOLDOWN = 200; //about 3.5 SECONDS. This is an inelegant solution.
 	this.ATTACK_SPAWN_OFFSET = 30; //how far in front of the sprite to spawn
-	//potential issue with attack spawn offset anchor position during spawn, requires investigation.
-
+	
 	//variables
-	//this.fastFall = 0;
 	this.playerDied = game.add.audio('playerDied'); //player death audio.
 	this.jumps = this.MAX_JUMP; //tracking var for multi jumping
 	this.playNum = playerNumber; //which player the instance is for
 	this.playerVel = 200; //player move speed
 	this.lives = this.MAX_LIVES; //current tracked lives
 	this.jumping = false;
-	//this.jumped = false;
 	this.bubbleCooldown = 0;
-	//this.body.mass = this.PLAYER_MASS; //this doesn't work for some reason
-	//this.body.damping = this.PLAYER_DAMPING; //this doesn't work for some reason
+	//this.body.mass = this.PLAYER_MASS; //this doesn't work for some reason, handled in play state
+	//this.body.damping = this.PLAYER_DAMPING; //this doesn't work for some reason, handled in play state
 	this.outerContext = outerContext; //required to call functions written in 
 	                                  //play state. Didn't know if you could, or 
 	                                  //how to, create new functions in prefabs at
@@ -48,7 +44,7 @@ var Player = function(game, x, y, key, playerNumber, attackGroup, attackCollisio
 	this.ballCollisionGroup = ballCollisionGroup;
 	this.bubbleGroup = bubbleGroup;
 	this.bubbleCollisionGroup = bubbleCollisionGroup;
-	this.bubbleMaterial = bubbleMaterial;
+	//this.bubbleMaterial = bubbleMaterial;
 
 	//coloring players to differentiate them.
 	if (this.playNum == 1) {
@@ -87,20 +83,15 @@ Player.prototype.update = function() {
 			}
 
 			if (game.input.keyboard.justPressed(Phaser.Keyboard.S)) {
-				//this.body.data.gravityScale = this.FORCED_GRAVITY;
-				this.body.velocity.y = 1000;
+				this.body.velocity.y = 1000; //fast fall
 
 				//used to prevent fast fall sliding
-				//this.outerContext.baseTerVsPlayContact.friction = 1e7;
 				this.outerContext.playTerrContact[1].friction = 1e7;
 				
-			} else {
-				//this.body.data.gravityScale = 1;
 			}
 
 			//resets friction if not fast falling
 			if (this.body.velocity.y < 900) {
-				//this.outerContext.baseTerVsPlayContact.friction = 1.0;
 				this.outerContext.playTerrContact[1].friction = 1.0;
 			}
 
@@ -108,7 +99,6 @@ Player.prototype.update = function() {
 			if(this.jumps > 0 && game.input.keyboard.downDuration(Phaser.Keyboard.W, 150)) {
 			    this.body.velocity.y = this.JUMP_SPEED;
 			    this.jumping = true;
-			    //this.jumped = true;
 			    //console.log(this.body.velocity.y);
 			}
 
@@ -146,14 +136,14 @@ Player.prototype.update = function() {
 
 			//defense bubble
 			if (game.input.keyboard.justPressed(Phaser.Keyboard.V) && (this.bubbleCooldown <= 0)) {
-				//PlayerBubble = function(game, x, y, key, outerContext)
+				//PlayerBubble = function(game, x, y, key, playNum, outerContext)
 				this.bubble = new PlayerBubble(game, this.x, this.y, 'playerBubble', 
 					this.playNum, this.outerContext);
 				this.game.add.existing(this.bubble);
 				//this.bubble.anchor.set(0.5); //P2 may do this automatically.
 				this.bubble.lockConstraint = this.game.physics.p2.createLockConstraint(this.bubble, this, [0,0]);
 				this.bubble.body.setCollisionGroup(this.bubbleCollisionGroup);
-				this.bubble.body.setMaterial(this.bubbleMaterial);
+				this.bubble.body.setMaterial(this.outerContext.bubbleMaterials[this.playNum]);
 				this.bubble.body.collides([this.ballCollisionGroup]);
 				this.bubbleGroup.add(this.bubble);
 				this.bubbleCooldown = this.BUBBLE_COOLDOWN;
@@ -162,6 +152,7 @@ Player.prototype.update = function() {
 		// Player 2 stuff
 		} else if (this.playNum == 2) {
 			
+			//movement keys
 			if(game.input.keyboard.isDown(Phaser.Keyboard.LEFT)) {
 
 				this.body.velocity.x = -this.playerVel;
@@ -175,27 +166,21 @@ Player.prototype.update = function() {
 			}
 
 			if (game.input.keyboard.justPressed(Phaser.Keyboard.DOWN)) {
-				//this.body.data.gravityScale = this.FORCED_GRAVITY;
-				this.body.velocity.y = 1000;
+				this.body.velocity.y = 1000; //fast fall
 
 				//used to prevent fast fall sliding
-				//this.outerContext.baseTerVsPlay2Contact.friction = 1e7;
 				this.outerContext.playTerrContact[2].friction = 1e7;
-			} else {
-				//this.body.data.gravityScale = 1;
+			}
+
+			//resets friction if not fast falling
+			if (this.body.velocity.y < 900) {
+				this.outerContext.playTerrContact[2].friction = 1.0;
 			}
 
 			if(this.jumps > 0 && game.input.keyboard.downDuration(Phaser.Keyboard.UP, 150)) {
 			    this.body.velocity.y = this.JUMP_SPEED;
 			    this.jumping = true;
-			    //this.jumped = true;
 			    //console.log(this.body.velocity.y);
-			}
-
-			//resets friction if not fast falling
-			if (this.body.velocity.y < 900) {
-				//this.outerContext.baseTerVsPlay2Contact.friction = 1.0;
-				this.outerContext.playTerrContact[2].friction = 1.0;
 			}
 			
 			//letting go of the UP key subtracts a jump
@@ -213,6 +198,8 @@ Player.prototype.update = function() {
 					this.attackOffset = this.x -this.ATTACK_SPAWN_OFFSET;
 					this.attackDirection = -1;
 				}
+				
+				//PlayerAttackZone = function(game, x, y, key, playNum, strength, direction, outerContext)
 				this.attackZone = new PlayerAttackZone(game, this.attackOffset, this.y, 'attackZone', this.playNum, 
 					this.STRIKE_STRENGTH, this.attackDirection, this.outerContext);
 				this.attackZone.anchor.x = this.attackAnchor;
@@ -227,22 +214,19 @@ Player.prototype.update = function() {
 
 			//defense bubble
 			if (game.input.keyboard.justPressed(Phaser.Keyboard.PERIOD) && (this.bubbleCooldown <= 0)) {
-				//PlayerBubble = function(game, x, y, key, outerContext)
+				//PlayerBubble = function(game, x, y, key, playNum, outerContext)
 				this.bubble = new PlayerBubble(game, this.x, this.y, 'playerBubble', 
 					this.playNum, this.outerContext);
 				this.game.add.existing(this.bubble);
 				//this.bubble.anchor.set(0.5); //P2 may do this automatically.
 				this.bubble.lockConstraint = this.game.physics.p2.createLockConstraint(this.bubble, this, [0,0]);
 				this.bubble.body.setCollisionGroup(this.bubbleCollisionGroup);
-				this.bubble.body.setMaterial(this.bubbleMaterial);
+				this.bubble.body.setMaterial(this.outerContext.bubbleMaterials[this.playNum]);
 				this.bubble.body.collides([this.ballCollisionGroup]);
 				this.bubbleGroup.add(this.bubble);
 				this.bubbleCooldown = this.BUBBLE_COOLDOWN;
 			}
 		}
 	}
-
-
-
 }
 

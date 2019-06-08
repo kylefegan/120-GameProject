@@ -1,7 +1,7 @@
 //Hazard prefab
 
 //Player constructor
-var Hazard = function(game, x, y, key, playerCollisionGroup,ballCollisionGroup, hazardCollisionGroup) {
+var Hazard = function(game, x, y, key, playerCollisionGroup, ballCollisionGroup, hazardCollisionGroup) {
 
 	this.DEBUG_BODIES = false; //toggle for physics body debug
 

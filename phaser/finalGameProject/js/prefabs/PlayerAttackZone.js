@@ -11,13 +11,10 @@ var PlayerAttackZone = function(game, x, y, key, playNum, strength, direction, o
 
 	game.physics.p2.enable(this, this.DEBUG_BODIES);	// enable physics
 
-	//this.body.data.gravityScale = 0; //prevents hitzone from falling due to gravity
-	//this.body.setZeroVelocity();
-	//this.body.static = true; //prevents movement from kinetic energy
 	this.STRIKE_STRENGTH = strength; //carried over from the player prefab and used in play state function playerAttack()
 	this.direction = direction; //carried over from the player prefab and used in play state function playerAttack()
 	this.outerContext = outerContext; //currently unused in this file but may be needed later.
-	this.lifeTime = 10; //how long the hit zone exists. measured in update cycles.
+	this.lifeTime = 10; //how long the hit zone exists. measured in update cycles. not an elegant solution.
 	this.playNum = playNum;
 	this.lockConstraint = null; //this is set when the attack is spawned in the player prefab
 

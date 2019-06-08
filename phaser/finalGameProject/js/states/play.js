@@ -13,21 +13,6 @@ Play.prototype = {
 		// playerAttackZone prefabs for their bodies.
 		this.DEBUG_BODIES = false;
 
-		//---------------------
-		// Material containers
-		//---------------------
-		this.playerMaterials = new Array();
-		this.projectileMaterials = new Array();
-		this.bubbleMaterials = new Array();
-		this.playTerrContact = new Array(); //Player/Terrain contact
-		this.playPlatContact = new Array(); //Player/Platform contact
-		this.proTerrContact = new Array();  //Projectile/Terrain contact
-		this.proPlatContact = new Array();  //Projectile/Platform contact
-		this.proHazContact = new Array();   //Projectile/Hazard contact
-		this.bubProContact = new Array();   //Bubble/Projectile container
-		//this.bubProContact[1] = new Array();//Player 1 Bubble/Projectile contacts
-		//this.bubProContact[2] = new Array();//player 2 Bubble/Projectile contacts
-
 		game.stage.setBackgroundColor('#87CEEB'); //stage background color: light blue
 
 		game.physics.startSystem(Phaser.Physics.P2JS);
@@ -122,6 +107,22 @@ Play.prototype = {
 			this.pcloud6 = new  Cloud(this.game, -1000, 0, 'cloud6', .1);
 			this.game.add.existing(this.pcloud6);
 			this.pcloud6.sendToBack();
+
+		//---------------------
+		// Material containers.
+		// Ran into problems with P2 when trying to break up materials
+		// across our prefabs so more stuff is handled here than should
+		// really be.
+		//---------------------
+		this.playerMaterials = new Array();
+		this.projectileMaterials = new Array();
+		this.bubbleMaterials = new Array();
+		this.playTerrContact = new Array(); //Player/Terrain contact
+		this.playPlatContact = new Array(); //Player/Platform contact
+		this.proTerrContact = new Array();  //Projectile/Terrain contact
+		this.proPlatContact = new Array();  //Projectile/Platform contact
+		this.proHazContact = new Array();   //Projectile/Hazard contact
+		this.bubProContact = new Array();   //Bubble/Projectile container
 		
 		//Terrain
 		//adds base terrain with custom hitbox and is static
@@ -137,9 +138,6 @@ Play.prototype = {
 		//physics toggle test platform
 		this.testPlatform = this.game.add.sprite(game.world.width/2 + 300, game.world.height/2 + 80, 'acid');
 		this.game.physics.p2.enable(this.testPlatform, this.DEBUG_BODIES);
-		//this.testPlatform.body.setMaterial(this.baseTerrainMaterial);
-        //this.testPlatform.body.clearShapes();
-		//this.testPlatform.body.loadPolygon("physics", "PyramidLevel");
 		this.testPlatform.body.static = true;
 		this.testPlatform.body.setCollisionGroup(this.platformCollisionGroup);
 		this.testPlatform.body.collides([this.platformCollisionGroup, this.playerCollisionGroup, this.ballCollisionGroup]);
@@ -147,6 +145,7 @@ Play.prototype = {
 		this.testPlatform.body.setMaterial(this.platformMaterial);
 
 		//Hazard 1
+		//Hazard = function(game, x, y, key, playerCollisionGroup, ballCollisionGroup, hazardCollisionGroup)
 		this.hazard = new  Hazard(this.game, (game.world.width/2)-200, 590, 'acid', 
 			this.playerCollisionGroup, this.ballCollisionGroup, this.hazardCollisionGroup);
 		this.hazardMaterial = game.physics.p2.createMaterial('hazardMaterial');
@@ -155,6 +154,7 @@ Play.prototype = {
 		this.hazardGroup.add(this.hazard);
 
 		//Hazard 2
+		//Hazard = function(game, x, y, key, playerCollisionGroup, ballCollisionGroup, hazardCollisionGroup)
 		this.hazard2 = new  Hazard(this.game, (game.world.width/2)+200,  590, 'acid', 
 			this.playerCollisionGroup, this.ballCollisionGroup, this.hazardCollisionGroup);
 		this.hazard2.body.setMaterial(this.hazardMaterial);
@@ -162,6 +162,7 @@ Play.prototype = {
 		this.hazardGroup.add(this.hazard);
 
 		// Ball 1
+		//Projectile = function(game, x, y, key, breakable, proNum, outerContext)
 		this.ball1 = new Projectile(this.game, 230, 300, 'ball', false, 1, this);
 		game.physics.p2.enable(this.ball1, this.DEBUG_BODIES);
 		this.ball1.body.setCircle(16);
@@ -174,6 +175,7 @@ Play.prototype = {
 		this.ballGroup.add(this.ball1);
 
 		// Ball 2
+		//Projectile = function(game, x, y, key, breakable, proNum, outerContext)
 		this.ball2 = new Projectile(this.game, this.game.width - 230, 300, 'ball', false, 2, this);
 		game.physics.p2.enable(this.ball2, this.DEBUG_BODIES);
 		this.ball2.body.setCircle(16);
@@ -188,7 +190,7 @@ Play.prototype = {
 		//Player bubble
 		//This place holder bubble is only here to configure the collision mechanics and
 		// is never truly used by anything else; it actually terminates itself shortly after creation
-		//PlayerBubble = function(game, x, y, key, outerContext)
+		//PlayerBubble = function(game, x, y, key, playNum, outerContext)
 		this.bubblePlaceHolder = new PlayerBubble(this.game, 50, this.game.height - 100, 
 			'playerBubble', 1, this);
 		this.bubblePlaceHolder.alpha = 0;
@@ -201,6 +203,7 @@ Play.prototype = {
 		this.bubbleGroup.add(this.bubblePlaceHolder);
 
 		//Breakable stage object
+		//Projectile = function(game, x, y, key, breakable, proNum, outerContext)
 		this.breakable = new Projectile(this.game, this.game.width/2, this.game.height/2 - 20, 'playerBubble', true, 3, this);
 		this.game.add.existing(this.breakable);
 		this.breakable.body.setCircle(16);
@@ -214,11 +217,11 @@ Play.prototype = {
 
 		//Player 1
 		//Player = function(game, x, y, key, playerNumber, attackGroup, attackCollisionGroup,
-		// ballCollisionGroup, ballCollisionGroup, bubbleGroup, bubbleCollisionGroup, bubbleMaterial, outerContext)
+		// ballCollisionGroup, ballCollisionGroup, bubbleGroup, bubbleCollisionGroup, outerContext)
 		this.player = new Player(this.game, this.game.width/2 - 40, this.game.height/2, 'golem', 1, 
 			this.attackGroup, this.attackCollisionGroup, this.ballCollisionGroup, 
-			this.bubbleGroup, this.bubbleCollisionGroup, this.bubbleMaterial, this);
-		if (!this.justStarted) {
+			this.bubbleGroup, this.bubbleCollisionGroup, this);
+		if (!this.justStarted) { //if it's not a new game, carry over life count
 			this.player.lives = this.p1Lives;
 		}
 		this.game.add.existing(this.player);
@@ -228,7 +231,6 @@ Play.prototype = {
 		this.player.body.dynamic = true; //This may actually be unnecessary.
 		this.player.body.mass = this.player.PLAYER_MASS;
 		this.player.body.damping = this.player.PLAYER_DAMPING;
-		//this.playerMaterial = game.physics.p2.createMaterial('playerMaterial', this.player.body);
 		this.playerMaterials[1] = game.physics.p2.createMaterial('player1Material');
 		this.player.body.setMaterial(this.playerMaterials[1]);
 		this.player.body.setCollisionGroup(this.playerCollisionGroup);
@@ -240,11 +242,11 @@ Play.prototype = {
 
 		//Player 2
 		//Player = function(game, x, y, key, playerNumber, attackGroup, attackCollisionGroup, 
-		//ballCollisionGroup, ballCollisionGroup, bubbleGroup, bubbleCollisionGroup, bubbleMaterial, outerContext)
+		//ballCollisionGroup, ballCollisionGroup, bubbleGroup, bubbleCollisionGroup, outerContext)
 		this.player2 = new Player(this.game, this.game.width/2 + 40, this.game.height/2, 'golem', 2, 
 			this.attackGroup, this.attackCollisionGroup, this.ballCollisionGroup, 
-			this.bubbleGroup, this.bubbleCollisionGroup, this.bubbleMaterial, this);
-		if (!this.justStarted) {
+			this.bubbleGroup, this.bubbleCollisionGroup, this);
+		if (!this.justStarted) { //if it's not a new game, carry over life count
 			this.player2.lives = this.p2Lives;
 		}
 		this.game.add.existing(this.player2);
@@ -256,7 +258,6 @@ Play.prototype = {
 		this.player2.body.damping = this.player2.PLAYER_DAMPING;
 		this.playerMaterials[2] = game.physics.p2.createMaterial('player2Material');
 		this.player2.body.setMaterial(this.playerMaterials[2]);
-		//this.player2.body.setMaterial(this.playerMaterial);
 		this.player2.body.setCollisionGroup(this.playerCollisionGroup);
 		this.player2.body.collides([this.ballCollisionGroup, this.terrainCollisionGroup, 
 			this.hazardCollisionGroup, this.platformCollisionGroup]);
@@ -266,7 +267,7 @@ Play.prototype = {
 		
 		//This place holder attackZone is only here to configure the collision mechanics and
 		// is never truly used by anything else; it actually terminates itself after a few update cycles
-		//PlayerAttackZone = function(game, x, y, key, strength, direction, outerContext)
+		//PlayerAttackZone = function(game, x, y, key, playNum, strength, direction, outerContext)
 		this.attackZonePlaceHolder = new PlayerAttackZone(this.game, 50, this.game.height - 100, 
 			'attackZone', 0, 0, 0, this);
 		this.attackZonePlaceHolder.alpha = 0;
@@ -395,27 +396,6 @@ Play.prototype = {
 	},
 	
 	update: function() {
-		/* This did not work, just so ya know.
-		if (this.player.body.velocity.y < -100) {
-			this.player.body.collides([this.ballCollisionGroup, this.terrainCollisionGroup, 
-				this.hazardCollisionGroup]);
-			this.testPlatform.body.collides([this.platformCollisionGroup]);
-		} else {
-			this.player.body.collides([this.ballCollisionGroup, this.terrainCollisionGroup, 
-				this.hazardCollisionGroup, this.platformCollisionGroup]);
-			this.testPlatform.body.collides([this.platformCollisionGroup, this.playerCollisionGroup]);
-		}
-
-		if (this.player2.body.velocity.y < -100) {
-			this.player2.body.collides([this.ballCollisionGroup, this.terrainCollisionGroup, 
-				this.hazardCollisionGroup]);
-			this.testPlatform.body.collides([this.platformCollisionGroup]);
-		} else {
-			this.player2.body.collides([this.ballCollisionGroup, this.terrainCollisionGroup, 
-				this.hazardCollisionGroup, this.platformCollisionGroup]);
-			this.testPlatform.body.collides([this.platformCollisionGroup, this.playerCollisionGroup]);
-		}
-		*/
 
 		//Check prefab update functions for more information on updates.
     	if(game.input.keyboard.isDown(Phaser.Keyboard.R)) {
@@ -483,14 +463,14 @@ Play.prototype = {
 		body1.safeDestroy = true;
 	},
 
-	hitByBall: function(receiver, hitter)
-	{
+	hitByBall: function(receiver, hitter) {	
+		//check to make sure a player hasn't already died. Used to prevent dual player death.
 		if (receiver.sprite.outerContext.player.alive && receiver.sprite.outerContext.player2.alive) {
+			//checks if the object is not an unbroken breakable object.
 			if (!hitter.sprite.isBreakable || (hitter.sprite.isBreakable && !hitter.sprite.unbroken)) {
-				//console.log('!isBreakable || isBreakable && !unbroken');
+				//checks for lethal projectile state
 				if (hitter.sprite.isLethal) {
-					//console.log('isLethal');
-					//console.log(hitter);
+
 					//Death Audio
 					receiver.sprite.playerDied.play();
 
@@ -538,70 +518,10 @@ Play.prototype = {
 				}
 			}
 		}
-
-		//*****************************************************************************************
-		//(David Monroe, 06/04/19) The CODE BELOW IS now DEPRECATED and is only here for reference.
-		//Note: There are other active functions below this deprecated section.
-		/******************************************************************************************
-
-		// NOTES (5/20/19):
-		// -- Kyle Fegan --
-		// I've rewritten the function to take into account horizontal and vertical velocity.
-		// When a player OR a physics object is traveling above lethal velocity when a
-		// collision occurs, the player will die.
-		// CURRENT ISSUES: 
-		//  -> Player/Ball physics interactions cause potential velocity innacuracies on lethal collision.
-		//  -> Players have instant acceleration and therefore run velocity is always lethal.
-		
-		//Velocity Variables
-		var lethalVelocity = 9;
-		var hVelocity = Math.sqrt(Math.abs((hitter.sprite.body.velocity.x)^2 + (hitter.sprite.body.velocity.y)^2));
-		var rVelocity = Math.sqrt(Math.abs((receiver.sprite.body.velocity.x)^2 + (receiver.sprite.body.velocity.y)^2));
-		
-		//DEBUG Console Log
-		console.log('Hitter Velocity: ' + hVelocity + ' || ' + 'Receiver Velocity: ' + rVelocity);
-		
-		//Check for lethal damage
-		if (hVelocity > lethalVelocity || rVelocity > lethalVelocity)
-		{
-			//Death Audio
-			receiver.sprite.playerDied.play();
-
-			//removing any existing bubble attack constraints in order to avoid a crash when the
-			// owning player sprite dies first.
-			receiver.sprite.outerContext.bubbleGroup.forEachAlive(function(bubble){
-				if (bubble.playNum == receiver.sprite.playNum) {
-					if (bubble.lockConstraint != null) {
-						game.physics.p2.removeConstraint(bubble.lockConstraint);
-						bubble.lockConstraint = null;
-					}
-					bubble.safeDestroy = true;
-					bubble.destroy();
-				}
-			});
-			
-			//Kill Player
-			//receiver.sprite.destroy();
-			receiver.sprite.kill();
-			receiver.sprite.lives--;
-			
-			//Check Match Status
-			if(receiver.sprite.outerContext.player.lives == 0 || receiver.sprite.outerContext.player2.lives == 0) {
-				game.state.start('GameOver', true, false, receiver.sprite.outerContext.player.lives, receiver.sprite.outerContext.player2.lives);
-			}
-			
-			//Display Score & Restart
-      		var scoreText = game.add.text(game.width/2, game.height/2, 'P1: ' + receiver.sprite.outerContext.player.lives + '  P2: ' + 
-      			receiver.sprite.outerContext.player2.lives, {font: 'Helvetica', fontSize: '48px', fill: '#fff'});
-			scoreText.anchor.set(0.5);
-			game.time.events.add(Phaser.Timer.SECOND * 2, function() { game.state.start('Play', true, false, false, 
-				receiver.sprite.outerContext.player.lives, receiver.sprite.outerContext.player2.lives)});
-		}
-		*/
 	},
 
 	hitByHazard: function(receiver, hitter) {
-
+		//check to make sure a player hasn't already died. Used to prevent dual player death.
 		if (receiver.sprite.outerContext.player.alive && receiver.sprite.outerContext.player2.alive) {
 			receiver.sprite.playerDied.play(); //death audio
 
@@ -631,24 +551,27 @@ Play.prototype = {
 				}
 			});
 
+			//kill player
 			receiver.sprite.kill();
 			receiver.sprite.lives--;
-			console.log('Player ' + receiver.sprite.playNum + ': ' + receiver.sprite.lives + ' lives remaining.');
+			//console.log('Player ' + receiver.sprite.playNum + ': ' + receiver.sprite.lives + ' lives remaining.');
 
+			//checking for game over and transitioning to game over state
 			if(receiver.sprite.outerContext.player.lives == 0 || receiver.sprite.outerContext.player2.lives == 0) {
 					game.state.start('GameOver', true, false, receiver.sprite.outerContext.player.lives, 
 						receiver.sprite.outerContext.player2.lives);
 			}
+
+			//updating ui
 			var scoreText = game.add.text(game.width/2, game.height/2, 'P1: ' + 
 				receiver.sprite.outerContext.player.lives + '  P2: ' + 
 				receiver.sprite.outerContext.player2.lives, {font: 'Helvetica', fontSize: '48px', fill: '#fff'});
 			scoreText.anchor.set(0.5);
+
+			//starting timer that restarts play state for the next round
 			game.time.events.add(Phaser.Timer.SECOND * 2, function() { game.state.start('Play', 
 				true, false, false, receiver.sprite.outerContext.player.lives, 
 				receiver.sprite.outerContext.player2.lives)});
 		}
 	},
-
-	
-
 };
