@@ -547,6 +547,25 @@ Play.prototype = {
 						}
 					});
 				
+					//Simple "shatter" animation
+					var deathEmitter = game.add.emitter(receiver.sprite.x, receiver.sprite.y, 200);
+					let gravity = new Phaser.Point(300, -100);
+					deathEmitter.gravity = gravity;
+					deathEmitter.makeParticles('fragment');		// image used for particles
+					deathEmitter.setAlpha(0.5, 1);				// set particle alpha (min, max)
+					deathEmitter.minParticleScale = 0.1;		// set min/max particle size
+					deathEmitter.maxParticleScale = 0.3;
+					deathEmitter.setXSpeed(-20,10);			// set min/max horizontal speed
+					deathEmitter.setYSpeed(-80,60);			// set min/max vertical speed
+					deathEmitter.start(false, 1000, 4, 50);	// (explode, lifespan, freq, quantity)
+					deathEmitter.forEach(function(particle) {
+						if (receiver.sprite.playNum == 1) {
+							particle.tint = 0x470000;
+						} else if (receiver.sprite.playNum == 2) {
+							particle.tint = 0x00375e;
+						}
+					});
+
 					//Kill Player
 					receiver.sprite.kill();
 					receiver.sprite.lives--;
@@ -595,6 +614,25 @@ Play.prototype = {
 					}
 					bubble.safeDestroy = true;
 					bubble.destroy();
+				}
+			});
+
+			//Simple "shatter" animation
+			var deathEmitter = game.add.emitter(receiver.sprite.x, receiver.sprite.y, 200);
+			let gravity = new Phaser.Point(300, -100);
+			deathEmitter.gravity = gravity;
+			deathEmitter.makeParticles('fragment');		// image used for particles
+			deathEmitter.setAlpha(0.5, 1);				// set particle alpha (min, max)
+			deathEmitter.minParticleScale = 0.1;		// set min/max particle size
+			deathEmitter.maxParticleScale = 0.3;
+			deathEmitter.setXSpeed(-20,10);			// set min/max horizontal speed
+			deathEmitter.setYSpeed(-80,60);			// set min/max vertical speed
+			deathEmitter.start(false, 1000, 4, 50);	// (explode, lifespan, freq, quantity)
+			deathEmitter.forEach(function(particle) {
+				if (receiver.sprite.playNum == 1) {
+					particle.tint = 0x470000;
+				} else if (receiver.sprite.playNum == 2) {
+					particle.tint = 0x00375e;
 				}
 			});
 
