@@ -1,4 +1,8 @@
 // Play state
+// An extremely overstuffed play state...
+// Would have liked to refactor everything but
+// given our short-handedness, there just isn't
+// time. Apologies.
 
 var Play = function(game) {};
 Play.prototype = {
@@ -423,14 +427,14 @@ Play.prototype = {
 
 		//initializing UI elements
 		for(var i = 0; i < this.player.lives; i++) {
-			var healthbar = game.add.sprite((game.world.width/2)-(i*64)-128,32, 'heart');
+			var healthbar = game.add.sprite((game.world.width/2)-(i*64)-128, game.world.height - 120, 'heart');
 		}
 		for(var j = 0; j < this.player2.lives; j++) {
-			var healthbar2 = game.add.sprite((game.world.width/2)+(j*64)+64,32, 'heart2');
+			var healthbar2 = game.add.sprite((game.world.width/2)+(j*64)+64, game.world.height - 120, 'heart2');
 		}
-		var playText = game.add.text(game.width/2, 16, 
+		var playText = game.add.text(game.width/2, game.world.height - 16, 
 			'P1                                            P2', 
-			{font: 'Helvetica', fontSize: '24px', fill: '#fff'});
+			{font: 'Helvetica', fontSize: '24px', fill: '#000000'});
 		playText.anchor.set(0.5);
 	},
 	
