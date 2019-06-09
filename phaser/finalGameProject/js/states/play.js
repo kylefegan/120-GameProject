@@ -1,4 +1,8 @@
 // Play state
+// An extremely overstuffed play state...
+// Would have liked to refactor everything but
+// given our short-handedness, there just isn't
+// time. Apologies.
 
 var Play = function(game) {};
 Play.prototype = {
@@ -135,14 +139,33 @@ Play.prototype = {
 		this.baseTerrain.body.collides([this.ballCollisionGroup, this.playerCollisionGroup]);
 		this.baseTerrainMaterial = game.physics.p2.createMaterial('baseTerrainMaterial', this.baseTerrain.body);
 
-		//physics toggle test platform
-		this.testPlatform = this.game.add.sprite(game.world.width/2 + 300, game.world.height/2 + 80, 'acid');
-		this.game.physics.p2.enable(this.testPlatform, this.DEBUG_BODIES);
-		this.testPlatform.body.static = true;
-		this.testPlatform.body.setCollisionGroup(this.platformCollisionGroup);
-		this.testPlatform.body.collides([this.platformCollisionGroup, this.playerCollisionGroup, this.ballCollisionGroup]);
+		//Main floating platform (not a pass-through)
+		this.mainPlatform = this.game.add.sprite(game.world.width/2, game.world.height/2 -50, 'mPlat');
+		this.game.physics.p2.enable(this.mainPlatform, this.DEBUG_BODIES);
+		this.mainPlatform.body.clearShapes();
+		this.mainPlatform.body.loadPolygon("mPlatPhysics", "mainPlatform");
+		this.mainPlatform.body.static = true;
+		this.mainPlatform.body.setCollisionGroup(this.terrainCollisionGroup);
+		this.mainPlatform.body.collides([this.ballCollisionGroup, this.playerCollisionGroup]);
+		this.mainPlatform.body.setMaterial(this.baseTerrainMaterial);
+
+		
+		//Light colored floating platform
+		this.lightPlatform = this.game.add.sprite(game.world.width - 200, game.world.height/2 + 50, 'fPlatL');
+		this.game.physics.p2.enable(this.lightPlatform, this.DEBUG_BODIES);
+		this.lightPlatform.body.static = true;
+		this.lightPlatform.body.setCollisionGroup(this.platformCollisionGroup);
+		this.lightPlatform.body.collides([this.platformCollisionGroup, this.playerCollisionGroup, this.ballCollisionGroup]);
 		this.platformMaterial = game.physics.p2.createMaterial('platformMaterial');
-		this.testPlatform.body.setMaterial(this.platformMaterial);
+		this.lightPlatform.body.setMaterial(this.platformMaterial);
+
+		//Dark colored floating platform
+		this.darkPlatform = this.game.add.sprite(200, game.world.height/2 + 50, 'fPlatD');
+		this.game.physics.p2.enable(this.darkPlatform, this.DEBUG_BODIES);
+		this.darkPlatform.body.static = true;
+		this.darkPlatform.body.setCollisionGroup(this.platformCollisionGroup);
+		this.darkPlatform.body.collides([this.platformCollisionGroup, this.playerCollisionGroup, this.ballCollisionGroup]);
+		this.darkPlatform.body.setMaterial(this.platformMaterial);
 
 		//Hazard 1
 		//Hazard = function(game, x, y, key, hazType, playerCollisionGroup, ballCollisionGroup, hazardCollisionGroup)
@@ -163,7 +186,7 @@ Play.prototype = {
 
 		//Hazard 3, spike hazard test
 		//Hazard = function(game, x, y, key, hazType, playerCollisionGroup, ballCollisionGroup, hazardCollisionGroup)
-		this.hazard3 = new  Hazard(this.game, 100,  this.game.world.height/2, 'playerBubble', 2,
+		this.hazard3 = new  Hazard(this.game, 70,  this.game.world.height/2 - 100, 'playerBubble', 2,
 			this.playerCollisionGroup, this.ballCollisionGroup, this.hazardCollisionGroup);
 		this.hazard3.body.setMaterial(this.hazardMaterial);
 		this.game.add.existing(this.hazard3);
@@ -220,7 +243,7 @@ Play.prototype = {
 
 		//Breakable stage object
 		//Projectile = function(game, x, y, key, breakable, proNum, outerContext)
-		this.breakable = new Projectile(this.game, this.game.width/2, this.game.height/2 - 20, 'playerBubble', true, 3, this);
+		this.breakable = new Projectile(this.game, this.game.width/2, this.game.height/2 - 200, 'playerBubble', true, 3, this);
 		this.game.add.existing(this.breakable);
 		this.breakable.body.setCircle(16);
 		this.projectileMaterials[3] = game.physics.p2.createMaterial('breakable1Material');
@@ -383,16 +406,20 @@ Play.prototype = {
 		    this.bubProContact[i].surfaceVelocity = 0;
 		}
 
-		// create callback event if player hits baseTerrain
+		// Non-pass through terrain callbacks
 		game.physics.p2.setImpactEvents(true);
 		this.player.body.createBodyCallback(this.baseTerrain, this.jumpReset);
 		this.player2.body.createBodyCallback(this.baseTerrain, this.jumpReset);
+		this.player.body.createBodyCallback(this.mainPlatform, this.jumpReset);
+		this.player2.body.createBodyCallback(this.mainPlatform, this.jumpReset);
 
-		//test callbacks
-		this.player.body.createBodyCallback(this.testPlatform, this.jumpReset);
-		this.player2.body.createBodyCallback(this.testPlatform, this.jumpReset);
+		//pass through callbacks
+		this.player.body.createBodyCallback(this.lightPlatform, this.jumpReset);
+		this.player2.body.createBodyCallback(this.lightPlatform, this.jumpReset);
+		this.player.body.createBodyCallback(this.darkPlatform, this.jumpReset);
+		this.player2.body.createBodyCallback(this.darkPlatform, this.jumpReset);
 
-		//create callback for ball or hazards with players to kill players when hit
+		//Player death callbacks
 		this.player.body.createGroupCallback(this.ballCollisionGroup, this.hitByBall);
 		this.player2.body.createGroupCallback(this.ballCollisionGroup, this.hitByBall);
 		this.player.body.createGroupCallback(this.hazardCollisionGroup, this.hitByHazard);
@@ -400,14 +427,14 @@ Play.prototype = {
 
 		//initializing UI elements
 		for(var i = 0; i < this.player.lives; i++) {
-			var healthbar = game.add.sprite((game.world.width/2)-(i*64)-128,32, 'heart');
+			var healthbar = game.add.sprite((game.world.width/2)-(i*64)-128, game.world.height - 120, 'heart');
 		}
 		for(var j = 0; j < this.player2.lives; j++) {
-			var healthbar2 = game.add.sprite((game.world.width/2)+(j*64)+64,32, 'heart2');
+			var healthbar2 = game.add.sprite((game.world.width/2)+(j*64)+64, game.world.height - 120, 'heart2');
 		}
-		var playText = game.add.text(game.width/2, 16, 
+		var playText = game.add.text(game.width/2, game.world.height - 16, 
 			'P1                                            P2', 
-			{font: 'Helvetica', fontSize: '24px', fill: '#fff'});
+			{font: 'Helvetica', fontSize: '24px', fill: '#000000'});
 		playText.anchor.set(0.5);
 	},
 	
@@ -435,17 +462,20 @@ Play.prototype = {
 
 			return false;
 
-		//if the first body is a player, a ball, or a breakable and the second is a platform; return false
+		//if the first body is a player, a ball, or a breakable and the second is a pass-through platform; return false
+		//Note: this check will need to be expanded as new assets comes in and get implemented
 		} else if ((body1.sprite === this.player || body1.sprite === this.player2 || body1.sprite === this.ball1 ||  
-			body1.sprite === this.ball2 ||  body1.sprite === this.breakable) && body2.sprite === this.testPlatform) {
+			body1.sprite === this.ball2 ||  body1.sprite === this.breakable) && (body2.sprite === this.lightPlatform || 
+			body1.sprite === this.darkPlatform)) {
 
 			if (body1.sprite.body.velocity.y < 0) {
 				return false;
 			}
 
-		//if the second body is a player, a ball, or a breakable and the first is a platform; return false
+		//if the second body is a player, a ball, or a breakable and the first is a pass-through platform; return false
 		} else if ((body2.sprite === this.player || body2.sprite === this.player2 || body2.sprite === this.ball1 ||  
-			body2.sprite === this.ball2 ||  body2.sprite === this.breakable) && body1.sprite === this.testPlatform) {
+			body2.sprite === this.ball2 ||  body2.sprite === this.breakable) && (body1.sprite === this.lightPlatform || 
+			body1.sprite === this.darkPlatform)) {
 
 			if (body2.sprite.body.velocity.y < 0) {
 				return false;
