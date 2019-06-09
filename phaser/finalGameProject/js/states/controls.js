@@ -12,7 +12,7 @@ Controls.prototype = {
 		var playText = game.add.text(game.width/2, game.height*.1, 'Fast moving objects kill players. Last one standing wins.', {font: 'Palatino', fontSize: '30px', fill: '#000'});
 		playText.anchor.set(0.5);
 
-		var playText = game.add.text(game.width/2, game.height*.2, 'P1 = wasd keys to move, "c" knocks objects, "v" creates a shield\nP2 = arrow keys to move, "," knocks objects, "." creates a shield\nPress "r" to end the game                                                                       Next-', {font: 'Palatino', fontSize: '24px', fill: '#000'});
+		var playText = game.add.text(game.width/2, game.height*.2, 'P1 = wasd keys to move, "c" knocks objects, "v" creates a shield\nP2 = arrow keys to move, "," knocks objects, "." creates a shield\nPress "r" to end the game                                                                       Play-', {font: 'Palatino', fontSize: '24px', fill: '#000'});
 		playText.anchor.set(0.5);
 
 		nextButton = game.add.button(game.width*.915, game.height*.24, 'next', this.goNext, this,1, 0, 2);
