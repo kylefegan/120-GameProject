@@ -452,11 +452,15 @@ Play.prototype = {
 		this.player2.body.createGroupCallback(this.hazardCollisionGroup, this.hitByHazard);
 
 		//initializing UI elements
+		this.livesGroup1 = game.add.group();
+		this.livesGroup2 = game.add.group();
 		for(var i = 0; i < this.player.lives; i++) {
-			var healthbar = game.add.sprite((game.world.width/2)-(i*64)-128, game.world.height - 120, 'heart');
+			var lifeJar = game.add.sprite((game.world.width/2)-(i*64)-128, game.world.height - 120, 'heart');
+			this.livesGroup1.add(lifeJar);
 		}
 		for(var j = 0; j < this.player2.lives; j++) {
-			var healthbar2 = game.add.sprite((game.world.width/2)+(j*64)+64, game.world.height - 120, 'heart2');
+			var lifeJar = game.add.sprite((game.world.width/2)+(j*64)+64, game.world.height - 120, 'heart2');
+			this.livesGroup2.add(lifeJar);
 		}
 		var playText = game.add.text(game.width/2, game.world.height - 16, 
 			'P1                                            P2', 
@@ -592,6 +596,23 @@ Play.prototype = {
 						}
 					});
 
+					//remove a life jar
+					for (var i = 0; i < receiver.sprite.MAX_LIVES; i++) {
+						if (receiver.sprite.playNum == 1 && receiver.sprite.lives > 1) {
+							if (receiver.sprite.outerContext.livesGroup1.getAt(i).alive && i == receiver.sprite.MAX_LIVES -1) {
+								receiver.sprite.outerContext.livesGroup1.getAt(i).kill();
+							} else if (!receiver.sprite.outerContext.livesGroup1.getAt(i).alive && i > 1){
+								receiver.sprite.outerContext.livesGroup1.getAt(i-1).kill();
+							}
+						} else if (receiver.sprite.playNum == 2 && receiver.sprite.lives > 1) {
+							if (receiver.sprite.outerContext.livesGroup2.getAt(i).alive && i == receiver.sprite.MAX_LIVES -1) {
+								receiver.sprite.outerContext.livesGroup2.getAt(i).kill();
+							} else if (!receiver.sprite.outerContext.livesGroup2.getAt(i).alive && i > 1) {
+								receiver.sprite.outerContext.livesGroup2.getAt(i-1).kill();
+							}
+						}
+					}
+
 					//Kill Player
 					receiver.sprite.kill();
 					receiver.sprite.lives--;
@@ -662,10 +683,29 @@ Play.prototype = {
 				}
 			});
 
+			//remove a life jar
+			for (var i = 0; i < receiver.sprite.MAX_LIVES; i++) {
+				if (receiver.sprite.playNum == 1 && receiver.sprite.lives > 1) {
+					if (receiver.sprite.outerContext.livesGroup1.getAt(i).alive && i == receiver.sprite.MAX_LIVES -1) {
+						receiver.sprite.outerContext.livesGroup1.getAt(i).kill();
+					} else if (!receiver.sprite.outerContext.livesGroup1.getAt(i).alive && i > 1){
+						receiver.sprite.outerContext.livesGroup1.getAt(i-1).kill();
+					}
+				} else if (receiver.sprite.playNum == 2 && receiver.sprite.lives > 1) {
+					if (receiver.sprite.outerContext.livesGroup2.getAt(i).alive && i == receiver.sprite.MAX_LIVES -1) {
+						receiver.sprite.outerContext.livesGroup2.getAt(i).kill();
+					} else if (!receiver.sprite.outerContext.livesGroup2.getAt(i).alive && i > 1) {
+						receiver.sprite.outerContext.livesGroup2.getAt(i-1).kill();
+					}
+				}
+			}
+
 			//kill player
 			receiver.sprite.kill();
 			receiver.sprite.lives--;
 			//console.log('Player ' + receiver.sprite.playNum + ': ' + receiver.sprite.lives + ' lives remaining.');
+
+			
 
 			//checking for game over and transitioning to game over state
 			if(receiver.sprite.outerContext.player.lives == 0 || receiver.sprite.outerContext.player2.lives == 0) {
