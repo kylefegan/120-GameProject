@@ -9,26 +9,34 @@ Controls.prototype = {
 		controlsAnimate.animations.add('cycle', [0,1,2,3,4,5,6,7,8], 1, true);
 		controlsAnimate.animations.play('cycle');
 
-		var playText = game.add.text(game.width/2, game.height*.1, 'Fast moving balls kill players. Last one standing wins.', {font: 'Palatino', fontSize: '30px', fill: '#000'});
+		var playText = game.add.text(game.width/2, game.height*.1, 'Fast moving objects kill players. Last one standing wins.', {font: 'Palatino', fontSize: '30px', fill: '#000'});
 		playText.anchor.set(0.5);
 
-		var playText = game.add.text(game.width/2, game.height*.2, 'P1 = wasd keys to move, "c" knocks balls, "v" creates a shield\nP2 = arrow keys to move, "," knocks balls, "." creates a shield\nPress "w" to start playing, Press "r" to end the game', {font: 'Palatino', fontSize: '24px', fill: '#000'});
+		var playText = game.add.text(game.width/2, game.height*.2, 'P1 = wasd keys to move, "c" knocks objects, "v" creates a shield\nP2 = arrow keys to move, "," knocks objects, "." creates a shield\nPress "r" to end the game                                                                       Play-', {font: 'Palatino', fontSize: '24px', fill: '#000'});
 		playText.anchor.set(0.5);
 
-		// creates play button
-		/*var playButton = game.add.button(game.width/2, game.height*.7, 'playbutton', this.goPlay, this,1, 0, 2);
-		playButton.anchor.set(0.5);*/
+		nextButton = game.add.button(game.width*.915, game.height*.24, 'next', this.goNext, this,1, 0, 2);
+		nextButton.anchor.set(0.5);
+		nextButton.onOverSound = game.add.audio('buttonHover');
+		nextButton.onDownSound = game.add.audio('buttonDown');
 
 	},
 	update: function() {
-		if(game.input.keyboard.isDown(Phaser.Keyboard.W)) {
+	},
+	goNext: function() {
+		// makes button stay on down frame when pressed
+		nextButton.freezeFrames = true;
+
+		// spawns an animation fading to white
+		transition = game.add.sprite(0, 0, 'screenTransition', 0);
+		transition.scale.x = 4;
+		transition.scale.y = 4;
+		transition.animations.add('fade', [0,1,2,3,4,5,6,7,8,9], 8);
+		transition.animations.play('fade');
+
+		// goes to next game state after 1.5 seconds
+		game.time.events.add(Phaser.Timer.SECOND * 1.5, function() {
 			game.state.start('Play', true, false, true, 0, 0);
-		}
+		});
 	}
-	/*goPlay: function() {
-		//clear world: true, clear cache: false, freshStart: true, playerOneLives: 0 (will be overwritten), playerTwoLives: 0 (will be overwritten)
-		//game.time.events.add(Phaser.Timer.SECOND * 2, function() {
-			game.state.start('Play', true, false, true, 0, 0);
-		//});
-	}*/
 };

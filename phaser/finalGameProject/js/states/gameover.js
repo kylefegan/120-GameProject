@@ -5,6 +5,7 @@ GameOver.prototype = {
 	init: function(playerOneLives, playerTwoLives) {
 		this.p1Lives = playerOneLives;
 		this.p2Lives = playerTwoLives;
+		this.cheering = game.add.audio('crowd');
 	},
 
 	create: function() {
@@ -20,11 +21,13 @@ GameOver.prototype = {
 			var playText = game.add.text(game.width*.8, game.height*.2, 'Press R to Restart', {font: 'Palatino', fontSize: '24px', fill: '#000'});
 		}
 		playText.anchor.set(0.5);
+		this.cheering.play();
 	},
 
 	update: function() {
 		// wait for keyboard input
 		if(game.input.keyboard.justPressed(Phaser.Keyboard.R)) {
+			this.cheering.stop();
 			//clear world: true, clear cache: false, freshStart: true, playerOneLives: 0 (will be overwritten), playerTwoLives: 0 (will be overwritten)
 			game.state.start('Play', true, false, true, 0, 0);
 		}

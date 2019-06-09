@@ -8,6 +8,7 @@ Load.prototype = {
 		game.load.image('tacoLizard', 'tacoLizard.png');
 		game.load.image('baseTerrain', 'PyramidLevel.png');
 		game.load.image('acid', 'acidPool.png');
+		game.load.image('fragment', 'fragment.png');
 		game.load.physics("physics", "PyramidLevel.json", null, Phaser.Physics.LIME_CORONA_JSON);
 		game.load.image('ball', 'Boulder.png');
 		game.load.image('playerBubble', 'ball.png');
@@ -17,7 +18,10 @@ Load.prototype = {
 		game.load.image('ControlMenu', 'Controls Menu.png');
 		game.load.image('Title', 'Title Screen.png');
 		game.load.image('mPlat', 'mainPlatform.png');
-		game.load.physics("mPlatPhysics", "mainPlatform.json", null, Phaser.Physics.LIME_CORONA_JSON);
+		game.load.image('column1', 'columnPiece1.png');
+		game.load.image('column2', 'columnPiece2.png');
+		game.load.image('column3', 'columnPiece3.png');
+		//game.load.physics("mPlatPhysics", "mainPlatform.json", null, Phaser.Physics.LIME_CORONA_JSON);
 		game.load.image('fPlatL', 'floatingPlatformLight.png');
 		game.load.image('fPlatD', 'floatingPlatformDark.png');
 		game.load.image('End1', 'EndScreen1.png');
@@ -25,6 +29,7 @@ Load.prototype = {
 		game.load.spritesheet('ControlAnimation', 'Controls animation.png', 1000, 550);
 		game.load.spritesheet('playbutton', 'Play button.png', 400, 150);
 		game.load.spritesheet('controlbutton', 'Controls button.png', 400, 150);
+		game.load.spritesheet('next', 'NextButton.png', 64, 80);
 		game.load.spritesheet('screenTransition', 'screenTransition.png',250,200);
 		
 		game.load.image('cloud1', 'cloud1.png');
@@ -38,9 +43,13 @@ Load.prototype = {
 
 		// load audio assets
 		game.load.path = 'assets/audio/';
-		game.load.audio('playerDied', 'Downer01.mp3');
+		game.load.audio('playerDied', 'playerDeath.wav');
+		game.load.audio('pAttack', 'playerAttack.wav');
+		game.load.audio('pBubble', 'playerBubble.wav');
+		game.load.audio('pBubbleCooldown', 'playerBubbleCooldown.wav');
 		game.load.audio('buttonHover', 'buttonHover.mp3');
 		game.load.audio('buttonDown', 'transitionSound.mp3');
+		game.load.audio('crowd', 'crowd-cheer.mp3');
 		
 	},
 	create: function() {

@@ -140,10 +140,10 @@ Play.prototype = {
 		this.baseTerrainMaterial = game.physics.p2.createMaterial('baseTerrainMaterial', this.baseTerrain.body);
 
 		//Main floating platform (not a pass-through)
-		this.mainPlatform = this.game.add.sprite(game.world.width/2, game.world.height/2 -50, 'mPlat');
+		this.mainPlatform = this.game.add.sprite(game.world.width/2, game.world.height/2 -120, 'mPlat');
 		this.game.physics.p2.enable(this.mainPlatform, this.DEBUG_BODIES);
-		this.mainPlatform.body.clearShapes();
-		this.mainPlatform.body.loadPolygon("mPlatPhysics", "mainPlatform");
+		//this.mainPlatform.body.clearShapes();
+		//this.mainPlatform.body.loadPolygon("mPlatPhysics", "mainPlatform");
 		this.mainPlatform.body.static = true;
 		this.mainPlatform.body.setCollisionGroup(this.terrainCollisionGroup);
 		this.mainPlatform.body.collides([this.ballCollisionGroup, this.playerCollisionGroup]);
@@ -243,9 +243,9 @@ Play.prototype = {
 
 		//Breakable stage object
 		//Projectile = function(game, x, y, key, breakable, proNum, outerContext)
-		this.breakable = new Projectile(this.game, this.game.width/2, this.game.height/2 - 200, 'playerBubble', true, 3, this);
+		this.breakable = new Projectile(this.game, this.game.width/2 - 70, this.game.height/2 - 90, 'column1', true, 3, this);
 		this.game.add.existing(this.breakable);
-		this.breakable.body.setCircle(16);
+		//this.breakable.body.setCircle(16);
 		this.projectileMaterials[3] = game.physics.p2.createMaterial('breakable1Material');
 		this.breakable.body.setMaterial(this.projectileMaterials[3]);
 		this.breakable.body.setCollisionGroup(this.ballCollisionGroup);
@@ -253,6 +253,32 @@ Play.prototype = {
 			this.attackCollisionGroup, this.terrainCollisionGroup, this.hazardCollisionGroup, 
 			this.bubbleCollisionGroup, this.platformCollisionGroup]);
 		this.breakableGroup.add(this.breakable);
+
+		//Breakable stage object 2
+		//Projectile = function(game, x, y, key, breakable, proNum, outerContext)
+		this.breakable2 = new Projectile(this.game, this.game.width/2 - 5, this.game.height/2 - 90, 'column2', true, 4, this);
+		this.game.add.existing(this.breakable2);
+		//this.breakable.body.setCircle(16);
+		this.projectileMaterials[4] = game.physics.p2.createMaterial('breakable1Material');
+		this.breakable2.body.setMaterial(this.projectileMaterials[3]);
+		this.breakable2.body.setCollisionGroup(this.ballCollisionGroup);
+		this.breakable2.body.collides([this.ballCollisionGroup, this.playerCollisionGroup, 
+			this.attackCollisionGroup, this.terrainCollisionGroup, this.hazardCollisionGroup, 
+			this.bubbleCollisionGroup, this.platformCollisionGroup]);
+		this.breakableGroup.add(this.breakable2);
+
+		//Breakable stage object 2
+		//Projectile = function(game, x, y, key, breakable, proNum, outerContext)
+		this.breakable3 = new Projectile(this.game, this.game.width/2 + 60, this.game.height/2 - 90, 'column3', true, 5, this);
+		this.game.add.existing(this.breakable3);
+		//this.breakable.body.setCircle(16);
+		this.projectileMaterials[5] = game.physics.p2.createMaterial('breakable1Material');
+		this.breakable3.body.setMaterial(this.projectileMaterials[3]);
+		this.breakable3.body.setCollisionGroup(this.ballCollisionGroup);
+		this.breakable3.body.collides([this.ballCollisionGroup, this.playerCollisionGroup, 
+			this.attackCollisionGroup, this.terrainCollisionGroup, this.hazardCollisionGroup, 
+			this.bubbleCollisionGroup, this.platformCollisionGroup]);
+		this.breakableGroup.add(this.breakable3);
 
 		//Player 1
 		//Player = function(game, x, y, key, playerNumber, attackGroup, attackCollisionGroup,
@@ -355,7 +381,7 @@ Play.prototype = {
 		}
 
 	    // Terrain Vs Ball contact
-	    for (var i = 1; i < 4; i++) { //this count will need to be change when/if more objects are added
+	    for (var i = 1; i < 6; i++) { //this count will need to be change when/if more objects are added
 		    this.proTerrContact[i] = game.physics.p2.createContactMaterial(this.projectileMaterials[i], 
 		    	this.baseTerrainMaterial);
 			this.proTerrContact[i].friction = 1.0;
@@ -368,7 +394,7 @@ Play.prototype = {
 		}
 
 		// Platform Vs Ball contact
-	    for (var i = 1; i < 4; i++) {
+	    for (var i = 1; i < 6; i++) { //this count will need to be change when/if more objects are added
 		    this.proPlatContact[i] = game.physics.p2.createContactMaterial(this.projectileMaterials[i], 
 		    	this.platformMaterial);
 			this.proPlatContact[i].friction = 1.0;
@@ -381,7 +407,7 @@ Play.prototype = {
 		}
 
 	    // Hazard Vs Ball contact, same as terrain vs ball.
-	    for (var i = 1; i < 4; i++) {
+	    for (var i = 1; i < 6; i++) { //this count will need to be change when/if more objects are added
 		    this.proHazContact[i] = game.physics.p2.createContactMaterial(this.projectileMaterials[i], 
 		    	this.hazardMaterial);
 			this.proHazContact[i].friction = 1.0;
@@ -426,11 +452,15 @@ Play.prototype = {
 		this.player2.body.createGroupCallback(this.hazardCollisionGroup, this.hitByHazard);
 
 		//initializing UI elements
+		this.livesGroup1 = game.add.group();
+		this.livesGroup2 = game.add.group();
 		for(var i = 0; i < this.player.lives; i++) {
-			var healthbar = game.add.sprite((game.world.width/2)-(i*64)-128, game.world.height - 120, 'heart');
+			var lifeJar = game.add.sprite((game.world.width/2)-(i*64)-128, game.world.height - 120, 'heart');
+			this.livesGroup1.add(lifeJar);
 		}
 		for(var j = 0; j < this.player2.lives; j++) {
-			var healthbar2 = game.add.sprite((game.world.width/2)+(j*64)+64, game.world.height - 120, 'heart2');
+			var lifeJar = game.add.sprite((game.world.width/2)+(j*64)+64, game.world.height - 120, 'heart2');
+			this.livesGroup2.add(lifeJar);
 		}
 		var playText = game.add.text(game.width/2, game.world.height - 16, 
 			'P1                                            P2', 
@@ -547,6 +577,42 @@ Play.prototype = {
 						}
 					});
 				
+					//Simple "shatter" animation
+					var deathEmitter = game.add.emitter(receiver.sprite.x, receiver.sprite.y, 200);
+					let gravity = new Phaser.Point(300, -100);
+					deathEmitter.gravity = gravity;
+					deathEmitter.makeParticles('fragment');		// image used for particles
+					deathEmitter.setAlpha(0.5, 1);				// set particle alpha (min, max)
+					deathEmitter.minParticleScale = 0.1;		// set min/max particle size
+					deathEmitter.maxParticleScale = 0.3;
+					deathEmitter.setXSpeed(-20,10);			// set min/max horizontal speed
+					deathEmitter.setYSpeed(-80,60);			// set min/max vertical speed
+					deathEmitter.start(false, 1000, 4, 50);	// (explode, lifespan, freq, quantity)
+					deathEmitter.forEach(function(particle) {
+						if (receiver.sprite.playNum == 1) {
+							particle.tint = 0x470000;
+						} else if (receiver.sprite.playNum == 2) {
+							particle.tint = 0x00375e;
+						}
+					});
+
+					//remove a life jar
+					for (var i = 0; i < receiver.sprite.MAX_LIVES; i++) {
+						if (receiver.sprite.playNum == 1 && receiver.sprite.lives > 1) {
+							if (receiver.sprite.outerContext.livesGroup1.getAt(i).alive && i == receiver.sprite.MAX_LIVES -1) {
+								receiver.sprite.outerContext.livesGroup1.getAt(i).kill();
+							} else if (!receiver.sprite.outerContext.livesGroup1.getAt(i).alive && i > 1){
+								receiver.sprite.outerContext.livesGroup1.getAt(i-1).kill();
+							}
+						} else if (receiver.sprite.playNum == 2 && receiver.sprite.lives > 1) {
+							if (receiver.sprite.outerContext.livesGroup2.getAt(i).alive && i == receiver.sprite.MAX_LIVES -1) {
+								receiver.sprite.outerContext.livesGroup2.getAt(i).kill();
+							} else if (!receiver.sprite.outerContext.livesGroup2.getAt(i).alive && i > 1) {
+								receiver.sprite.outerContext.livesGroup2.getAt(i-1).kill();
+							}
+						}
+					}
+
 					//Kill Player
 					receiver.sprite.kill();
 					receiver.sprite.lives--;
@@ -598,10 +664,48 @@ Play.prototype = {
 				}
 			});
 
+			//Simple "shatter" animation
+			var deathEmitter = game.add.emitter(receiver.sprite.x, receiver.sprite.y, 200);
+			let gravity = new Phaser.Point(300, -100);
+			deathEmitter.gravity = gravity;
+			deathEmitter.makeParticles('fragment');		// image used for particles
+			deathEmitter.setAlpha(0.5, 1);				// set particle alpha (min, max)
+			deathEmitter.minParticleScale = 0.1;		// set min/max particle size
+			deathEmitter.maxParticleScale = 0.3;
+			deathEmitter.setXSpeed(-20,10);			// set min/max horizontal speed
+			deathEmitter.setYSpeed(-80,60);			// set min/max vertical speed
+			deathEmitter.start(false, 1000, 4, 50);	// (explode, lifespan, freq, quantity)
+			deathEmitter.forEach(function(particle) {
+				if (receiver.sprite.playNum == 1) {
+					particle.tint = 0x470000;
+				} else if (receiver.sprite.playNum == 2) {
+					particle.tint = 0x00375e;
+				}
+			});
+
+			//remove a life jar
+			for (var i = 0; i < receiver.sprite.MAX_LIVES; i++) {
+				if (receiver.sprite.playNum == 1 && receiver.sprite.lives > 1) {
+					if (receiver.sprite.outerContext.livesGroup1.getAt(i).alive && i == receiver.sprite.MAX_LIVES -1) {
+						receiver.sprite.outerContext.livesGroup1.getAt(i).kill();
+					} else if (!receiver.sprite.outerContext.livesGroup1.getAt(i).alive && i > 1){
+						receiver.sprite.outerContext.livesGroup1.getAt(i-1).kill();
+					}
+				} else if (receiver.sprite.playNum == 2 && receiver.sprite.lives > 1) {
+					if (receiver.sprite.outerContext.livesGroup2.getAt(i).alive && i == receiver.sprite.MAX_LIVES -1) {
+						receiver.sprite.outerContext.livesGroup2.getAt(i).kill();
+					} else if (!receiver.sprite.outerContext.livesGroup2.getAt(i).alive && i > 1) {
+						receiver.sprite.outerContext.livesGroup2.getAt(i-1).kill();
+					}
+				}
+			}
+
 			//kill player
 			receiver.sprite.kill();
 			receiver.sprite.lives--;
 			//console.log('Player ' + receiver.sprite.playNum + ': ' + receiver.sprite.lives + ' lives remaining.');
+
+			
 
 			//checking for game over and transitioning to game over state
 			if(receiver.sprite.outerContext.player.lives == 0 || receiver.sprite.outerContext.player2.lives == 0) {
