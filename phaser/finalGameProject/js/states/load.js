@@ -26,7 +26,7 @@ Load.prototype = {
 		game.load.spritesheet('ControlAnimation', 'Controls animation.png', 1000, 550);
 		game.load.spritesheet('playbutton', 'Play button.png', 400, 150);
 		game.load.spritesheet('controlbutton', 'Controls button.png', 400, 150);
-		game.load.spritesheet('next', 'NextButton.png', 32, 40);
+		game.load.spritesheet('next', 'NextButton.png', 64, 80);
 		game.load.spritesheet('screenTransition', 'screenTransition.png',250,200);
 		
 		game.load.image('cloud1', 'cloud1.png');
