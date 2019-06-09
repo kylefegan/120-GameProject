@@ -20,6 +20,8 @@ Load.prototype = {
 		game.load.physics("mPlatPhysics", "mainPlatform.json", null, Phaser.Physics.LIME_CORONA_JSON);
 		game.load.image('fPlatL', 'floatingPlatformLight.png');
 		game.load.image('fPlatD', 'floatingPlatformDark.png');
+		game.load.image('End1', 'EndScreen1.png');
+		game.load.image('End2', 'EndScreen2.png');
 		game.load.spritesheet('ControlAnimation', 'Controls animation.png', 1000, 550);
 		game.load.spritesheet('playbutton', 'Play button.png', 400, 150);
 		game.load.spritesheet('controlbutton', 'Controls button.png', 400, 150);
