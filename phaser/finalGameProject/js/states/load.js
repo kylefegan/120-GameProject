@@ -40,7 +40,10 @@ Load.prototype = {
 
 		// load audio assets
 		game.load.path = 'assets/audio/';
-		game.load.audio('playerDied', 'Downer01.mp3');
+		game.load.audio('playerDied', 'playerDeath.wav');
+		game.load.audio('pAttack', 'playerAttack.wav');
+		game.load.audio('pBubble', 'playerBubble.wav');
+		game.load.audio('pBubbleCooldown', 'playerBubbleCooldown.wav');
 		game.load.audio('buttonHover', 'buttonHover.mp3');
 		game.load.audio('buttonDown', 'transitionSound.mp3');
 		

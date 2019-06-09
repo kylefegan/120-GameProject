@@ -24,7 +24,10 @@ var Player = function(game, x, y, key, playerNumber, attackGroup, attackCollisio
 	this.ATTACK_SPAWN_OFFSET = 30; //how far in front of the sprite to spawn
 	
 	//variables
-	this.playerDied = game.add.audio('playerDied'); //player death audio.
+	this.playerDied = game.add.audio('playerDied');                 //player death audio.
+	this.playerAttacked = game.add.audio('pAttack');                //player attack audio.
+	this.playerBubbled = game.add.audio('pBubble');                 //player bubble shield audio.
+	this.playerBubbledCooldown = game.add.audio('pBubbleCooldown'); //player bubble on cooldown sound.
 	this.jumps = this.MAX_JUMP; //tracking var for multi jumping
 	this.playNum = playerNumber; //which player the instance is for
 	this.playerVel = 200; //player move speed
@@ -111,6 +114,7 @@ Player.prototype.update = function() {
 
 			//attack stuff, spawns an invisible hit box to check collisions
 			if (game.input.keyboard.justPressed(Phaser.Keyboard.C)) {
+				this.playerAttacked.play();
 				if (this.scale.x > 0) {
 					this.attackOffset = this.x + this.ATTACK_SPAWN_OFFSET;
 					this.attackDirection = 1;
@@ -135,18 +139,23 @@ Player.prototype.update = function() {
 			}
 
 			//defense bubble
-			if (game.input.keyboard.justPressed(Phaser.Keyboard.V) && (this.bubbleCooldown <= 0)) {
-				//PlayerBubble = function(game, x, y, key, playNum, outerContext)
-				this.bubble = new PlayerBubble(game, this.x, this.y, 'playerBubble', 
-					this.playNum, this.outerContext);
-				this.game.add.existing(this.bubble);
-				//this.bubble.anchor.set(0.5); //P2 may do this automatically.
-				this.bubble.lockConstraint = this.game.physics.p2.createLockConstraint(this.bubble, this, [0,0]);
-				this.bubble.body.setCollisionGroup(this.bubbleCollisionGroup);
-				this.bubble.body.setMaterial(this.outerContext.bubbleMaterials[this.playNum]);
-				this.bubble.body.collides([this.ballCollisionGroup]);
-				this.bubbleGroup.add(this.bubble);
-				this.bubbleCooldown = this.BUBBLE_COOLDOWN;
+			if (game.input.keyboard.justPressed(Phaser.Keyboard.V)) {
+				if (this.bubbleCooldown <= 0) {
+					//PlayerBubble = function(game, x, y, key, playNum, outerContext)
+					this.bubble = new PlayerBubble(game, this.x, this.y, 'playerBubble', 
+						this.playNum, this.outerContext);
+					this.game.add.existing(this.bubble);
+					//this.bubble.anchor.set(0.5); //P2 may do this automatically.
+					this.bubble.lockConstraint = this.game.physics.p2.createLockConstraint(this.bubble, this, [0,0]);
+					this.bubble.body.setCollisionGroup(this.bubbleCollisionGroup);
+					this.bubble.body.setMaterial(this.outerContext.bubbleMaterials[this.playNum]);
+					this.bubble.body.collides([this.ballCollisionGroup]);
+					this.bubbleGroup.add(this.bubble);
+					this.bubbleCooldown = this.BUBBLE_COOLDOWN;
+					this.playerBubbled.play();
+				} else {
+					this.playerBubbledCooldown.play();
+				}
 			}
 
 		// Player 2 stuff
@@ -191,6 +200,7 @@ Player.prototype.update = function() {
 
 			//attack stuff
 			if (game.input.keyboard.justPressed(Phaser.Keyboard.COMMA)) {
+				this.playerAttacked.play();
 				if (this.scale.x > 0) {
 					this.attackOffset = this.x + this.ATTACK_SPAWN_OFFSET;
 					this.attackDirection = 1;
@@ -213,18 +223,23 @@ Player.prototype.update = function() {
 			}
 
 			//defense bubble
-			if (game.input.keyboard.justPressed(Phaser.Keyboard.PERIOD) && (this.bubbleCooldown <= 0)) {
-				//PlayerBubble = function(game, x, y, key, playNum, outerContext)
-				this.bubble = new PlayerBubble(game, this.x, this.y, 'playerBubble', 
-					this.playNum, this.outerContext);
-				this.game.add.existing(this.bubble);
-				//this.bubble.anchor.set(0.5); //P2 may do this automatically.
-				this.bubble.lockConstraint = this.game.physics.p2.createLockConstraint(this.bubble, this, [0,0]);
-				this.bubble.body.setCollisionGroup(this.bubbleCollisionGroup);
-				this.bubble.body.setMaterial(this.outerContext.bubbleMaterials[this.playNum]);
-				this.bubble.body.collides([this.ballCollisionGroup]);
-				this.bubbleGroup.add(this.bubble);
-				this.bubbleCooldown = this.BUBBLE_COOLDOWN;
+			if (game.input.keyboard.justPressed(Phaser.Keyboard.PERIOD)) {
+				if (this.bubbleCooldown <= 0) {
+					//PlayerBubble = function(game, x, y, key, playNum, outerContext)
+					this.bubble = new PlayerBubble(game, this.x, this.y, 'playerBubble', 
+						this.playNum, this.outerContext);
+					this.game.add.existing(this.bubble);
+					//this.bubble.anchor.set(0.5); //P2 may do this automatically.
+					this.bubble.lockConstraint = this.game.physics.p2.createLockConstraint(this.bubble, this, [0,0]);
+					this.bubble.body.setCollisionGroup(this.bubbleCollisionGroup);
+					this.bubble.body.setMaterial(this.outerContext.bubbleMaterials[this.playNum]);
+					this.bubble.body.collides([this.ballCollisionGroup]);
+					this.bubbleGroup.add(this.bubble);
+					this.bubbleCooldown = this.BUBBLE_COOLDOWN;
+					this.playerBubbled.play();
+				} else {
+					this.playerBubbledCooldown.play();
+				}
 			}
 		}
 	}

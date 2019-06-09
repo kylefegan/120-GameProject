@@ -459,7 +459,7 @@ Play.prototype = {
 		//if both bodies are player sprites, return false
 		if ((body1.sprite === this.player && body2.sprite === this.player2) || 
 			(body2.sprite === this.player && body1.sprite === this.player2)) {
-
+			
 			return false;
 
 		//if the first body is a player, a ball, or a breakable and the second is a pass-through platform; return false
