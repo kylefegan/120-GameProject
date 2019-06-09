@@ -23,7 +23,7 @@ Play.prototype = {
 
 		game.physics.p2.gravity.y = 500;
 
-		//this prevents players from bumping into each other.
+		//this allows us to set specific conditions for valid collisions.
 		game.physics.p2.setPostBroadphaseCallback(this.checkCollision, this);
 
 		//collision groups
@@ -145,8 +145,8 @@ Play.prototype = {
 		this.testPlatform.body.setMaterial(this.platformMaterial);
 
 		//Hazard 1
-		//Hazard = function(game, x, y, key, playerCollisionGroup, ballCollisionGroup, hazardCollisionGroup)
-		this.hazard = new  Hazard(this.game, (game.world.width/2)-200, 590, 'acid', 
+		//Hazard = function(game, x, y, key, hazType, playerCollisionGroup, ballCollisionGroup, hazardCollisionGroup)
+		this.hazard = new  Hazard(this.game, (game.world.width/2)-200, 590, 'acid', 1,
 			this.playerCollisionGroup, this.ballCollisionGroup, this.hazardCollisionGroup);
 		this.hazardMaterial = game.physics.p2.createMaterial('hazardMaterial');
 		this.hazard.body.setMaterial(this.hazardMaterial);
@@ -154,12 +154,28 @@ Play.prototype = {
 		this.hazardGroup.add(this.hazard);
 
 		//Hazard 2
-		//Hazard = function(game, x, y, key, playerCollisionGroup, ballCollisionGroup, hazardCollisionGroup)
-		this.hazard2 = new  Hazard(this.game, (game.world.width/2)+200,  590, 'acid', 
+		//Hazard = function(game, x, y, key, hazType, playerCollisionGroup, ballCollisionGroup, hazardCollisionGroup)
+		this.hazard2 = new  Hazard(this.game, (game.world.width/2)+200,  590, 'acid', 1,
 			this.playerCollisionGroup, this.ballCollisionGroup, this.hazardCollisionGroup);
 		this.hazard2.body.setMaterial(this.hazardMaterial);
 		this.game.add.existing(this.hazard2);
-		this.hazardGroup.add(this.hazard);
+		this.hazardGroup.add(this.hazard2);
+
+		//Hazard 3, spike hazard test
+		//Hazard = function(game, x, y, key, hazType, playerCollisionGroup, ballCollisionGroup, hazardCollisionGroup)
+		this.hazard3 = new  Hazard(this.game, 100,  this.game.world.height/2, 'playerBubble', 2,
+			this.playerCollisionGroup, this.ballCollisionGroup, this.hazardCollisionGroup);
+		this.hazard3.body.setMaterial(this.hazardMaterial);
+		this.game.add.existing(this.hazard3);
+		this.hazardGroup.add(this.hazard3);
+
+		/*
+			Much of the code here could be refactored into the prefabs, 
+			similar to how the hazard prefab is. It was not deemed worth 
+			sacrificing the time to do so given that for much of our time
+			with the project we had an incomplete group due to 
+			extenuating medical circumstances.
+		*/
 
 		// Ball 1
 		//Projectile = function(game, x, y, key, breakable, proNum, outerContext)
@@ -382,19 +398,20 @@ Play.prototype = {
 		this.player.body.createGroupCallback(this.hazardCollisionGroup, this.hitByHazard);
 		this.player2.body.createGroupCallback(this.hazardCollisionGroup, this.hitByHazard);
 
+		//initializing UI elements
 		for(var i = 0; i < this.player.lives; i++) {
 			var healthbar = game.add.sprite((game.world.width/2)-(i*64)-128,32, 'heart');
 		}
 		for(var j = 0; j < this.player2.lives; j++) {
 			var healthbar2 = game.add.sprite((game.world.width/2)+(j*64)+64,32, 'heart2');
 		}
-
 		var playText = game.add.text(game.width/2, 16, 
 			'P1                                            P2', 
 			{font: 'Helvetica', fontSize: '24px', fill: '#fff'});
 		playText.anchor.set(0.5);
 	},
 	
+	//PLAY STATE UPDATE
 	update: function() {
 
 		//Check prefab update functions for more information on updates.
