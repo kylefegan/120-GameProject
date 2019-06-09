@@ -46,6 +46,7 @@ Load.prototype = {
 		game.load.audio('pBubbleCooldown', 'playerBubbleCooldown.wav');
 		game.load.audio('buttonHover', 'buttonHover.mp3');
 		game.load.audio('buttonDown', 'transitionSound.mp3');
+		game.load.audio('crowd', 'crowd-cheer.mp3');
 		
 	},
 	create: function() {
