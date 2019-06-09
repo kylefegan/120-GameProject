@@ -17,6 +17,8 @@ Load.prototype = {
 		game.load.image('attackZone', 'playerAttackZone.png'); //it's a transparent box image.
 		game.load.image('ControlMenu', 'Controls Menu.png');
 		game.load.image('Title', 'Title Screen.png');
+		game.load.image('End1', 'EndScreen1.png');
+		game.load.image('End2', 'EndScreen2.png');
 		game.load.spritesheet('ControlAnimation', 'Controls animation.png', 1000, 550);
 		game.load.spritesheet('playbutton', 'Play button.png', 400, 150);
 		game.load.spritesheet('controlbutton', 'Controls button.png', 400, 150);
