@@ -18,7 +18,10 @@ Load.prototype = {
 		game.load.image('ControlMenu', 'Controls Menu.png');
 		game.load.image('Title', 'Title Screen.png');
 		game.load.image('mPlat', 'mainPlatform.png');
-		game.load.physics("mPlatPhysics", "mainPlatform.json", null, Phaser.Physics.LIME_CORONA_JSON);
+		game.load.image('column1', 'columnPiece1.png');
+		game.load.image('column2', 'columnPiece2.png');
+		game.load.image('column3', 'columnPiece3.png');
+		//game.load.physics("mPlatPhysics", "mainPlatform.json", null, Phaser.Physics.LIME_CORONA_JSON);
 		game.load.image('fPlatL', 'floatingPlatformLight.png');
 		game.load.image('fPlatD', 'floatingPlatformDark.png');
 		game.load.image('End1', 'EndScreen1.png');

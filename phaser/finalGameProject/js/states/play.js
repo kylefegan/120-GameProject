@@ -140,10 +140,10 @@ Play.prototype = {
 		this.baseTerrainMaterial = game.physics.p2.createMaterial('baseTerrainMaterial', this.baseTerrain.body);
 
 		//Main floating platform (not a pass-through)
-		this.mainPlatform = this.game.add.sprite(game.world.width/2, game.world.height/2 -50, 'mPlat');
+		this.mainPlatform = this.game.add.sprite(game.world.width/2, game.world.height/2 -120, 'mPlat');
 		this.game.physics.p2.enable(this.mainPlatform, this.DEBUG_BODIES);
-		this.mainPlatform.body.clearShapes();
-		this.mainPlatform.body.loadPolygon("mPlatPhysics", "mainPlatform");
+		//this.mainPlatform.body.clearShapes();
+		//this.mainPlatform.body.loadPolygon("mPlatPhysics", "mainPlatform");
 		this.mainPlatform.body.static = true;
 		this.mainPlatform.body.setCollisionGroup(this.terrainCollisionGroup);
 		this.mainPlatform.body.collides([this.ballCollisionGroup, this.playerCollisionGroup]);
@@ -243,9 +243,9 @@ Play.prototype = {
 
 		//Breakable stage object
 		//Projectile = function(game, x, y, key, breakable, proNum, outerContext)
-		this.breakable = new Projectile(this.game, this.game.width/2, this.game.height/2 - 200, 'playerBubble', true, 3, this);
+		this.breakable = new Projectile(this.game, this.game.width/2 - 70, this.game.height/2 - 90, 'column1', true, 3, this);
 		this.game.add.existing(this.breakable);
-		this.breakable.body.setCircle(16);
+		//this.breakable.body.setCircle(16);
 		this.projectileMaterials[3] = game.physics.p2.createMaterial('breakable1Material');
 		this.breakable.body.setMaterial(this.projectileMaterials[3]);
 		this.breakable.body.setCollisionGroup(this.ballCollisionGroup);
@@ -253,6 +253,32 @@ Play.prototype = {
 			this.attackCollisionGroup, this.terrainCollisionGroup, this.hazardCollisionGroup, 
 			this.bubbleCollisionGroup, this.platformCollisionGroup]);
 		this.breakableGroup.add(this.breakable);
+
+		//Breakable stage object 2
+		//Projectile = function(game, x, y, key, breakable, proNum, outerContext)
+		this.breakable2 = new Projectile(this.game, this.game.width/2 - 5, this.game.height/2 - 90, 'column2', true, 4, this);
+		this.game.add.existing(this.breakable2);
+		//this.breakable.body.setCircle(16);
+		this.projectileMaterials[4] = game.physics.p2.createMaterial('breakable1Material');
+		this.breakable2.body.setMaterial(this.projectileMaterials[3]);
+		this.breakable2.body.setCollisionGroup(this.ballCollisionGroup);
+		this.breakable2.body.collides([this.ballCollisionGroup, this.playerCollisionGroup, 
+			this.attackCollisionGroup, this.terrainCollisionGroup, this.hazardCollisionGroup, 
+			this.bubbleCollisionGroup, this.platformCollisionGroup]);
+		this.breakableGroup.add(this.breakable2);
+
+		//Breakable stage object 2
+		//Projectile = function(game, x, y, key, breakable, proNum, outerContext)
+		this.breakable3 = new Projectile(this.game, this.game.width/2 + 60, this.game.height/2 - 90, 'column3', true, 5, this);
+		this.game.add.existing(this.breakable3);
+		//this.breakable.body.setCircle(16);
+		this.projectileMaterials[5] = game.physics.p2.createMaterial('breakable1Material');
+		this.breakable3.body.setMaterial(this.projectileMaterials[3]);
+		this.breakable3.body.setCollisionGroup(this.ballCollisionGroup);
+		this.breakable3.body.collides([this.ballCollisionGroup, this.playerCollisionGroup, 
+			this.attackCollisionGroup, this.terrainCollisionGroup, this.hazardCollisionGroup, 
+			this.bubbleCollisionGroup, this.platformCollisionGroup]);
+		this.breakableGroup.add(this.breakable3);
 
 		//Player 1
 		//Player = function(game, x, y, key, playerNumber, attackGroup, attackCollisionGroup,
@@ -355,7 +381,7 @@ Play.prototype = {
 		}
 
 	    // Terrain Vs Ball contact
-	    for (var i = 1; i < 4; i++) { //this count will need to be change when/if more objects are added
+	    for (var i = 1; i < 6; i++) { //this count will need to be change when/if more objects are added
 		    this.proTerrContact[i] = game.physics.p2.createContactMaterial(this.projectileMaterials[i], 
 		    	this.baseTerrainMaterial);
 			this.proTerrContact[i].friction = 1.0;
@@ -368,7 +394,7 @@ Play.prototype = {
 		}
 
 		// Platform Vs Ball contact
-	    for (var i = 1; i < 4; i++) {
+	    for (var i = 1; i < 6; i++) { //this count will need to be change when/if more objects are added
 		    this.proPlatContact[i] = game.physics.p2.createContactMaterial(this.projectileMaterials[i], 
 		    	this.platformMaterial);
 			this.proPlatContact[i].friction = 1.0;
@@ -381,7 +407,7 @@ Play.prototype = {
 		}
 
 	    // Hazard Vs Ball contact, same as terrain vs ball.
-	    for (var i = 1; i < 4; i++) {
+	    for (var i = 1; i < 6; i++) { //this count will need to be change when/if more objects are added
 		    this.proHazContact[i] = game.physics.p2.createContactMaterial(this.projectileMaterials[i], 
 		    	this.hazardMaterial);
 			this.proHazContact[i].friction = 1.0;
@@ -459,7 +485,7 @@ Play.prototype = {
 		//if both bodies are player sprites, return false
 		if ((body1.sprite === this.player && body2.sprite === this.player2) || 
 			(body2.sprite === this.player && body1.sprite === this.player2)) {
-			
+
 			return false;
 
 		//if the first body is a player, a ball, or a breakable and the second is a pass-through platform; return false

@@ -12,7 +12,7 @@ var Projectile = function(game, x, y, key, breakable, proNum, outerContext) {
 	game.physics.p2.enable(this, this.DEBUG_BODIES);	// enable physics
 
 	this.OBJECT_MASS = 1; //mass of projectile objects
-	this.VEL_CHECK = 5; //velocity check for cancelling lethality
+	this.VEL_CHECK = 3; //velocity check for cancelling lethality
 	this.BOUNCE_THRESHOLD_MAX = 10; //used to prevent object clipping/slipping through platforms
 	this.BOUNCE_THRESHOLD_MIN = -4; //used to prevent object clipping/slipping through platforms
 
@@ -27,7 +27,7 @@ var Projectile = function(game, x, y, key, breakable, proNum, outerContext) {
 						   //check play state's playerAttack for details on triggers
 
 	if (this.isBreakable) {
-		this.tint = 0x0077ff; //for testing clarity only
+		//this.tint = 0x0077ff; //for testing clarity only
 	}
 
 	//#ff0000 red
