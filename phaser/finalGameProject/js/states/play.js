@@ -151,18 +151,26 @@ Play.prototype = {
 
 		
 		//Light colored floating platform
-		this.lightPlatform = this.game.add.sprite(game.world.width - 200, game.world.height/2 + 50, 'fPlatL');
+		this.lightPlatformVX = -100;
+		this.lightPlatformVY = 100;
+		this.lightPlatformDirection = 'horizontal';
+		this.lightPlatform = this.game.add.sprite(game.world.width - 200, 400, 'fPlatL');
 		this.game.physics.p2.enable(this.lightPlatform, this.DEBUG_BODIES);
-		this.lightPlatform.body.static = true;
+		this.lightPlatform.body.mass = 100000000;
+		this.lightPlatform.body.data.gravityScale = 0;
 		this.lightPlatform.body.setCollisionGroup(this.platformCollisionGroup);
 		this.lightPlatform.body.collides([this.platformCollisionGroup, this.playerCollisionGroup, this.ballCollisionGroup]);
 		this.platformMaterial = game.physics.p2.createMaterial('platformMaterial');
 		this.lightPlatform.body.setMaterial(this.platformMaterial);
 
 		//Dark colored floating platform
-		this.darkPlatform = this.game.add.sprite(200, game.world.height/2 + 50, 'fPlatD');
+		this.darkPlatformVX = 100;
+		this.darkPlatformVY = 100;
+		this.darkPlatformDirection = 'horizontal';
+		this.darkPlatform = this.game.add.sprite(200, 400, 'fPlatD');
 		this.game.physics.p2.enable(this.darkPlatform, this.DEBUG_BODIES);
-		this.darkPlatform.body.static = true;
+		this.darkPlatform.body.mass = 100000000;
+		this.darkPlatform.body.data.gravityScale = 0;
 		this.darkPlatform.body.setCollisionGroup(this.platformCollisionGroup);
 		this.darkPlatform.body.collides([this.platformCollisionGroup, this.playerCollisionGroup, this.ballCollisionGroup]);
 		this.darkPlatform.body.setMaterial(this.platformMaterial);
@@ -276,8 +284,11 @@ Play.prototype = {
 		this.player.body.collides([this.ballCollisionGroup, this.terrainCollisionGroup, 
 			this.hazardCollisionGroup, this.platformCollisionGroup]);
 		this.playerGroup.add(this.player);
+		//Player 1 Animations
 		this.player.animations.add('run', [0,1,2,3,4,5,6,7,8,9], 10, true);
-		this.player.animations.play('run');
+		this.player.animations.add('idle', [10,11], 3, true);
+		this.player.animations.play('idle');
+
 
 		//Player 2
 		//Player = function(game, x, y, key, playerNumber, attackGroup, attackCollisionGroup, 
@@ -301,8 +312,10 @@ Play.prototype = {
 		this.player2.body.collides([this.ballCollisionGroup, this.terrainCollisionGroup, 
 			this.hazardCollisionGroup, this.platformCollisionGroup]);
 		this.playerGroup.add(this.player2);
+		//Player 2 Animations
 		this.player2.animations.add('run', [0,1,2,3,4,5,6,7,8,9], 10, true);
-		this.player2.animations.play('run');
+		this.player2.animations.add('idle', [10,11], 3, true);
+		this.player2.animations.play('idle');
 		
 		//This place holder attackZone is only here to configure the collision mechanics and
 		// is never truly used by anything else; it actually terminates itself after a few update cycles
@@ -439,9 +452,80 @@ Play.prototype = {
 	},
 	
 	//PLAY STATE UPDATE
-	update: function() {
+	update: function()
+	{
 
 		//Check prefab update functions for more information on updates.
+		
+		//Player Animation Logic
+		//~~~~~~~~~~~~~~~~~~~~~~~
+		//  Player 1
+		if (game.input.keyboard.isDown(Phaser.Keyboard.A) || game.input.keyboard.isDown(Phaser.Keyboard.D))
+		{
+			this.player.animations.play('run');
+		}
+		else this.player.animations.play('idle');
+		//  Player 2
+		if (game.input.keyboard.isDown(Phaser.Keyboard.LEFT) || game.input.keyboard.isDown(Phaser.Keyboard.RIGHT))
+		{
+			this.player2.animations.play('run');
+		}
+		else this.player2.animations.play('idle');
+		//~~~~~~~~~~~~~~~~~~~~~~~
+		
+		//Moving Platform Logic
+		//-----------------------
+		if (this.darkPlatformDirection == 'horizontal')
+		{
+			if (this.darkPlatform.x >= 300)
+			{
+				this.darkPlatformVX = -100;
+				this.darkPlatformDirection = 'vertical';
+				this.darkPlatform.body.x = 299;
+			}
+			if (this.darkPlatform.x <= 100) this.darkPlatformVX = 100;
+			this.darkPlatform.body.velocity.x = this.darkPlatformVX;
+			this.darkPlatform.body.velocity.y = 0;
+		}
+		if (this.darkPlatformDirection == 'vertical')
+		{
+			if (this.darkPlatform.y >= 600) this.darkPlatformVY = -100;
+			if (this.darkPlatform.y <= 400)
+			{
+				this.darkPlatformVY = 100;
+				this.darkPlatformDirection = 'horizontal';
+				this.darkPlatform.body.y = 399;
+			}
+			this.darkPlatform.body.velocity.y = this.darkPlatformVY;
+			this.darkPlatform.body.velocity.x = 0;
+		}
+		
+		if (this.lightPlatformDirection == 'horizontal')
+		{
+			if (this.lightPlatform.x <= 700)
+			{
+				this.lightPlatformVX = 100;
+				this.lightPlatformDirection = 'vertical';
+				this.lightPlatform.body.x = 701;
+			}
+			if (this.lightPlatform.x >= 900) this.lightPlatformVX = -100;
+			this.lightPlatform.body.velocity.x = this.lightPlatformVX;
+			this.lightPlatform.body.velocity.y = 0;
+		}
+		if (this.lightPlatformDirection == 'vertical')
+		{
+			if (this.lightPlatform.y >= 600) this.lightPlatformVY = -100;
+			if (this.lightPlatform.y <= 400)
+			{
+				this.lightPlatformVY = 100;
+				this.lightPlatformDirection = 'horizontal';
+				this.lightPlatform.body.y = 399;
+			}
+			this.lightPlatform.body.velocity.y = this.lightPlatformVY;
+			this.lightPlatform.body.velocity.x = 0;
+		}
+		//-----------------------
+		
     	if(game.input.keyboard.isDown(Phaser.Keyboard.R)) {
     		game.state.start('GameOver', true, false, this.player.lives, this.player2.lives);
     	}
