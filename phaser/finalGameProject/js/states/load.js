@@ -39,7 +39,7 @@ Load.prototype = {
 		game.load.image('cloud5', 'cloud5.png');
 		game.load.image('cloud6', 'cloud6.png');
 		
-		game.load.spritesheet('golem', 'golemtest.png', 32, 32);
+		game.load.spritesheet('golem', 'golemtest2.png', 32, 32);
 
 		// load audio assets
 		game.load.path = 'assets/audio/';
