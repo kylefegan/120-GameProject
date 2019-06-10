@@ -126,7 +126,7 @@ Player.prototype.update = function() {
 				}
 				
 				//Player1 Attack Animation
-				attackAnimation = this.game.add.sprite(this.attackOffset, this.y - 10, 'attack', 0)
+				attackAnimation = this.game.add.sprite(this.attackOffset, this.y - 10, 'attack1', 0)
 				attackAnimation.scale.x = 2 * this.scale.x;
 				attackAnimation.scale.y = 2;
 				attackAnimation.lifespan = 800;
