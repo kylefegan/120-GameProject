@@ -354,6 +354,13 @@ Play.prototype = {
 		this.attackZonePlaceHolder.body.collides(this.ballCollisionGroup, this.playerAttack, this);
 		this.attackGroup.add(this.attackZonePlaceHolder); //don't know if this is truly necessary.
 
+		//----Explanation of Code----
+		// The following code is a series of loops configuring all of the individual instances
+		// of contact materials required to allow for dynamic and specific editing of physics
+		// values on a sprite vs sprite basis. It let's us do stuff like make player 1's
+		// friction on base terrain super high for a split second without effecting any
+		// other sprites or surfaces.
+
 		//======Material configuration section======
 		//-----Contact Materials key-----
 		// FRICTION to use in the contact of these two materials.
