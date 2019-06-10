@@ -50,11 +50,11 @@ var Player = function(game, x, y, key, playerNumber, attackGroup, attackCollisio
 	//this.bubbleMaterial = bubbleMaterial;
 
 	//coloring players to differentiate them.
-	if (this.playNum == 1) {
-		this.tint = 0xf4307c;
-	} else if (this.playNum == 2) {
-		this.tint = 0x26baff;
-	}
+	//if (this.playNum == 1) {
+	//	this.tint = 0xf4307c;
+	//} else if (this.playNum == 2) {
+	//	this.tint = 0x26baff;
+	//}
 
 };
 
@@ -124,7 +124,15 @@ Player.prototype.update = function() {
 					this.attackDirection = -1;
 					this.attackAnchor = 1;
 				}
-
+				
+				//Player1 Attack Animation
+				attackAnimation = this.game.add.sprite(this.attackOffset, this.y - 10, 'attack', 0)
+				attackAnimation.scale.x = 2 * this.scale.x;
+				attackAnimation.scale.y = 2;
+				attackAnimation.lifespan = 800;
+				attackAnimation.animations.add('idle', [0,1,2,3,4,5,6,7,8,9], 10, false);
+				attackAnimation.animations.play('idle');
+					
 				//PlayerAttackZone = function(game, x, y, key, playNum, strength, direction, outerContext)
 				this.attackZone = new PlayerAttackZone(game, this.attackOffset, this.y, 'attackZone', this.playNum, 
 					this.STRIKE_STRENGTH, this.attackDirection, this.outerContext);
@@ -209,6 +217,14 @@ Player.prototype.update = function() {
 					this.attackDirection = -1;
 				}
 				
+				//Player 2 Attack Animation
+				attackAnimation = this.game.add.sprite(this.attackOffset, this.y - 10, 'attack', 0)
+				attackAnimation.scale.x = 2 * this.scale.x;
+				attackAnimation.scale.y = 2;
+				attackAnimation.lifespan = 800;
+				attackAnimation.animations.add('idle', [0,1,2,3,4,5,6,7,8,9], 10, false);
+				attackAnimation.animations.play('idle');
+				
 				//PlayerAttackZone = function(game, x, y, key, playNum, strength, direction, outerContext)
 				this.attackZone = new PlayerAttackZone(game, this.attackOffset, this.y, 'attackZone', this.playNum, 
 					this.STRIKE_STRENGTH, this.attackDirection, this.outerContext);
@@ -226,7 +242,7 @@ Player.prototype.update = function() {
 			if (game.input.keyboard.justPressed(Phaser.Keyboard.PERIOD)) {
 				if (this.bubbleCooldown <= 0) {
 					//PlayerBubble = function(game, x, y, key, playNum, outerContext)
-					this.bubble = new PlayerBubble(game, this.x, this.y, 'playerBubble', 
+					this.bubble = new PlayerBubble(game, this.x, this.y, 'playerBubble2', 
 						this.playNum, this.outerContext);
 					this.game.add.existing(this.bubble);
 					//this.bubble.anchor.set(0.5); //P2 may do this automatically.

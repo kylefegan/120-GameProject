@@ -17,7 +17,7 @@ var PlayerBubble = function(game, x, y, key, playNum, outerContext) {
 	this.body.setCircle(40);
 	this.lockConstraint = null; //this is set when a bubble is spawned in the player prefab
 	this.outerContext = outerContext; //currently unused in this file but may be needed later.
-	this.lifeTime = 10; //how long the hit zone exists. measured in update cycles.
+	this.lifeTime = 20; //how long the hit zone exists. measured in update cycles.
 
 
 };

@@ -13,6 +13,7 @@ Play.prototype = {
 	},
 
 	create: function() {
+		
 		//this will toggle p2 physics debug bodies in this file. Check player and 
 		// playerAttackZone prefabs for their bodies.
 		this.DEBUG_BODIES = false;
@@ -192,14 +193,6 @@ Play.prototype = {
 		this.game.add.existing(this.hazard2);
 		this.hazardGroup.add(this.hazard2);
 
-		//Hazard 3, spike hazard test
-		//Hazard = function(game, x, y, key, hazType, playerCollisionGroup, ballCollisionGroup, hazardCollisionGroup)
-		this.hazard3 = new  Hazard(this.game, 70,  this.game.world.height/2 - 100, 'playerBubble', 2,
-			this.playerCollisionGroup, this.ballCollisionGroup, this.hazardCollisionGroup);
-		this.hazard3.body.setMaterial(this.hazardMaterial);
-		this.game.add.existing(this.hazard3);
-		this.hazardGroup.add(this.hazard3);
-
 		/*
 			Much of the code here could be refactored into the prefabs, 
 			similar to how the hazard prefab is. It was not deemed worth 
@@ -239,7 +232,7 @@ Play.prototype = {
 		// is never truly used by anything else; it actually terminates itself shortly after creation
 		//PlayerBubble = function(game, x, y, key, playNum, outerContext)
 		this.bubblePlaceHolder = new PlayerBubble(this.game, 50, this.game.height - 100, 
-			'playerBubble', 1, this);
+			'block', 1, this);
 		this.bubblePlaceHolder.alpha = 0;
 		this.game.add.existing(this.bubblePlaceHolder);
 		this.bubbleMaterials[1] = game.physics.p2.createMaterial('bubbleMaterial');
@@ -319,7 +312,7 @@ Play.prototype = {
 		//Player 2
 		//Player = function(game, x, y, key, playerNumber, attackGroup, attackCollisionGroup, 
 		//ballCollisionGroup, ballCollisionGroup, bubbleGroup, bubbleCollisionGroup, outerContext)
-		this.player2 = new Player(this.game, this.game.width/2 + 40, this.game.height/2, 'golem', 2, 
+		this.player2 = new Player(this.game, this.game.width/2 + 40, this.game.height/2, 'golem2', 2, 
 			this.attackGroup, this.attackCollisionGroup, this.ballCollisionGroup, 
 			this.bubbleGroup, this.bubbleCollisionGroup, this);
 		if (!this.justStarted) { //if it's not a new game, carry over life count
@@ -512,6 +505,7 @@ Play.prototype = {
 		
 		//Moving Platform Logic
 		//-----------------------
+		//Dark Platform:
 		if (this.darkPlatformDirection == 'horizontal')
 		{
 			if (this.darkPlatform.x >= 300)
@@ -536,7 +530,7 @@ Play.prototype = {
 			this.darkPlatform.body.velocity.y = this.darkPlatformVY;
 			this.darkPlatform.body.velocity.x = 0;
 		}
-		
+		//Light Platform
 		if (this.lightPlatformDirection == 'horizontal')
 		{
 			if (this.lightPlatform.x <= 700)
@@ -681,9 +675,9 @@ Play.prototype = {
 					deathEmitter.start(false, 1000, 4, 50);	// (explode, lifespan, freq, quantity)
 					deathEmitter.forEach(function(particle) {
 						if (receiver.sprite.playNum == 1) {
-							particle.tint = 0x470000;
+							particle.tint = 0xbe5e00;
 						} else if (receiver.sprite.playNum == 2) {
-							particle.tint = 0x00375e;
+							particle.tint = 0x737373;
 						}
 					});
 
@@ -768,9 +762,9 @@ Play.prototype = {
 			deathEmitter.start(false, 1000, 4, 50);	// (explode, lifespan, freq, quantity)
 			deathEmitter.forEach(function(particle) {
 				if (receiver.sprite.playNum == 1) {
-					particle.tint = 0x470000;
+					particle.tint = 0xbe5e00;
 				} else if (receiver.sprite.playNum == 2) {
-					particle.tint = 0x00375e;
+					particle.tint = 0x737373;
 				}
 			});
 

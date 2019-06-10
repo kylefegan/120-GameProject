@@ -17,10 +17,14 @@ Title.prototype = {
 		controlButton.anchor.set(0.5);
 		controlButton.onOverSound = game.add.audio('buttonHover');
 		controlButton.onDownSound = game.add.audio('buttonDown');
+		
+		//Create Music Object
+		this.music = new Phaser.Sound(game, 'soundtrack', 1, true);
 	},
 	update: function() {
 	},
 	goPlay: function() {
+		this.music.play();
 		// makes button stay on down frame when pressed
 		playButton.freezeFrames = true;
 
@@ -38,6 +42,7 @@ Title.prototype = {
 		});
 	},
 	goControl: function() {
+		this.music.play();
 		// makes button stay on down frame when pressed
 		controlButton.freezeFrames = true;
 
