@@ -19,7 +19,7 @@ Title.prototype = {
 		controlButton.onDownSound = game.add.audio('buttonDown');
 		
 		//Create Music Object
-		this.music = new Phaser.Sound(game, 'soundtrack', 1, true);
+		this.music = new Phaser.Sound(game, 'soundtrack', 0.5, true);
 	},
 	update: function() {
 	},
