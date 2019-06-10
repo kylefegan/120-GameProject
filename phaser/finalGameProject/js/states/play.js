@@ -267,7 +267,7 @@ Play.prototype = {
 		this.breakable2 = new Projectile(this.game, this.game.width/2 - 5, this.game.height/2 - 90, 'column2', true, 4, this);
 		this.game.add.existing(this.breakable2);
 		//this.breakable.body.setCircle(16);
-		this.projectileMaterials[4] = game.physics.p2.createMaterial('breakable1Material');
+		this.projectileMaterials[4] = game.physics.p2.createMaterial('breakable2Material');
 		this.breakable2.body.setMaterial(this.projectileMaterials[3]);
 		this.breakable2.body.setCollisionGroup(this.ballCollisionGroup);
 		this.breakable2.body.collides([this.ballCollisionGroup, this.playerCollisionGroup, 
@@ -280,7 +280,7 @@ Play.prototype = {
 		this.breakable3 = new Projectile(this.game, this.game.width/2 + 60, this.game.height/2 - 90, 'column3', true, 5, this);
 		this.game.add.existing(this.breakable3);
 		//this.breakable.body.setCircle(16);
-		this.projectileMaterials[5] = game.physics.p2.createMaterial('breakable1Material');
+		this.projectileMaterials[5] = game.physics.p2.createMaterial('breakable3Material');
 		this.breakable3.body.setMaterial(this.projectileMaterials[3]);
 		this.breakable3.body.setCollisionGroup(this.ballCollisionGroup);
 		this.breakable3.body.collides([this.ballCollisionGroup, this.playerCollisionGroup, 
