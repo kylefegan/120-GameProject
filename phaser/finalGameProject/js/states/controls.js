@@ -16,10 +16,6 @@ Controls.prototype = {
 		playText.anchor.set(0.5);
 
 		nextButton = game.add.button(game.width*.915, game.height*.24, 'next', this.goNext, this,1, 0, 2);
-
-		playText.anchor.set(0.5);
-
-		nextButton = game.add.button(game.width*.915, game.height*.24, 'next', this.goNext, this,1, 0, 2);
 		nextButton.anchor.set(0.5);
 		nextButton.onOverSound = game.add.audio('buttonHover');
 		nextButton.onDownSound = game.add.audio('buttonDown');
